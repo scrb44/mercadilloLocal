@@ -18,10 +18,25 @@ Por el momento, la aplicación se centra exclusivamente en la ciudad de Málaga 
 
 ## Tipo de usuarios:
 
--   Compradores
--   Vendedores
--   Administradores
+-   Compradores: ciudadanos y habitantes de la localidad en cuestion, dado el alcanse actual del proyecto la ciudad de malaga (publico general)
 
+    los compradores podrian acceder a la pagina para ver los productos, se podran registrar explorar los productos y agregarlos a un           carrito de compra, asi como calificar reportar o comentar estos mismos productos
+-   Vendedores: comerciantes locales que vendan *productos* con posibilidad de expandir a aquillos que vendan cervicios por ejemplo:
+    +  pastelerias
+    +  bares que hagan su propio vino
+    +  tiendas de ropa
+    +  maqueteria
+    +  libros
+    +  ropa segunda mano
+    +  etc.
+
+
+    los vendedores podrian acceder a su perfil para ver el estado de su pagina sus baneers y los productos agregados, de momento nosotros     ofreseriamos el servicio de actualizar o agregar los productos a la pagina, mas no se descarta agregar la opcion que el propio            vendedor lo pueda agregar, asi como la accion de participar en eventos 
+    
+-   Administradores: nosotros como dueños de la pagina o algun empleado que funga de regulador
+
+    los administradores tendriamos la capacidad de administrar los productos, regular a los usuarios tanto clientes como compradores en       su actitud o si llegan a ser reportados asi como de agregar eventos.
+      
 ## Historias de usuario
 
 Rellenar
