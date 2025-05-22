@@ -131,7 +131,17 @@ Rellenar
 
 ## Endpoints de la API REST
 
-Rellenar
+### GET /productos/categorias/{categoriaId}: Obtiene los productos de una categoría.
+
+### GET /productos/{productosId}: Obtienen los productos
+
+### POST /productos/categorias/{categoriaId}: Crea un producto dentro de una categoría.
+
+### PUT /productos/{productoId}: Actualiza un producto existente.
+
+### PUT /productos/categorias/{categoriaId}: Actualiza un producto de una categoría
+
+### DELETE /productos/{productoId}: Elimina un producto.
 
 # 6. Planificación del desarrollo
 
