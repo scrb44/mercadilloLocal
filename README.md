@@ -28,6 +28,6 @@ Este proyecto ha sido desarrollado como parte del Bootcamp **Desarrollo Web con 
 
 ### Integrantes
 
--   [Doriana](https://www.linkedin.com/in/usuario1)
+-   [Doriana Da Costa](https://es.linkedin.com/in/doriana-da-costa)
 -   [Santiago](https://www.linkedin.com/in/usuario2)
 -   [Sofía Celeste Ríos Bautista](https://www.linkedin.com/in/scrb44)
