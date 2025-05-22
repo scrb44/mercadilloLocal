@@ -99,17 +99,73 @@ Rellenar
 
 # 6. Planificación del desarrollo
 
-## Tareas principales divididas por equipo o persona
+### Tareas principales divididas por equipo o persona
 
-Rellenar
+| Equipo/Persona       | Tareas principales |
+|----------------------|--------------------|
+ **Frontend (React)** 
+- Maquetar pantallas (inicio, comercios, productos, contacto)  
+- Implementar navegación y rutas  
+- Conectar con la API REST  
+- Validación de formularios  
+- Diseño responsive 
 
-## Cronograma estimado (por sprints, fases o semanas)
+ **Backend (Spring Boot)** 
+- Modelado de base de datos (admin, productos, comprador, provincias)  
+- Crear endpoints RESTful  
+- Seguridad básica (login, registro)  
+- Gestión de errores y validaciones 
 
-Rellenar
+**Base de datos**    
+- Crear el modelo entidad-relación 
+- Crear las tablas en MySQL  
+- Definir relaciones entre entidades
+ **Testing & QA**     
+- Probar endpoints con Postman  
+- Pruebas funcionales en frontend  
+- Validación de datos y flujos de usuario
+**Documentación**   
+- Redactar README.md  
+- Documentar endpoints  
+- Manual de usuario básico
 
-## Riesgos potenciales y cómo mitigarlos
+---
 
-Rellenar
+### Cronograma estimado (por sprints/semanas)
+
+| Semana | Objetivos principales |
+|--------|------------------------|
+ **Semana 1 (Sprint 1)** 
+- Definición de requerimientos  
+- Bocetos de interfaz (mockups)  
+- Crear repositorios y entorno local 
+
+**Semana 2 (Sprint 2)**  
+- Implementar backend básico: entidades, repositorios, controladores  
+- Primeros componentes en frontend
+- Registro/login de usuarios
+- Conexión frontend-backend  
+- CRUD de productos y comercios  
+
+
+**Semana 3 (Sprint 3)**
+- Diseño responsive  
+- Validaciones  
+- Pruebas y correcciones 
+- Documentación final  
+- Presentación del proyecto 
+
+---
+
+### Riesgos potenciales y cómo mitigarlos
+
+| Riesgo | Mitigación |
+|--------|------------|
+| **Retrasos por falta de tiempo** | Dividir tareas bien desde el principio y seguir sprints cortos |
+| **Dificultades técnicas (API, conexión frontend-backend)** | Buscar apoyo del equipo, usar documentación oficial y herramientas como Postman o Insomnia |
+| **Problemas con Git (conflictos o pérdida de código)** | Usar ramas correctamente y hacer commits frecuentes con mensajes claros |
+| **Errores** | Hacer pruebas antes de desplegar, tener backups |
+| **Falta de comunicación en el equipo** | Reuniones semanales, usar herramientas como Kanbam o WhatsApp para coordinar |
 
 # 7. Consideraciones adicionales
 
