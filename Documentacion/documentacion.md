@@ -40,7 +40,43 @@ Por el momento, la aplicación se centra exclusivamente en la ciudad de Málaga 
 
 ## Historias de usuario
 
-Rellenar
+### Historia de Usuario 1: Visualizar productos de diferentes lugares y categorías
+Como usuario comprador,
+ Quiero poder ver una lista de productos agrupados por categorías y de diferentes localidades,
+ Para que pueda fácilmente encontrar lo que busco y ver opciones de distintas áreas.
+
+### Historia de Usuario 2: Filtrar productos por categorías, ubicación y precio
+Como usuario comprador,
+ Quiero filtrar los productos por categorías (ejemplo: ropa, comida, herramientas) y por ubicación,
+ Para que pueda reducir la búsqueda y encontrar productos de interés más rápido.
+
+### Historia de Usuario 3: Ver los detalles de un producto
+Como usuario comprador,
+ Quiero poder ver los detalles de un producto (descripción, precio, ubicación del vendedor, fotos),
+ Para que pueda tomar una decisión informada antes de realizar la compra.
+
+### Historia de Usuario 4: Agregar productos al carrito
+Como usuario comprador,
+ Quiero agregar productos a mi carrito,
+ Para que pueda revisar y comprar varios productos en un solo proceso de pago.
+
+### Historia de Usuario 5: Crear un perfil de vendedor
+Como vendedor local,
+ Quiero poder crear un perfil en la página donde pueda subir productos de mi tienda,
+ Para que los compradores puedan ver mis productos y contactar conmigo.
+
+ ### Historia de Usuario 6: Gestión de productos para el vendedor
+Como vendedor,
+ Quiero poder gestionar los productos que subo a la página (editar, eliminar, actualizar precios),
+ Para que pueda mantener mi catálogo actualizado de manera sencilla.
+
+### Historia de Usuario 7: Sistema de reseñas y valoraciones
+Como usuario comprador,
+ Quiero poder dejar una reseña y valoración a los productos que he comprado,
+ Para que otros compradores puedan ver mi experiencia y tomar decisiones más informadas.
+
+
+
 
 ## Casos de uso detallados (diagramas opcionales)
 
