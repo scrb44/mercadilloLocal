@@ -1,0 +1,22 @@
+.page-footer {
+    background-color: white;
+    padding: 20px 0;
+}
+
+.page-footer__container {
+    width: var(--page-width);
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.page-footer__list {
+    display: flex;
+    flex-flow: row;
+    list-style: none;
+    width: 40%;
+    gap: 10px;
+    justify-content: space-between;
+}
