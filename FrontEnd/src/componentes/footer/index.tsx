@@ -1,6 +1,7 @@
 function Footer() {
     return (
         <footer>
+            <div>Footer</div>
             <ul>
                 <li>Elemento 1</li>
                 <li>Elemento 2</li>
