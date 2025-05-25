@@ -1,220 +1,77 @@
-// src/context/UserContext.ts
+// src/context/UserContext.tsx - VERSIÓN SIMPLIFICADA
 import React, {
     createContext,
     useContext,
-    useReducer,
-    useEffect,
+    useState,
     type ReactNode,
 } from "react";
-import mercadilloService from "../services/mercadilloService";
+import mercadilloService from "../services";
+import { type UserInterface, type LoginCredentials } from "../types/types";
 
-import {
-    type UserInterface,
-    type LoginCredentials,
-    type RegisterData,
-    type UserStateInterface,
-    type UserAction,
-} from "../types/types";
-
-// Context type
+// ============ INTERFACES SIMPLES ============
 interface UserContextType {
-    state: UserStateInterface;
+    user: UserInterface | null;
+    isAuthenticated: boolean;
+    loading: boolean;
+    error: string | null;
     login: (credentials: LoginCredentials) => Promise<void>;
-    register: (data: RegisterData) => Promise<void>;
     logout: () => void;
-    updateProfile: (data: Partial<UserInterface>) => Promise<void>;
-    checkAuthStatus: () => Promise<void>;
 }
 
-// Estado inicial
-const initialState: UserStateInterface = {
-    user: null,
-    isAuthenticated: false,
-    loading: false,
-    error: null,
-};
-
-// Reducer
-const userReducer = (
-    state: UserStateInterface,
-    action: UserAction
-): UserStateInterface => {
-    switch (action.type) {
-        case "SET_LOADING":
-            return { ...state, loading: action.payload };
-
-        case "SET_ERROR":
-            return { ...state, error: action.payload, loading: false };
-
-        case "LOGIN_SUCCESS":
-            return {
-                ...state,
-                user: action.payload,
-                isAuthenticated: true,
-                loading: false,
-                error: null,
-            };
-
-        case "LOGOUT":
-            return {
-                ...state,
-                user: null,
-                isAuthenticated: false,
-                loading: false,
-                error: null,
-            };
-
-        case "UPDATE_PROFILE":
-            return {
-                ...state,
-                user: state.user ? { ...state.user, ...action.payload } : null,
-            };
-
-        default:
-            return state;
-    }
-};
-
-// Crear el Context
+// ============ CONTEXT ============
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Provider Component
+// ============ PROVIDER SIMPLIFICADO ============
 interface UserProviderProps {
     children: ReactNode;
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-    const [state, dispatch] = useReducer(userReducer, initialState);
+    const [user, setUser] = useState<UserInterface | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        checkAuthStatus();
-    }, []);
+    const isAuthenticated = user !== null;
 
     const login = async (credentials: LoginCredentials) => {
         try {
-            dispatch({ type: "SET_LOADING", payload: true });
+            setLoading(true);
+            setError(null);
 
-            const response = await fetch("auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(credentials),
-            });
+            // TODO: Implementar llamada real a API
+            // Por ahora, simular login exitoso
+            const mockUser: UserInterface = {
+                id: 1,
+                name: "Usuario Demo",
+                email: credentials.email,
+                role: "user",
+                isEmailVerified: true,
+            };
 
-            if (!response.ok) {
-                throw new Error("Credenciales incorrectas");
-            }
-
-            const { user, token } = await response.json();
-            localStorage.setItem("auth_token", token);
-            dispatch({ type: "LOGIN_SUCCESS", payload: user });
-        } catch (error) {
-            dispatch({
-                type: "SET_ERROR",
-                payload:
-                    error instanceof Error ? error.message : "Error de login",
-            });
-            throw error;
-        }
-    };
-
-    const register = async (data: RegisterData) => {
-        try {
-            dispatch({ type: "SET_LOADING", payload: true });
-
-            const response = await fetch("auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error("Error en el registro");
-            }
-
-            const { user, token } = await response.json();
-            localStorage.setItem("auth_token", token);
-            dispatch({ type: "LOGIN_SUCCESS", payload: user });
-        } catch (error) {
-            dispatch({
-                type: "SET_ERROR",
-                payload:
-                    error instanceof Error
-                        ? error.message
-                        : "Error de registro",
-            });
-            throw error;
+            setUser(mockUser);
+            console.log("🔧 Login simulado exitoso:", mockUser);
+        } catch (err: any) {
+            setError(err.message || "Error de login");
+            throw err;
+        } finally {
+            setLoading(false);
         }
     };
 
     const logout = () => {
-        localStorage.removeItem("auth_token");
+        setUser(null);
+        setError(null);
         mercadilloService.clearLocalCache();
-        dispatch({ type: "LOGOUT" });
-    };
-
-    const updateProfile = async (data: Partial<UserInterface>) => {
-        try {
-            const response = await fetch("user/profile", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem(
-                        "auth_token"
-                    )}`,
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error("Error actualizando perfil");
-            }
-
-            const updatedUser = await response.json();
-            dispatch({ type: "UPDATE_PROFILE", payload: updatedUser });
-        } catch (error) {
-            dispatch({
-                type: "SET_ERROR",
-                payload:
-                    error instanceof Error
-                        ? error.message
-                        : "Error actualizando perfil",
-            });
-            throw error;
-        }
-    };
-
-    const checkAuthStatus = async () => {
-        const token = localStorage.getItem("auth_token");
-        if (!token) return;
-
-        try {
-            dispatch({ type: "SET_LOADING", payload: true });
-
-            const response = await fetch("auth/me", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.ok) {
-                const user = await response.json();
-                dispatch({ type: "LOGIN_SUCCESS", payload: user });
-            } else {
-                localStorage.removeItem("auth_token");
-                dispatch({ type: "LOGOUT" });
-            }
-        } catch (error) {
-            console.error("Error checking auth status:", error);
-            localStorage.removeItem("auth_token");
-            dispatch({ type: "LOGOUT" });
-        }
+        console.log("🔧 Logout exitoso");
     };
 
     const contextValue: UserContextType = {
-        state,
+        user,
+        isAuthenticated,
+        loading,
+        error,
         login,
-        register,
         logout,
-        updateProfile,
-        checkAuthStatus,
     };
 
     return (
@@ -224,6 +81,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     );
 };
 
+// ============ HOOK ============
 export const useUser = (): UserContextType => {
     const context = useContext(UserContext);
     if (context === undefined) {
