@@ -1,8 +1,14 @@
 package com.example.springboot.model;
 
-import jakarta.persistence.*;
-
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Categoria {
@@ -22,6 +28,8 @@ public class Categoria {
 
     @OneToMany(mappedBy = "categoriaPadre")
     private List<Categoria> subcategorias;  // Subcategorías
+
+    public Categoria(){}
 
     public Categoria(Long id, String imagen, String nombre, Categoria categoriaPadre, List<Producto> productos, List<Categoria> subcategorias) {
         this.id = id;

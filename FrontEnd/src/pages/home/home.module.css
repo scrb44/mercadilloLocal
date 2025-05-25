@@ -24,3 +24,29 @@
 .home__spacer {
     flex: 1;
 }
+
+.home {
+  padding: 1rem;
+}
+
+.productos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+h1{
+    padding: 50%;
+}
+
+.producto {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  width: 200px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background-color: rgba(255, 255, 255, 0.8); /* fondo blanco con transparencia */
+  backdrop-filter: saturate(180%) blur(10px); /* efecto de difuminado del fondo detrás */
+}

@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Producto {
 
@@ -17,16 +19,21 @@ public class Producto {
     private String nombre;
     private String imagen;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "productos")
     private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;  // Relación muchos a uno con Categoria
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "vendedor_id")
     private Vendedor vendedor;  // Relación muchos a uno con Vendedor
+
+    public Producto(){}
 
     public Producto(Long id, String descripcion, String nombre, Categoria categoria, Vendedor vendedor, List<Comprador> compradores, String imagen, BigDecimal precio) {
         this.id = id;

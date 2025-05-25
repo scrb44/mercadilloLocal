@@ -27,6 +27,8 @@ function Home() {
     <div className={classes["home"]}>
       <Header />
       <Filter />
+    <h1>Productos más vendidos</h1>
+
       <main>
         {productos.length === 0 && <p>Cargando productos...</p>}
         <div className={classes["productos-lista"]}>

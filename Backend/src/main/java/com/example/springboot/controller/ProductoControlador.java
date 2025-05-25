@@ -1,29 +1,25 @@
-// ProductoControlador.java
 package com.example.springboot.controller;
+
+import com.example.springboot.model.Producto;
+import com.example.springboot.service.ProductoService;
+
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.springboot.model.Producto;
-import com.example.springboot.repository.ProductoRepositorio;
-
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*")  
+@CrossOrigin(origins = "*")
 public class ProductoControlador {
 
-    private final ProductoRepositorio productoRepositorio;
+    private final ProductoService productoService;
 
-    public ProductoControlador(ProductoRepositorio productoRepositorio) {
-        this.productoRepositorio = productoRepositorio;
+    public ProductoControlador(ProductoService productoService) {
+        this.productoService = productoService;
     }
 
     @GetMapping
     public List<Producto> obtenerProductos() {
-        return productoRepositorio.findAll();
+        return productoService.obtenerTodos();
     }
 }
