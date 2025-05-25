@@ -23,11 +23,18 @@ function Home() {
       .catch(console.error);
   }, []);
 
+  const formatearPrecio = (precio: number) => {
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR",
+    }).format(precio);
+  };
+
   return (
     <div className={classes["home"]}>
       <Header />
       <Filter />
-    <h1>Productos más vendidos</h1>
+      <h1>Productos más vendidos</h1>
 
       <main>
         {productos.length === 0 && <p>Cargando productos...</p>}
@@ -37,7 +44,7 @@ function Home() {
               <h3>{producto.nombre}</h3>
               <img src={producto.imagen} alt={producto.nombre} width={150} />
               <p>{producto.descripcion}</p>
-              <p>Precio: ${producto.precio}</p>
+              <p>Precio: {formatearPrecio(producto.precio)}</p>
             </div>
           ))}
         </div>
