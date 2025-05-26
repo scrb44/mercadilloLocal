@@ -18,6 +18,27 @@ Mercadillo Local te permite descubrir productos y servicios disponibles en tu zo
 -   React / TypeScript
 -   Java / Spring Boot
 
+
+## Explicación de como ejecutar la aplicación
+
+### Parte Fronted con React:
+Esta parte muestra la interfaz de la aplicación.
+- Paso 1: Ir a la consola de git bash en el Entorno (Visual Studio Code)
+- Paso 2: Navega a la carpeta FrontEnd/ si no estás ya en ella, usa el comando "cd FrontEnd
+".
+- Paso 3: Instala las dependencias, ejecuta el comando: "pnpm install" 
+- Paso 4: Inicia la aplicación en modo desarrollo, ejecuta el comando: "pnpm run dev" 
+- Paso 5: Aparecerá una URL como http://localhost:5173/. Haz clic en ella o ábrela en tu navegador.
+
+### Parte Backend con Spring boot y MySQL:
+Esta parte gestiona la lógica y las conexiones con la base de datos.
+- Paso 1: Abre tu entorno de desarrollo (por ejemplo, IntelliJ o Visal Studio Code).
+- Paso 2: Localiza el archivo o clase principal: SpringBootAplicacion.java (usualmente en .src/main/java/...).
+- Paso 3: Ejecuta esa clase como una aplicación Spring Boot.
+- Paso 4: Asegúrate de tener MySQL corriendo (con el schema llamado correctamente) y con las credenciales correctas en tu application.properties.
+
+
+
 ## Próximas funcionalidades
 
 -   Poner en un futuro
@@ -28,6 +49,6 @@ Este proyecto ha sido desarrollado como parte del Bootcamp **Desarrollo Web con 
 
 ### Integrantes
 
--   [Doriana Da Costa](https://es.linkedin.com/in/doriana-da-costa)
--   [Santiago](https://www.linkedin.com/in/usuario2)
+-   [Doriana Angelica Da Costa Magello](https://es.linkedin.com/in/doriana-da-costa)
+-   [Santiago Eduardo Chaves Borrero](https://www.linkedin.com/in/usuario2)
 -   [Sofía Celeste Ríos Bautista](https://www.linkedin.com/in/scrb44)
