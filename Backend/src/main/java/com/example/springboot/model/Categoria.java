@@ -16,22 +16,21 @@ public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String imagen;
     private String nombre;
-
+    public Categoria(){}
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
-    private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
+    private Producto categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
 
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
     @OneToMany(mappedBy = "categoriaPadre")
-    private List<Categoria> subcategorias;  // Subcategorías
+    private List<Producto> subcategorias;  // Subcategorías
 
-    public Categoria(){}
-
-    public Categoria(Long id, String imagen, String nombre, Categoria categoriaPadre, List<Producto> productos, List<Categoria> subcategorias) {
+    public Categoria(Long id, String imagen, String nombre, Producto categoriaPadre, List<Producto> productos, List<Producto> subcategorias) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
@@ -52,7 +51,7 @@ public class Categoria {
         return nombre;
     }
 
-    public Categoria getCategoriaPadre() {
+    public Producto getCategoriaPadre() {
         return categoriaPadre;
     }
 
@@ -60,7 +59,7 @@ public class Categoria {
         return productos;
     }
 
-    public List<Categoria> getSubcategorias() {
+    public List<Producto> getSubcategorias() {
         return subcategorias;
     }
 
@@ -76,7 +75,7 @@ public class Categoria {
         this.nombre = nombre;
     }
 
-    public void setCategoriaPadre(Categoria categoriaPadre) {
+    public void setCategoriaPadre(Producto categoriaPadre) {
         this.categoriaPadre = categoriaPadre;
     }
 
@@ -84,7 +83,7 @@ public class Categoria {
         this.productos = productos;
     }
 
-    public void setSubcategorias(List<Categoria> subcategorias) {
+    public void setSubcategorias(List<Producto> subcategorias) {
         this.subcategorias = subcategorias;
     }
 }

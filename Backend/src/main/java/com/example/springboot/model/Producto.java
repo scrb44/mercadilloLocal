@@ -26,7 +26,7 @@ public class Producto {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "categoria_id")
-    private Categoria categoria;  // Relación muchos a uno con Categoria
+    private Producto categoria;  // Relación muchos a uno con Categoria
 
     @JsonIgnore
     @ManyToOne
@@ -35,7 +35,7 @@ public class Producto {
 
     public Producto(){}
 
-    public Producto(Long id, String descripcion, String nombre, Categoria categoria, Vendedor vendedor, List<Comprador> compradores, String imagen, BigDecimal precio) {
+    public Producto(Long id, String descripcion, String nombre, Producto categoria, Vendedor vendedor, List<Comprador> compradores, String imagen, BigDecimal precio) {
         this.id = id;
         this.descripcion = descripcion;
         this.nombre = nombre;
@@ -70,11 +70,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public Categoria getCategoria() {
+    public Producto getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(Categoria categoria) {
+    public void setCategoria(Producto categoria) {
         this.categoria = categoria;
     }
 

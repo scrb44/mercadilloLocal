@@ -4,7 +4,6 @@ import com.example.springboot.model.Categoria;
 import com.example.springboot.model.Producto;
 import com.example.springboot.repository.CategoriaRepositorio;
 import com.example.springboot.repository.ProductoRepositorio;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +34,9 @@ public class DataLoader {
                 categoriaRepo.save(cat);
                 categorias.put(nombreCat, cat);
             }
-
+            Categoria cat1= new Categoria();
+            cat1.setImagen("https://www.google.com/imgres?q=juguetes%20categoria&imgurl=https%3A%2F%2Fencuentraproveedores.com%2Fwp-content%2Fuploads%2F2022%2F05%2FCATEGORIAS-juguetes-varios-4.jpg&imgrefurl=https%3A%2F%2Fencuentraproveedores.com%2Fmayoristas%2Fkilumio%2F&docid=OF-hjaJCykLw0M&tbnid=16CsIkJqV5tvcM&vet=12ahUKEwjc7sOD9MCNAxVBVKQEHTWoB1cQM3oECGQQAA..i&w=1280&h=710&hcb=2&ved=2ahUKEwjc7sOD9MCNAxVBVKQEHTWoB1cQM3oECGQQAA");
+            cat1.setNombre("juguete");
             // Producto 1: Auriculares (Electrónica)
             Producto prod1 = new Producto();
             prod1.setNombre("Auriculares");
