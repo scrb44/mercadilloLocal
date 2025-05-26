@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useUser, useCart } from "../../contexts";
+// src/pages/home/Home.tsx - VERSIÓN LIMPIA
+import { useEffect, useState, useCallback } from "react";
 import mercadilloService from "../../services";
 import {
     type ProductInterface,
@@ -9,31 +9,28 @@ import {
 import Filter from "../../componentes/filter";
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
+import ProductList from "../../componentes/productList";
 
 import classes from "./home.module.css";
 
 function Home() {
+    // ============ ESTADO LOCAL ============
     const [productos, setProductos] = useState<ProductInterface[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // ✅ USAR VALORES PRIMITIVOS EN LUGAR DE OBJETOS
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [selectedCategory, setSelectedCategory] = useState<
         number | undefined
     >();
 
-    const { user, isAuthenticated } = useUser();
-    const cart = isAuthenticated ? useCart() : null;
-
-    // ✅ CARGAR PRODUCTOS - Dependencias específicas
+    // ============ CARGAR PRODUCTOS ============
     useEffect(() => {
         const loadProducts = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                // Construir filtros aquí
+                // Construir filtros
                 const filters: SearchFiltersInterface = {};
                 if (searchQuery) filters.query = searchQuery;
                 if (selectedCategory) filters.category = selectedCategory;
@@ -41,16 +38,16 @@ function Home() {
                 const data = await mercadilloService.getProducts(filters);
                 setProductos(data);
             } catch (err: any) {
-                setError(err.message);
+                setError(err.message || "Error al cargar productos");
             } finally {
                 setLoading(false);
             }
         };
 
         loadProducts();
-    }, [searchQuery, selectedCategory]); // ← Dependencias primitivas específicas
+    }, [searchQuery, selectedCategory]);
 
-    // ✅ HANDLER ESTABLE CON useCallback
+    // ============ HANDLERS ============
     const handleFiltersChange = useCallback(
         (newFilters: SearchFiltersInterface) => {
             setSearchQuery(newFilters.query || "");
@@ -59,107 +56,52 @@ function Home() {
         []
     );
 
-    const handleAddToCart = async (product: ProductInterface) => {
-        if (!isAuthenticated) {
-            alert("Debes iniciar sesión para añadir productos al carrito");
-            return;
-        }
+    const handleAddToCart = useCallback((product: ProductInterface) => {
+        // Este callback se ejecuta cuando se añade un producto al carrito
+        console.log("Producto añadido desde Home:", product.name);
+    }, []);
 
-        if (!cart) return;
+    const handleRetry = useCallback(() => {
+        // Reintentar cargar productos
+        const filters: SearchFiltersInterface = {};
+        if (searchQuery) filters.query = searchQuery;
+        if (selectedCategory) filters.category = selectedCategory;
 
-        try {
-            await cart.addItem(product, 1);
-            console.log("✅ Producto añadido al carrito:", product.name);
-        } catch (error) {
-            console.error("❌ Error adding to cart:", error);
-            alert("Error al añadir producto al carrito");
-        }
-    };
+        setError(null);
+        setLoading(true);
 
+        mercadilloService
+            .getProducts(filters)
+            .then(setProductos)
+            .catch((err) =>
+                setError(err.message || "Error al cargar productos")
+            )
+            .finally(() => setLoading(false));
+    }, [searchQuery, selectedCategory]);
+
+    // ============ RENDER ============
     return (
-        <div className={classes["home"]}>
+        <div className={classes.home}>
             <Header />
-            <Filter onFiltersChange={handleFiltersChange} />
 
-            <main>
-                {loading && <p>Cargando productos...</p>}
+            <div className={classes.container}>
+                <Filter onFiltersChange={handleFiltersChange} />
 
-                {error && (
-                    <div
-                        style={{
-                            backgroundColor: "#fee2e2",
-                            padding: "10px",
-                            margin: "10px",
-                        }}
-                    >
-                        <p style={{ color: "#dc2626" }}>❌ {error}</p>
-                    </div>
-                )}
+                <main className={classes.main}>
+                    <ProductList
+                        products={productos}
+                        loading={loading}
+                        error={error}
+                        onAddToCart={handleAddToCart}
+                        onRetry={handleRetry}
+                    />
+                </main>
+            </div>
 
-                {!loading && !error && (
-                    <div className={classes["productos-lista"]}>
-                        {productos.length === 0 ? (
-                            <p>📦 No se encontraron productos</p>
-                        ) : (
-                            productos.map((producto) => (
-                                <div
-                                    key={producto.id}
-                                    className={classes["producto"]}
-                                >
-                                    <img
-                                        src={producto.img[0]}
-                                        alt={producto.name}
-                                        width={150}
-                                        style={{ borderRadius: "8px" }}
-                                    />
-                                    <h3>{producto.name}</h3>
-                                    <p>{producto.description}</p>
-                                    <p
-                                        style={{
-                                            fontWeight: "bold",
-                                            color: "#2563eb",
-                                        }}
-                                    >
-                                        €{producto.price}
-                                    </p>
-                                    <p
-                                        style={{
-                                            fontSize: "0.9em",
-                                            color: "#666",
-                                        }}
-                                    >
-                                        Vendedor: {producto.vendedor.name}
-                                    </p>
-
-                                    <button
-                                        onClick={() =>
-                                            handleAddToCart(producto)
-                                        }
-                                        disabled={cart?.loading}
-                                        style={{
-                                            padding: "8px 16px",
-                                            backgroundColor: isAuthenticated
-                                                ? "#2563eb"
-                                                : "#6b7280",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "4px",
-                                            cursor: "pointer",
-                                            marginTop: "10px",
-                                        }}
-                                    >
-                                        {isAuthenticated
-                                            ? "Añadir al carrito"
-                                            : "Inicia sesión"}
-                                    </button>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                )}
-            </main>
+            <div className={classes.spacer}></div>
             <Footer />
         </div>
     );
+}
 
 export default Home;
