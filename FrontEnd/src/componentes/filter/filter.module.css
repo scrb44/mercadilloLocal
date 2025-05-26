@@ -1,0 +1,17 @@
+.page-searcher {
+    width: 80%;
+    background-color: rgba(172, 255, 47, 0.5);
+    padding: 10px 10%;
+}
+
+.page-searcher__search-bar {
+    width: 100%;
+    border-radius: 10px;
+    padding: 3px 0;
+    border: none;
+    text-align: center;
+}
+
+.page-searcher__search-bar:current {
+    border: none;
+}
