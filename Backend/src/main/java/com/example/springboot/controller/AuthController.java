@@ -2,6 +2,7 @@ package com.example.springboot.controller;
 
 import com.example.springboot.dto.LoginRequest;
 import com.example.springboot.dto.LoginResponse;
+import com.example.springboot.dto.RegisterRequest;
 import com.example.springboot.model.Admin;
 import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Vendedor;
@@ -69,6 +70,43 @@ public class AuthController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No hay sesión activa");
+    }
+
+
+    @PostMapping("/registro")
+    public ResponseEntity<?> registrarUsuario(@RequestBody RegisterRequest request) {
+        switch (request.getRol().toUpperCase()) {
+            case "ADMIN":
+                Admin admin = new Admin();
+                admin.setUsuario(request.getUsuario());
+                admin.setNombre(request.getNombre());
+                admin.setContraseña(request.getContraseña());
+                adminService.guardarAdmin(admin); // Asegúrate de tener este método
+                return ResponseEntity.ok("Admin registrado");
+
+            case "COMPRADOR":
+                Comprador comprador = new Comprador();
+                comprador.setUsuario(request.getUsuario());
+                comprador.setNombre(request.getNombre());
+                comprador.setContraseña(request.getContraseña());
+                comprador.setCorreo(request.getCorreo());
+                comprador.setTelf(request.getTelf());
+                compradorService.guardarComprador(comprador);
+                return ResponseEntity.ok("Comprador registrado");
+
+            case "VENDEDOR":
+                Vendedor vendedor = new Vendedor();
+                vendedor.setUsuario(request.getUsuario());
+                vendedor.setNombre(request.getNombre());
+                vendedor.setContraseña(request.getContraseña());
+                vendedor.setCorreo(request.getCorreo());
+                vendedor.setTelf(request.getTelf());
+                vendedorService.guardarVendedor(vendedor);
+                return ResponseEntity.ok("Vendedor registrado");
+
+            default:
+                return ResponseEntity.badRequest().body("Rol no válido");
+        }
     }
 
 
