@@ -14,6 +14,10 @@ public class Admin {
     private String nombre;
     private String contraseña;
 
+    public Admin() {
+    }
+
+
     public Admin(Long id, String nombre, String contraseña) {
         this.id = id;
         this.nombre = nombre;
