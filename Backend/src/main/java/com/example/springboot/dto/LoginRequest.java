@@ -4,5 +4,27 @@ public class LoginRequest {
     private String usuario;
     private String contraseña;
 
-    // Getters y setters
+    public LoginRequest() {
+    }
+
+    public LoginRequest(String usuario, String contraseña) {
+        this.usuario = usuario;
+        this.contraseña = contraseña;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getContraseña() {
+        return contraseña;
+    }
+
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
 }
