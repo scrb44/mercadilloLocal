@@ -32,4 +32,9 @@ public class VendedorService {
     public Vendedor login(String usuario, String contraseña) {
         return vendedorRepository.findByUsuarioAndContraseña(usuario, contraseña);
     }
+
+    public boolean existePorUsuario(String usuario) {
+        return vendedorRepository.existsByUsuario(usuario);
+    }
+
 }

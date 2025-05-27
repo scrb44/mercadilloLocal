@@ -75,18 +75,29 @@ public class AuthController {
 
     @PostMapping("/registro")
     public ResponseEntity<?> registrarUsuario(@RequestBody RegisterRequest request) {
+        String usuario = request.getUsuario();
+
+        // Verificar si el usuario ya existe en cualquiera de las tablas
+        boolean existeUsuario = compradorService.existePorUsuario(usuario) ||
+                vendedorService.existePorUsuario(usuario) ||
+                adminService.existePorUsuario(usuario);
+
+        if (existeUsuario) {
+            return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
+        }
+
         switch (request.getRol().toUpperCase()) {
             case "ADMIN":
                 Admin admin = new Admin();
-                admin.setUsuario(request.getUsuario());
+                admin.setUsuario(usuario);
                 admin.setNombre(request.getNombre());
                 admin.setContraseña(request.getContraseña());
-                adminService.guardarAdmin(admin); // Asegúrate de tener este método
+                adminService.guardarAdmin(admin);
                 return ResponseEntity.ok("Admin registrado");
 
             case "COMPRADOR":
                 Comprador comprador = new Comprador();
-                comprador.setUsuario(request.getUsuario());
+                comprador.setUsuario(usuario);
                 comprador.setNombre(request.getNombre());
                 comprador.setContraseña(request.getContraseña());
                 comprador.setCorreo(request.getCorreo());
@@ -96,7 +107,7 @@ public class AuthController {
 
             case "VENDEDOR":
                 Vendedor vendedor = new Vendedor();
-                vendedor.setUsuario(request.getUsuario());
+                vendedor.setUsuario(usuario);
                 vendedor.setNombre(request.getNombre());
                 vendedor.setContraseña(request.getContraseña());
                 vendedor.setCorreo(request.getCorreo());

@@ -32,4 +32,9 @@ public class AdminService {
     public Admin login(String nombre, String contraseña) {
         return adminRepository.findByNombreAndContraseña(nombre, contraseña);
     }
+
+    public boolean existePorUsuario(String usuario) {
+        return adminRepository.existsByUsuario(usuario);
+    }
+
 }
