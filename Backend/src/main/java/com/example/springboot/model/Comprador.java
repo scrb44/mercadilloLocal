@@ -18,11 +18,13 @@ public class Comprador {
 
     @ManyToMany
     @JoinTable(
-            name = "carrito",  // Tabla intermedia
+            name = "carrito_comprador",  // Tabla intermedia
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
     private List<Producto> productos;  // Relación muchos a muchos con Producto
+
+    public Comprador(){}
 
     public Comprador(Long id, String usuario, String nombre, String contraseña, String correo, String telf, List<Producto> productos) {
         this.id = id;
