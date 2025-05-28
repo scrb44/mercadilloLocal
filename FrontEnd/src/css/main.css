@@ -11,6 +11,69 @@ h3 {
 }
 
 body {
-    min-height: 100vh;
+    margin: 0;
+    padding: 0;
     position: relative;
+    min-height: 100vh;
+}
+
+/* Fondo de imagen para todas las páginas */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../assets/bg.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+/* Contenedor principal para el 80% */
+.page-container {
+    width: var(--page-width);
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Clases de utilidad para efectos cristal */
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+}
+
+.glass-effect-strong {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.glass-effect-light {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Bandas que ocupan todo el ancho */
+.full-width-band {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
 }
