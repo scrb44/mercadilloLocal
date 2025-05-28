@@ -1,6 +1,8 @@
-// src/pages/cart/index.tsx
+// src/pages/cart/index.tsx - MODULARIZADO CON CARTITEM
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
+import { SimpleBreadcrumb } from "../../componentes/breadcrumb";
+import CartItem from "../../componentes/cartItem";
 
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
@@ -63,6 +65,9 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
+                    {/* Breadcrumb para usuarios no autenticados */}
+                    <SimpleBreadcrumb pageName="Carrito" />
+
                     <div className={classes.unauthenticatedState}>
                         <h1 className={classes.title}>Tu Carrito</h1>
                         <div className={classes.loginPrompt}>
@@ -85,6 +90,8 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
+                    <SimpleBreadcrumb pageName="Carrito" />
+
                     <div className={classes.errorState}>
                         <p>Error al cargar el carrito</p>
                         <Link to="/" className={classes.backLink}>
@@ -102,6 +109,8 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
+                    <SimpleBreadcrumb pageName="Carrito" />
+
                     <div className={classes.loadingState}>
                         <div className={classes.loadingSpinner}></div>
                         <p>Cargando carrito...</p>
@@ -118,6 +127,9 @@ function Cart() {
             <Header />
 
             <div className={classes.container}>
+                {/* Breadcrumb del carrito */}
+                <SimpleBreadcrumb pageName="Mi Carrito" />
+
                 {/* Header del carrito */}
                 <div className={classes.cartHeader}>
                     <h1 className={classes.title}>Tu Carrito</h1>
@@ -163,114 +175,13 @@ function Cart() {
                         {/* Lista de productos */}
                         <div className={classes.cartItems}>
                             {cart.items.map((item) => (
-                                <div
+                                <CartItem
                                     key={item.product.id}
-                                    className={classes.cartItem}
-                                >
-                                    {/* Imagen del producto */}
-                                    <div className={classes.itemImage}>
-                                        <img
-                                            src={
-                                                item.product.img[0] ||
-                                                "/placeholder-image.jpg"
-                                            }
-                                            alt={item.product.name}
-                                            onError={(e) => {
-                                                e.currentTarget.src =
-                                                    "/placeholder-image.jpg";
-                                            }}
-                                        />
-                                    </div>
-
-                                    {/* Información del producto */}
-                                    <div className={classes.itemInfo}>
-                                        <Link
-                                            to={`/producto/${item.product.id}`}
-                                            className={classes.itemName}
-                                        >
-                                            {item.product.name}
-                                        </Link>
-                                        <p className={classes.itemDescription}>
-                                            {item.product.description}
-                                        </p>
-                                        <p className={classes.itemVendor}>
-                                            Vendedor:{" "}
-                                            {item.product.vendedor.name}
-                                        </p>
-                                    </div>
-
-                                    {/* Controles de cantidad */}
-                                    <div className={classes.itemControls}>
-                                        <div
-                                            className={classes.quantityControl}
-                                        >
-                                            <button
-                                                onClick={() =>
-                                                    handleUpdateQuantity(
-                                                        item.product.id,
-                                                        item.quantity - 1
-                                                    )
-                                                }
-                                                className={
-                                                    classes.quantityButton
-                                                }
-                                                disabled={
-                                                    cart.loading ||
-                                                    item.quantity <= 1
-                                                }
-                                            >
-                                                -
-                                            </button>
-                                            <span
-                                                className={
-                                                    classes.quantityValue
-                                                }
-                                            >
-                                                {item.quantity}
-                                            </span>
-                                            <button
-                                                onClick={() =>
-                                                    handleUpdateQuantity(
-                                                        item.product.id,
-                                                        item.quantity + 1
-                                                    )
-                                                }
-                                                className={
-                                                    classes.quantityButton
-                                                }
-                                                disabled={cart.loading}
-                                            >
-                                                +
-                                            </button>
-                                        </div>
-
-                                        <button
-                                            onClick={() =>
-                                                handleRemoveItem(
-                                                    item.product.id
-                                                )
-                                            }
-                                            className={classes.removeButton}
-                                            disabled={cart.loading}
-                                        >
-                                            🗑️ Eliminar
-                                        </button>
-                                    </div>
-
-                                    {/* Precio */}
-                                    <div className={classes.itemPrice}>
-                                        <div className={classes.unitPrice}>
-                                            €{item.product.price.toFixed(2)} c/u
-                                        </div>
-                                        <div className={classes.totalItemPrice}>
-                                            €
-                                            {(
-                                                item.product.price *
-                                                item.quantity
-                                            ).toFixed(2)}
-                                        </div>
-                                    </div>
-                                </div>
+                                    item={item}
+                                    loading={cart.loading}
+                                    onUpdateQuantity={handleUpdateQuantity}
+                                    onRemove={handleRemoveItem}
+                                />
                             ))}
                         </div>
 

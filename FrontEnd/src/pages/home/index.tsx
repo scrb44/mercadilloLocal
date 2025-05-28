@@ -1,4 +1,4 @@
-// src/pages/home/index.tsx - CON CATEGORÍAS Y PRODUCTOS MÁS VENDIDOS
+// src/pages/home/index.tsx - SOLO CATEGORÍAS PRINCIPALES Y PRODUCTOS MÁS VENDIDOS
 import { useEffect, useState, useCallback } from "react";
 import mercadilloService from "../../services";
 import {
@@ -9,13 +9,15 @@ import {
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
 import ProductList from "../../componentes/productList";
+import CategoryList from "../../componentes/categoryList";
 
 import classes from "./home.module.css";
-import CategoryList from "../../componentes/categoryList";
 
 function Home() {
     // ============ ESTADO LOCAL ============
-    const [categorias, setCategorias] = useState<CategoryInterface[]>([]);
+    const [categoriasPrincipales, setCategoriasPrincipales] = useState<
+        CategoryInterface[]
+    >([]);
     const [productosPopulares, setProductosPopulares] = useState<
         ProductInterface[]
     >([]);
@@ -32,8 +34,14 @@ function Home() {
                 try {
                     setCategoriesLoading(true);
                     setCategoriesError(null);
-                    const data = await mercadilloService.getCategories();
-                    setCategorias(data);
+                    const allCategories =
+                        await mercadilloService.getCategories();
+
+                    // Filtrar solo las categorías principales (sin fatherId)
+                    const mainCategories = allCategories.filter(
+                        (cat) => !cat.fatherId
+                    );
+                    setCategoriasPrincipales(mainCategories);
                 } catch (err: any) {
                     setCategoriesError(
                         err.message || "Error al cargar categorías"
@@ -48,9 +56,8 @@ function Home() {
                     setProductsLoading(true);
                     setProductsError(null);
                     // Obtenemos todos los productos y tomamos los primeros 6 como "más vendidos"
-                    // En un entorno real, esto vendría de un endpoint específico como /api/productos/populares
                     const allProducts = await mercadilloService.getProducts();
-                    // Simulamos productos populares tomando los primeros 6
+                    // Los primeros 6 productos del mockData son los "más vendidos"
                     const popularProducts = allProducts.slice(0, 6);
                     setProductosPopulares(popularProducts);
                 } catch (err: any) {
@@ -76,7 +83,13 @@ function Home() {
 
         mercadilloService
             .getCategories()
-            .then(setCategorias)
+            .then((allCategories) => {
+                // Filtrar solo categorías principales
+                const mainCategories = allCategories.filter(
+                    (cat) => !cat.fatherId
+                );
+                setCategoriasPrincipales(mainCategories);
+            })
             .catch((err) =>
                 setCategoriesError(err.message || "Error al cargar categorías")
             )
@@ -118,19 +131,29 @@ function Home() {
                             Bienvenido a Mercadillo Local
                         </h1>
                         <p className={classes.welcomeSubtitle}>
-                            Explora nuestras categorías y encuentra lo que
-                            buscas
+                            Explora nuestras categorías principales y descubre
+                            los productos más vendidos
                         </p>
                     </div>
 
-                    {/* Sección de categorías */}
+                    {/* Sección de categorías principales */}
                     <section className={classes.categoriesSection}>
-                        <h2 className={classes.sectionTitle}>Categorías</h2>
+                        <div className={classes.sectionHeader}>
+                            <h2 className={classes.sectionTitle}>
+                                Categorías Principales
+                            </h2>
+                            <p className={classes.sectionSubtitle}>
+                                Navega por nuestras categorías principales para
+                                encontrar lo que buscas
+                            </p>
+                        </div>
+
                         <CategoryList
-                            categories={categorias}
+                            categories={categoriasPrincipales}
                             loading={categoriesLoading}
                             error={categoriesError}
                             onRetry={handleCategoriesRetry}
+                            showSubcategories={false} // Explícitamente NO mostrar subcategorías
                         />
                     </section>
 

@@ -1,59 +1,42 @@
-// src/pages/categoryProducts/index.tsx
-import { useEffect, useState, useCallback } from "react";
+// src/pages/categoryProducts/index.tsx - MODULARIZADO
+import { useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import mercadilloService from "../../services";
-import {
-    type ProductInterface,
-    type CategoryInterface,
-    type SearchFiltersInterface,
-} from "../../types/types";
+import { type SearchFiltersInterface } from "../../types/types";
 
+// Hooks personalizados
+import { useCategory, useProducts } from "../../hooks";
+
+// Componentes
 import Filter from "../../componentes/filter";
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
-import ProductList from "../../componentes/productList";
+import CategoryList from "../../componentes/categoryList";
+import { CategoryBreadcrumb } from "../../componentes/breadcrumb";
+import CategoryHeader from "../../componentes/categoryHeader";
+import ProductsSection from "../../componentes/productSection";
 
 import classes from "./CategoryProducts.module.css";
 
 function CategoryProducts() {
     const { categoryId } = useParams<{ categoryId: string }>();
-
-    // ============ ESTADO LOCAL ============
-    const [productos, setProductos] = useState<ProductInterface[]>([]);
-    const [categoria, setCategoria] = useState<CategoryInterface | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>("");
 
-    // ============ CARGAR DATOS ============
-    useEffect(() => {
-        if (!categoryId) return;
+    // Usar hooks personalizados
+    const {
+        categoria,
+        categoriaPadre,
+        subcategorias,
+        loading: categoryLoading,
+        error: categoryError,
+        retry: retryCategory,
+    } = useCategory(categoryId);
 
-        const loadData = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                // Cargar categoría y productos en paralelo
-                const [categoryData, productsData] = await Promise.all([
-                    mercadilloService.getCategory(parseInt(categoryId)),
-                    mercadilloService.getProducts({
-                        category: parseInt(categoryId),
-                        query: searchQuery || undefined,
-                    }),
-                ]);
-
-                setCategoria(categoryData);
-                setProductos(productsData);
-            } catch (err: any) {
-                setError(err.message || "Error al cargar datos");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadData();
-    }, [categoryId, searchQuery]);
+    const {
+        productos,
+        loading: productsLoading,
+        error: productsError,
+        retry: retryProducts,
+    } = useProducts(categoryId, searchQuery);
 
     // ============ HANDLERS ============
     const handleFiltersChange = useCallback(
@@ -63,32 +46,20 @@ function CategoryProducts() {
         []
     );
 
-    const handleAddToCart = useCallback((product: ProductInterface) => {
+    const handleAddToCart = useCallback((product: any) => {
         console.log("Producto añadido desde CategoryProducts:", product.name);
     }, []);
 
+    const handleClearSearch = useCallback(() => {
+        setSearchQuery("");
+    }, []);
+
     const handleRetry = useCallback(() => {
-        if (!categoryId) return;
+        retryCategory();
+        retryProducts();
+    }, [retryCategory, retryProducts]);
 
-        setError(null);
-        setLoading(true);
-
-        Promise.all([
-            mercadilloService.getCategory(parseInt(categoryId)),
-            mercadilloService.getProducts({
-                category: parseInt(categoryId),
-                query: searchQuery || undefined,
-            }),
-        ])
-            .then(([categoryData, productsData]) => {
-                setCategoria(categoryData);
-                setProductos(productsData);
-            })
-            .catch((err) => setError(err.message || "Error al cargar datos"))
-            .finally(() => setLoading(false));
-    }, [categoryId, searchQuery]);
-
-    // ============ RENDER ============
+    // ============ RENDER CONDICIONAL PARA ERRORES ============
     if (!categoryId) {
         return (
             <div className={classes.categoryProducts}>
@@ -106,44 +77,111 @@ function CategoryProducts() {
         );
     }
 
+    // ============ RENDER PRINCIPAL ============
     return (
         <div className={classes.categoryProducts}>
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb y título */}
-                <div className={classes.breadcrumb}>
-                    <Link to="/" className={classes.breadcrumbLink}>
-                        Inicio
-                    </Link>
-                    <span className={classes.breadcrumbSeparator}>›</span>
-                    <span className={classes.breadcrumbCurrent}>
-                        {categoria?.name || "Cargando..."}
-                    </span>
-                </div>
+                {/* Breadcrumb */}
+                <CategoryBreadcrumb
+                    currentCategory={categoria}
+                    parentCategory={categoriaPadre}
+                />
 
+                {/* Header de categoría */}
                 {categoria && (
-                    <div className={classes.categoryHeader}>
-                        <h1 className={classes.categoryTitle}>
-                            {categoria.name}
-                        </h1>
-                        <p className={classes.categorySubtitle}>
-                            Productos en la categoría {categoria.name}
-                        </p>
+                    <CategoryHeader
+                        categoria={categoria}
+                        categoriaPadre={categoriaPadre}
+                        productCount={productos.length}
+                        subcategoryCount={subcategorias.length}
+                    />
+                )}
+
+                {/* Subcategorías (solo si existen y no hay búsqueda) */}
+                {subcategorias.length > 0 && !searchQuery && (
+                    <div className={classes.subcategoriesSection}>
+                        <div className={classes.subcategoriesHeader}>
+                            <h2 className={classes.subcategoriesTitle}>
+                                Explora las subcategorías de {categoria?.name}
+                            </h2>
+                            <p className={classes.subcategoriesSubtitle}>
+                                Encuentra productos más específicos navegando
+                                por las subcategorías
+                            </p>
+                        </div>
+                        <CategoryList
+                            categories={subcategorias}
+                            loading={false}
+                            error={null}
+                            showSubcategories={true}
+                            parentCategory={categoria}
+                        />
                     </div>
                 )}
 
-                {/* Filtro de búsqueda dentro de la categoría */}
+                {/* Filtro de búsqueda */}
                 <Filter onFiltersChange={handleFiltersChange} />
 
                 <main className={classes.main}>
-                    <ProductList
-                        products={productos}
-                        loading={loading}
-                        error={error}
-                        onAddToCart={handleAddToCart}
-                        onRetry={handleRetry}
-                    />
+                    {/* Sección de productos */}
+                    {categoria && (
+                        <ProductsSection
+                            products={productos}
+                            categoria={categoria}
+                            searchQuery={searchQuery}
+                            loading={productsLoading}
+                            error={productsError}
+                            onAddToCart={handleAddToCart}
+                            onRetry={handleRetry}
+                            onClearSearch={handleClearSearch}
+                        />
+                    )}
+
+                    {/* Mensaje si no hay productos pero sí subcategorías */}
+                    {!productsLoading &&
+                        productos.length === 0 &&
+                        subcategorias.length > 0 &&
+                        !searchQuery && (
+                            <div className={classes.noProductsButSubcategories}>
+                                <div className={classes.noProductsContent}>
+                                    <span className={classes.infoIcon}>💡</span>
+                                    <h3 className={classes.infoTitle}>
+                                        Esta categoría contiene subcategorías
+                                    </h3>
+                                    <p className={classes.infoText}>
+                                        Los productos están organizados en las
+                                        subcategorías mostradas arriba. Explora
+                                        las subcategorías para encontrar lo que
+                                        buscas.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                    {/* Footer de navegación */}
+                    {categoria && !categoryLoading && (
+                        <div className={classes.navigationFooter}>
+                            <div className={classes.backNavigation}>
+                                {categoriaPadre ? (
+                                    <Link
+                                        to={`/categoria/${categoriaPadre.id}`}
+                                        className={classes.backToParentLink}
+                                    >
+                                        ← Volver a {categoriaPadre.name}
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        to="/"
+                                        className={classes.backToHomeLink}
+                                    >
+                                        ← Volver al inicio
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
 

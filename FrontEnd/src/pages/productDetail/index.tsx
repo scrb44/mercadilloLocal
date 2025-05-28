@@ -1,9 +1,10 @@
-// src/pages/productDetail/index.tsx
-import { useEffect, useState } from "react";
+// src/pages/productDetail/index.tsx - MODULARIZADO
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
-import mercadilloService from "../../services";
-import { type ProductInterface } from "../../types/types";
+import { useProduct } from "../../hooks";
+import { ProductBreadcrumb } from "../../componentes/breadcrumb";
+import ProductGallery from "../../componentes/productGallery";
 
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
@@ -15,36 +16,10 @@ function ProductDetail() {
     const navigate = useNavigate();
     const { user, isAuthenticated } = useUser();
     const cart = isAuthenticated ? useCart() : null;
-
-    // ============ ESTADO LOCAL ============
-    const [producto, setProducto] = useState<ProductInterface | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
-    // ============ CARGAR PRODUCTO ============
-    useEffect(() => {
-        if (!productId) return;
-
-        const loadProduct = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                const data = await mercadilloService.getProduct(
-                    parseInt(productId)
-                );
-                setProducto(data);
-            } catch (err: any) {
-                setError(err.message || "Error al cargar el producto");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadProduct();
-    }, [productId]);
+    // Usar hook personalizado
+    const { producto, loading, error } = useProduct(productId);
 
     // ============ HANDLERS ============
     const handleAddToCart = async () => {
@@ -73,10 +48,6 @@ function ProductDetail() {
         handleAddToCart().then(() => {
             navigate("/carrito");
         });
-    };
-
-    const handleImageChange = (index: number) => {
-        setSelectedImageIndex(index);
     };
 
     const handleQuantityChange = (newQuantity: number) => {
@@ -158,72 +129,16 @@ function ProductDetail() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb */}
-                <div className={classes.breadcrumb}>
-                    <Link to="/" className={classes.breadcrumbLink}>
-                        Inicio
-                    </Link>
-                    {producto.categories.length > 0 && (
-                        <>
-                            <span className={classes.breadcrumbSeparator}>
-                                ›
-                            </span>
-                            <Link
-                                to={`/categoria/${producto.categories[0].id}`}
-                                className={classes.breadcrumbLink}
-                            >
-                                {producto.categories[0].name}
-                            </Link>
-                        </>
-                    )}
-                    <span className={classes.breadcrumbSeparator}>›</span>
-                    <span className={classes.breadcrumbCurrent}>
-                        {producto.name}
-                    </span>
-                </div>
+                {/* Breadcrumb del producto */}
+                <ProductBreadcrumb product={producto} />
 
                 {/* Contenido principal */}
                 <div className={classes.productContent}>
-                    {/* Galería de imágenes */}
-                    <div className={classes.imageSection}>
-                        <div className={classes.mainImageContainer}>
-                            <img
-                                src={
-                                    producto.img[selectedImageIndex] ||
-                                    producto.img[0] ||
-                                    "/placeholder-image.jpg"
-                                }
-                                alt={producto.name}
-                                className={classes.mainImage}
-                                onError={(e) => {
-                                    e.currentTarget.src =
-                                        "/placeholder-image.jpg";
-                                }}
-                            />
-                        </div>
-
-                        {producto.img.length > 1 && (
-                            <div className={classes.thumbnailContainer}>
-                                {producto.img.map((image, index) => (
-                                    <img
-                                        key={index}
-                                        src={image}
-                                        alt={`${producto.name} ${index + 1}`}
-                                        className={`${classes.thumbnail} ${
-                                            index === selectedImageIndex
-                                                ? classes.thumbnailActive
-                                                : ""
-                                        }`}
-                                        onClick={() => handleImageChange(index)}
-                                        onError={(e) => {
-                                            e.currentTarget.src =
-                                                "/placeholder-image.jpg";
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {/* Galería de imágenes - COMPONENTE MODULARIZADO */}
+                    <ProductGallery
+                        images={producto.img}
+                        productName={producto.name}
+                    />
 
                     {/* Información del producto */}
                     <div className={classes.infoSection}>
@@ -270,7 +185,6 @@ function ProductDetail() {
                             </div>
                         </div>
 
-                        {/* Controles de compra */}
                         <div className={classes.purchaseSection}>
                             <div className={classes.quantityControl}>
                                 <label className={classes.quantityLabel}>
