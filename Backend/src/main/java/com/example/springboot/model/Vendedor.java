@@ -23,6 +23,7 @@ public class Vendedor {
     @OneToMany(mappedBy = "vendedor")
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
+    public Vendedor(){}
 
     public Vendedor(Long id, String usuario, String contraseña, String nombre, String correo, String telf, Boolean verificado, List<Producto> productos) {
         this.id = id;
