@@ -1,42 +1,65 @@
+// src/App.tsx - Configuración completa de rutas
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { UserProvider, useUser, CartProvider } from "./contexts";
+import { UserProvider, CartProvider, useUser } from "./contexts";
 
+// Páginas
 import Home from "./pages/home";
-// import CartPage from "./pages/cart/CartPage";
-// import LoginPage from "./pages/auth/LoginPage";
+import CategoryProducts from "./pages/categoryProducts";
+import ProductDetail from "./pages/productDetail";
+import Cart from "./pages/cart";
+import Login from "./pages/login";
+import Register from "./pages/register";
 
-// Componente interno que necesita acceso al usuario
+// Componente wrapper para manejar el CartProvider condicionalmente
 function AppContent() {
     const { user, isAuthenticated } = useUser();
 
     return (
-        <Router>
-            {/* Solo mostrar CartProvider si el usuario está autenticado */}
+        <div className="App">
             {isAuthenticated && user ? (
                 <CartProvider userId={user.id}>
                     <Routes>
                         <Route path="/" element={<Home />} />
-                        {/* <Route path="/cart" element={<CartPage />} /> */}
-                        {/* <Route path="/login" element={<LoginPage />} /> */}
-                        {/* Más rutas aquí */}
+                        <Route
+                            path="/categoria/:categoryId"
+                            element={<CategoryProducts />}
+                        />
+                        <Route
+                            path="/producto/:productId"
+                            element={<ProductDetail />}
+                        />
+                        <Route path="/carrito" element={<Cart />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/registro" element={<Register />} />
                     </Routes>
                 </CartProvider>
             ) : (
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    {/* <Route path="/login" element={<LoginPage />} /> */}
-                    {/* Rutas sin carrito para usuarios no autenticados */}
+                    <Route
+                        path="/categoria/:categoryId"
+                        element={<CategoryProducts />}
+                    />
+                    <Route
+                        path="/producto/:productId"
+                        element={<ProductDetail />}
+                    />
+                    <Route path="/carrito" element={<Cart />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/registro" element={<Register />} />
                 </Routes>
             )}
-        </Router>
+        </div>
     );
 }
 
 function App() {
     return (
-        <UserProvider>
-            <AppContent />
-        </UserProvider>
+        <Router>
+            <UserProvider>
+                <AppContent />
+            </UserProvider>
+        </Router>
     );
 }
 
