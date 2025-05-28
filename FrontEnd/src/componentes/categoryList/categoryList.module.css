@@ -1,0 +1,195 @@
+/* src/componentes/categoryGrid/CategoryGrid.module.css */
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.categoryCard {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.categoryCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.categoryContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.categoryImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.categoryPlaceholder {
+    width: 60px;
+    height: 60px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.categoryName {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    text-align: center;
+}
+
+/* Estados de carga, error y vacío */
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+/* Loading */
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingText {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Error */
+.errorContainer {
+    background-color: #fef2f2;
+    border-radius: 12px;
+    margin: 20px;
+}
+
+.errorContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.errorIcon {
+    font-size: 2rem;
+}
+
+.errorText {
+    font-size: 1.1rem;
+    color: #dc2626;
+    margin: 0;
+    font-weight: 500;
+}
+
+.retryButton {
+    padding: 10px 20px;
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+    background-color: #b91c1c;
+    transform: translateY(-1px);
+}
+
+/* Empty state */
+.emptyContainer {
+    background-color: #f9fafb;
+    border-radius: 12px;
+    margin: 20px;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.emptyText {
+    font-size: 1.25rem;
+    color: #374151;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .categoryGrid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+        padding: 16px 0;
+    }
+
+    .categoryCard {
+        height: 140px;
+        padding: 16px;
+    }
+
+    .categoryImage,
+    .categoryPlaceholder {
+        width: 50px;
+        height: 50px;
+    }
+
+    .categoryName {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .categoryGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .categoryCard {
+        height: 120px;
+        padding: 12px;
+    }
+}
