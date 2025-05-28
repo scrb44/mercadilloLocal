@@ -1,3 +1,4 @@
+// src/componentes/filter/index.tsx - ACTUALIZADO PARA BANDA VERDE
 import { useState, useEffect, useCallback } from "react";
 import { type SearchFiltersInterface } from "../../types/types";
 import classes from "./filter.module.css";
@@ -19,7 +20,7 @@ function Filter({ onFiltersChange }: FilterProps) {
         return () => clearTimeout(timer);
     }, [searchName]);
 
-    // ============ NOTIFICAR CAMBIOS - SIN onFiltersChange EN DEPENDENCIAS ============
+    // ============ NOTIFICAR CAMBIOS ============
     useEffect(() => {
         const filters: SearchFiltersInterface = {};
 
@@ -27,26 +28,29 @@ function Filter({ onFiltersChange }: FilterProps) {
             filters.query = debouncedSearchName.trim();
         }
 
-        // ✅ SOLUCIÓN: No poner onFiltersChange en dependencias
         onFiltersChange(filters);
-    }, [debouncedSearchName]); // ← SOLO debouncedSearchName
+    }, [debouncedSearchName, onFiltersChange]);
 
     return (
         <nav className={classes["page-searcher"]}>
-            <input
-                type="search"
-                name="search"
-                placeholder="Barra de búsqueda"
-                className={classes["page-searcher__search-bar"]}
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-            />
+            <div className={classes["page-searcher__container"]}>
+                <input
+                    type="search"
+                    name="search"
+                    placeholder="¿Qué estás buscando?"
+                    className={classes["page-searcher__search-bar"]}
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                />
 
-            {searchName !== debouncedSearchName && (
-                <small style={{ color: "#666", marginLeft: "10px" }}>
-                    Buscando...
-                </small>
-            )}
+                {searchName !== debouncedSearchName && (
+                    <div
+                        className={`${classes["search-indicator"]} ${classes["search-loading"]}`}
+                    >
+                        🔍 Buscando...
+                    </div>
+                )}
+            </div>
         </nav>
     );
 }
