@@ -10,7 +10,7 @@ export const MOCK_PRODUCTS: ProductInterface[] = [
         name: "iPhone 13 Pro",
         description: "Smartphone Apple con cámara profesional",
         img: [
-            "https://via.placeholder.com/300x200/007bff/ffffff?text=iPhone+13",
+            "https://www.powerplanetonline.com/cdnassets/apple_iphone_13_pro_grafito_01_l.jpg",
         ],
         video: [],
         price: 999,
@@ -21,9 +21,7 @@ export const MOCK_PRODUCTS: ProductInterface[] = [
         id: 2,
         name: "Samsung Galaxy S22",
         description: "Teléfono Android de última generación",
-        img: [
-            "https://via.placeholder.com/300x200/28a745/ffffff?text=Samsung+S22",
-        ],
+        img: ["https://m.media-amazon.com/images/I/714LtBc8KzL.jpg"],
         video: [],
         price: 799,
         categories: [{ id: 1, name: "Electrónicos", img: "" }],
@@ -33,9 +31,7 @@ export const MOCK_PRODUCTS: ProductInterface[] = [
         id: 3,
         name: "MacBook Air M2",
         description: "Portátil Apple con chip M2",
-        img: [
-            "https://via.placeholder.com/300x200/6c757d/ffffff?text=MacBook+Air",
-        ],
+        img: ["https://techcrunch.com/wp-content/uploads/2022/07/CMC_1580.jpg"],
         video: [],
         price: 1299,
         categories: [{ id: 2, name: "Informática", img: "" }],
@@ -46,7 +42,7 @@ export const MOCK_PRODUCTS: ProductInterface[] = [
         name: "Nike Air Max",
         description: "Zapatillas deportivas cómodas",
         img: [
-            "https://via.placeholder.com/300x200/dc3545/ffffff?text=Nike+Air+Max",
+            "https://i1.t4s.cz//products/921522-034/nike-air-max-97-gs-715627-921522-034-960.webp",
         ],
         video: [],
         price: 129,

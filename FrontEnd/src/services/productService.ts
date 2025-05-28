@@ -13,6 +13,7 @@ import {
 } from "../types/types";
 
 const apiClient = createApiClient();
+const PRODUCTS_ENDPOINT = "/api/productos";
 
 export const productsService = {
     async getProduct(
@@ -26,7 +27,7 @@ export const productsService = {
 
         try {
             const product = await apiClient.get<ProductInterface>(
-                `products/${id}`
+                `${PRODUCTS_ENDPOINT}/${id}`
             );
             cacheProduct(id, product);
             return product;
@@ -66,7 +67,7 @@ export const productsService = {
                 params.append("maxPrice", filters.maxPrice.toString());
             if (filters?.query) params.append("q", filters.query);
 
-            const url = `products${
+            const url = `${PRODUCTS_ENDPOINT}${
                 params.toString() ? "?" + params.toString() : ""
             }`;
             const products = await apiClient.get<ProductInterface[]>(url);

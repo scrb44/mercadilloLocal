@@ -4,7 +4,6 @@ interface CacheItem<T> {
     ttl?: number;
 }
 
-// TTL más corto para datos de mercadillo que pueden cambiar más frecuentemente
 const DEFAULT_TTL = 1000 * 60 * 30; // 30 minutos
 const PRODUCTS_TTL = 1000 * 60 * 15; // 15 minutos para productos (pueden cambiar precios/stock)
 const CATEGORIES_TTL = 1000 * 60 * 60 * 2; // 2 horas para categorías (cambian menos)
@@ -19,7 +18,23 @@ const CACHE_PREFIXES = {
     SEARCH: "mercadillo-search-",
 } as const;
 
+function isLocalStorageAvailable(): boolean {
+    try {
+        const test = "__localStorage_test__";
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 export function getItem<T>(key: string): T | null {
+    if (!isLocalStorageAvailable()) {
+        console.warn("localStorage no disponible");
+        return null;
+    }
+
     try {
         const item = localStorage.getItem(key);
         if (!item) return null;
@@ -43,6 +58,11 @@ export function setItem<T>(
     data: T,
     ttl: number = DEFAULT_TTL
 ): void {
+    if (!isLocalStorageAvailable()) {
+        console.warn("localStorage no disponible, saltando cache");
+        return;
+    }
+
     try {
         const item: CacheItem<T> = {
             data,
