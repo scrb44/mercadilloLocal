@@ -1,99 +1,159 @@
-// src/pages/home/Home.tsx - VERSIÓN LIMPIA
+// src/pages/home/index.tsx - CON CATEGORÍAS Y PRODUCTOS MÁS VENDIDOS
 import { useEffect, useState, useCallback } from "react";
 import mercadilloService from "../../services";
 import {
+    type CategoryInterface,
     type ProductInterface,
-    type SearchFiltersInterface,
 } from "../../types/types";
 
-import Filter from "../../componentes/filter";
 import Footer from "../../componentes/footer";
 import Header from "../../componentes/header";
 import ProductList from "../../componentes/productList";
 
 import classes from "./home.module.css";
+import CategoryList from "../../componentes/categoryList";
 
 function Home() {
     // ============ ESTADO LOCAL ============
-    const [productos, setProductos] = useState<ProductInterface[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>("");
-    const [selectedCategory, setSelectedCategory] = useState<
-        number | undefined
-    >();
+    const [categorias, setCategorias] = useState<CategoryInterface[]>([]);
+    const [productosPopulares, setProductosPopulares] = useState<
+        ProductInterface[]
+    >([]);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(true);
+    const [categoriesError, setCategoriesError] = useState<string | null>(null);
+    const [productsError, setProductsError] = useState<string | null>(null);
 
-    // ============ CARGAR PRODUCTOS ============
+    // ============ CARGAR DATOS ============
     useEffect(() => {
-        const loadProducts = async () => {
-            try {
-                setLoading(true);
-                setError(null);
+        const loadData = async () => {
+            // Cargar categorías y productos en paralelo
+            const loadCategories = async () => {
+                try {
+                    setCategoriesLoading(true);
+                    setCategoriesError(null);
+                    const data = await mercadilloService.getCategories();
+                    setCategorias(data);
+                } catch (err: any) {
+                    setCategoriesError(
+                        err.message || "Error al cargar categorías"
+                    );
+                } finally {
+                    setCategoriesLoading(false);
+                }
+            };
 
-                // Construir filtros
-                const filters: SearchFiltersInterface = {};
-                if (searchQuery) filters.query = searchQuery;
-                if (selectedCategory) filters.category = selectedCategory;
+            const loadPopularProducts = async () => {
+                try {
+                    setProductsLoading(true);
+                    setProductsError(null);
+                    // Obtenemos todos los productos y tomamos los primeros 6 como "más vendidos"
+                    // En un entorno real, esto vendría de un endpoint específico como /api/productos/populares
+                    const allProducts = await mercadilloService.getProducts();
+                    // Simulamos productos populares tomando los primeros 6
+                    const popularProducts = allProducts.slice(0, 6);
+                    setProductosPopulares(popularProducts);
+                } catch (err: any) {
+                    setProductsError(
+                        err.message || "Error al cargar productos populares"
+                    );
+                } finally {
+                    setProductsLoading(false);
+                }
+            };
 
-                const data = await mercadilloService.getProducts(filters);
-                setProductos(data);
-            } catch (err: any) {
-                setError(err.message || "Error al cargar productos");
-            } finally {
-                setLoading(false);
-            }
+            // Ejecutar ambas cargas en paralelo
+            await Promise.all([loadCategories(), loadPopularProducts()]);
         };
 
-        loadProducts();
-    }, [searchQuery, selectedCategory]);
-
-    // ============ HANDLERS ============
-    const handleFiltersChange = useCallback(
-        (newFilters: SearchFiltersInterface) => {
-            setSearchQuery(newFilters.query || "");
-            setSelectedCategory(newFilters.category);
-        },
-        []
-    );
-
-    const handleAddToCart = useCallback((product: ProductInterface) => {
-        // Este callback se ejecuta cuando se añade un producto al carrito
-        console.log("Producto añadido desde Home:", product.name);
+        loadData();
     }, []);
 
-    const handleRetry = useCallback(() => {
-        // Reintentar cargar productos
-        const filters: SearchFiltersInterface = {};
-        if (searchQuery) filters.query = searchQuery;
-        if (selectedCategory) filters.category = selectedCategory;
-
-        setError(null);
-        setLoading(true);
+    // ============ HANDLERS ============
+    const handleCategoriesRetry = useCallback(() => {
+        setCategoriesError(null);
+        setCategoriesLoading(true);
 
         mercadilloService
-            .getProducts(filters)
-            .then(setProductos)
+            .getCategories()
+            .then(setCategorias)
             .catch((err) =>
-                setError(err.message || "Error al cargar productos")
+                setCategoriesError(err.message || "Error al cargar categorías")
             )
-            .finally(() => setLoading(false));
-    }, [searchQuery, selectedCategory]);
+            .finally(() => setCategoriesLoading(false));
+    }, []);
+
+    const handleProductsRetry = useCallback(() => {
+        setProductsError(null);
+        setProductsLoading(true);
+
+        mercadilloService
+            .getProducts()
+            .then((allProducts) => {
+                const popularProducts = allProducts.slice(0, 6);
+                setProductosPopulares(popularProducts);
+            })
+            .catch((err) =>
+                setProductsError(
+                    err.message || "Error al cargar productos populares"
+                )
+            )
+            .finally(() => setProductsLoading(false));
+    }, []);
+
+    const handleAddToCart = useCallback((product: ProductInterface) => {
+        console.log("Producto añadido desde Home:", product.name);
+    }, []);
 
     // ============ RENDER ============
     return (
         <div className={classes.home}>
             <Header />
 
-            <Filter onFiltersChange={handleFiltersChange} />
             <div className={classes.container}>
                 <main className={classes.main}>
-                    <ProductList
-                        products={productos}
-                        loading={loading}
-                        error={error}
-                        onAddToCart={handleAddToCart}
-                        onRetry={handleRetry}
-                    />
+                    {/* Sección de bienvenida */}
+                    <div className={classes.welcomeSection}>
+                        <h1 className={classes.welcomeTitle}>
+                            Bienvenido a Mercadillo Local
+                        </h1>
+                        <p className={classes.welcomeSubtitle}>
+                            Explora nuestras categorías y encuentra lo que
+                            buscas
+                        </p>
+                    </div>
+
+                    {/* Sección de categorías */}
+                    <section className={classes.categoriesSection}>
+                        <h2 className={classes.sectionTitle}>Categorías</h2>
+                        <CategoryList
+                            categories={categorias}
+                            loading={categoriesLoading}
+                            error={categoriesError}
+                            onRetry={handleCategoriesRetry}
+                        />
+                    </section>
+
+                    {/* Sección de productos más vendidos */}
+                    <section className={classes.popularProductsSection}>
+                        <div className={classes.sectionHeader}>
+                            <h2 className={classes.sectionTitle}>
+                                Productos Más Vendidos
+                            </h2>
+                            <p className={classes.sectionSubtitle}>
+                                Descubre los productos favoritos de nuestra
+                                comunidad
+                            </p>
+                        </div>
+
+                        <ProductList
+                            products={productosPopulares}
+                            loading={productsLoading}
+                            error={productsError}
+                            onAddToCart={handleAddToCart}
+                            onRetry={handleProductsRetry}
+                        />
+                    </section>
                 </main>
             </div>
 

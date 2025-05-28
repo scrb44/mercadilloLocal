@@ -1,32 +1,21 @@
+/* src/pages/home/home.module.css - CORREGIDO COMPLETO */
+
 .home {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     position: relative;
-}
-
-/* Imagen de fondo con blur */
-.home::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url("../../assets/bg.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: blur(5px);
-    z-index: -1;
+    padding-top: 100px; /* Espacio para el header fijo */
 }
 
 .container {
     flex: 1;
-    max-width: 1200px;
+    width: var(--page-width, 80%);
+    max-width: var(--page-max-width, 1200px);
     margin: 0 auto;
     padding: 0 20px;
-    width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .main {
@@ -38,13 +27,165 @@
     min-height: 20px;
 }
 
+/* Sección de bienvenida con efecto cristal */
+.welcomeSection {
+    text-align: center;
+    margin: 40px 0;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 40px 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.welcomeTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.welcomeSubtitle {
+    font-size: 1.25rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Secciones de contenido con efecto cristal */
+.categoriesSection,
+.popularProductsSection {
+    margin: 60px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.sectionHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.7);
+}
+
+.sectionSubtitle {
+    font-size: 1.1rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Estilos específicos para la sección de categorías */
+.categoriesSection .sectionTitle {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Separación entre secciones */
+.popularProductsSection {
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    margin-top: 80px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+    .home {
+        padding-top: 120px; /* Más espacio en móvil porque el header es más alto */
+    }
+
     .container {
         padding: 0 16px;
     }
 
     .main {
         margin-top: 16px;
+    }
+
+    .welcomeSection {
+        margin: 20px 0;
+        padding: 30px 16px;
+        border-radius: 16px;
+    }
+
+    .welcomeTitle {
+        font-size: 2rem;
+    }
+
+    .welcomeSubtitle {
+        font-size: 1.1rem;
+    }
+
+    .categoriesSection,
+    .popularProductsSection {
+        margin: 40px 0;
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+
+    .sectionTitle {
+        font-size: 1.75rem;
+    }
+
+    .sectionSubtitle {
+        font-size: 1rem;
+    }
+
+    .popularProductsSection {
+        margin-top: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home {
+        padding-top: 140px; /* Aún más espacio en móviles pequeños */
+    }
+
+    .welcomeSection {
+        padding: 20px 12px;
+        border-radius: 12px;
+    }
+
+    .welcomeTitle {
+        font-size: 1.75rem;
+    }
+
+    .welcomeSubtitle {
+        font-size: 1rem;
+    }
+
+    .categoriesSection,
+    .popularProductsSection {
+        padding: 20px 16px;
+        margin: 30px 0;
+        border-radius: 12px;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
+    }
+
+    .sectionSubtitle {
+        font-size: 0.95rem;
+    }
+
+    .sectionHeader {
+        margin-bottom: 30px;
     }
 }
