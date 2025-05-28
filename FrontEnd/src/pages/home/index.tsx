@@ -84,9 +84,8 @@ function Home() {
         <div className={classes.home}>
             <Header />
 
+            <Filter onFiltersChange={handleFiltersChange} />
             <div className={classes.container}>
-                <Filter onFiltersChange={handleFiltersChange} />
-
                 <main className={classes.main}>
                     <ProductList
                         products={productos}
