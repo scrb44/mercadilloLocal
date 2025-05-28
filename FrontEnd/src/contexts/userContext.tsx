@@ -38,7 +38,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            // TODO: Implementar llamada real a API
+            // Implementar llamada real a API
             // Por ahora, simular login exitoso
             const mockUser: UserInterface = {
                 id: 1,
