@@ -1,3 +1,27 @@
 :root {
     --page-width: 80%;
+    --page-max-width: 1200px;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --glass-backdrop: blur(10px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    :root {
+        --page-width: 85%;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --page-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --page-width: 95%;
+    }
 }

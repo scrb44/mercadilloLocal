@@ -1,0 +1,90 @@
+/* src/componentes/productsSection/productsSection.module.css */
+
+.productsSection {
+    margin-top: 20px;
+}
+
+.productsHeader {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.productsTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.productsCount {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.clearSearchButton {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.clearSearchButton:hover {
+    background: rgba(220, 38, 38, 0.2);
+    color: #b91c1c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .productsHeader {
+        padding: 16px;
+        border-radius: 12px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .productsTitle {
+        font-size: 1.3rem;
+    }
+
+    .clearSearchButton {
+        align-self: center;
+        margin-top: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .productsHeader {
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .productsTitle {
+        font-size: 1.2rem;
+    }
+}
