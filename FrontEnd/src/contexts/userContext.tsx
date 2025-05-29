@@ -6,17 +6,11 @@ import React, {
     type ReactNode,
 } from "react";
 import mercadilloService from "../services";
-import { type UserInterface, type LoginCredentials } from "../types/types";
-
-// ============ INTERFACES SIMPLES ============
-interface UserContextType {
-    user: UserInterface | null;
-    isAuthenticated: boolean;
-    loading: boolean;
-    error: string | null;
-    login: (credentials: LoginCredentials) => Promise<void>;
-    logout: () => void;
-}
+import {
+    type UserInterface,
+    type LoginCredentials,
+    type UserContextType,
+} from "../types/types";
 
 // ============ CONTEXT ============
 const UserContext = createContext<UserContextType | undefined>(undefined);
