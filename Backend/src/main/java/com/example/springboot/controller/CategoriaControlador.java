@@ -1,7 +1,7 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Categoria;
-import com.example.springboot.model.Producto;
+//import com.example.springboot.model.Producto;
 import com.example.springboot.service.CategoriaService;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/Categoria")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class CategoriaControlador{
 
 private final CategoriaService categoriaService;
@@ -27,8 +27,8 @@ private final CategoriaService categoriaService;
     public Categoria agregarCategoria(@RequestBody Categoria categoria) {
         return categoriaService.agregarCategoria(categoria);}
 
-    @PostMapping
+ /*   @PostMapping
     public void eliminarCategoria(@RequestBody Categoria categoria) {
         categoriaService.eliminarCategoria(categoria.getId());
-    }
+    }*/
 }

@@ -1,9 +1,9 @@
 package com.example.springboot.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Carrito {
@@ -12,10 +12,13 @@ public class Carrito {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUser;
 
-    @Id
+    // @Id; nesesidad de refactorisar many to many para poder soportar una unique key de multiples valores
     private Long idProd;
 
     private String nombreProducto;
+
+    @ManyToMany(mappedBy = "carritos")
+    private Set<Comprador> carrito_comprador= new HashSet<>();
 
     public Carrito(Long idUser, Long idProd, String nombreProducto) {
         this.idUser = idUser;
