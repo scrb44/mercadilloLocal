@@ -1,7 +1,8 @@
 // src/services/api.ts
 import { type ApiError } from "../types/types";
 
-const API_BASE = "http://localhost:8080/";
+import { API_BASE_URL } from "../constants";
+const API_BASE = API_BASE_URL;
 
 export async function get<T = unknown>(
     url: string,
