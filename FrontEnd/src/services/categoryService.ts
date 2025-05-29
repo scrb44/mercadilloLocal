@@ -1,4 +1,4 @@
-// src/services/categoryService.ts - ACTUALIZADO CON ADAPTADORES para estructura real
+// src/services/categoryService.ts - PRIORIZA API REAL
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -7,7 +7,7 @@ import {
     cacheSearchResults,
     getCachedSearchResults,
 } from "./cache";
-import { MOCK_CATEGORIES } from "./mockData";
+import { MOCK_CATEGORIES, MOCK_PRODUCTS } from "./mockData";
 import { type CategoryInterface } from "../types/types";
 import { type ApiCategory } from "../types/apiTypes";
 import {
@@ -31,7 +31,7 @@ export const categoriesService = {
         }
 
         try {
-            // La API devuelve ApiCategory, lo adaptamos a CategoryInterface
+            // SIEMPRE intentar API real primero
             const apiCategory = await apiClient.get<ApiCategory>(
                 `${ENDPOINTS.CATEGORIES}/${id}`
             );
@@ -43,13 +43,31 @@ export const categoriesService = {
             const adaptedCategory = adaptApiCategory(apiCategory);
             cacheCategory(id, adaptedCategory);
             return adaptedCategory;
-        } catch (error) {
-            console.warn(
-                "🔧 API no disponible para categoría, usando datos de ejemplo"
+        } catch (error: any) {
+            console.warn(`🔧 API falló para categoría ${id}:`, error.message);
+
+            // SOLO usar mock si la API definitivamente no está disponible
+            if (error.status === 404) {
+                // Si la categoría no existe en la API, buscar en mock
+                const mockCategory = MOCK_CATEGORIES.find((c) => c.id === id);
+                if (mockCategory) {
+                    console.log(`📦 Usando categoría mock para ID ${id}`);
+                    return mockCategory;
+                }
+            } else if (error.message?.includes("fetch")) {
+                // Si hay problema de red, usar mock temporalmente
+                const mockCategory = MOCK_CATEGORIES.find((c) => c.id === id);
+                if (mockCategory) {
+                    console.log(
+                        `🌐 API no disponible, usando mock para ID ${id}`
+                    );
+                    return mockCategory;
+                }
+            }
+
+            throw new Error(
+                `Categoría con ID ${id} no encontrada en API ni en datos locales`
             );
-            const mockCategory = MOCK_CATEGORIES.find((c) => c.id === id);
-            if (mockCategory) return mockCategory;
-            throw new Error(`Categoría con ID ${id} no encontrada`);
         }
     },
 
@@ -65,7 +83,7 @@ export const categoriesService = {
         }
 
         try {
-            // La API devuelve un array de ApiCategory con estructura jerárquica
+            // PRIORIZAR API real
             const apiCategories = await apiClient.get<ApiCategory[]>(
                 ENDPOINTS.CATEGORIES
             );
@@ -75,16 +93,16 @@ export const categoriesService = {
 
             cacheSearchResults(cacheKey, flattenedCategories);
             return flattenedCategories;
-        } catch (error) {
+        } catch (error: any) {
             console.warn(
-                "🔧 API no disponible para categorías, usando datos de ejemplo"
+                "🔧 API de categorías no disponible, usando datos de ejemplo"
             );
             return MOCK_CATEGORIES;
         }
     },
 
     /**
-     * NUEVA: Obtiene categorías con su estructura jerárquica completa
+     * Obtiene categorías con su estructura jerárquica completa
      */
     async getCategoriesHierarchical(useCache: boolean = true) {
         const cacheKey = "hierarchical-categories";
@@ -95,6 +113,7 @@ export const categoriesService = {
         }
 
         try {
+            // PRIORIZAR API real
             const apiCategories = await apiClient.get<ApiCategory[]>(
                 ENDPOINTS.CATEGORIES
             );
@@ -103,7 +122,7 @@ export const categoriesService = {
 
             cacheSearchResults(cacheKey, organized);
             return organized;
-        } catch (error) {
+        } catch (error: any) {
             console.warn("🔧 API no disponible para categorías jerárquicas");
             // Fallback con mock data organizado
             return {
@@ -119,7 +138,7 @@ export const categoriesService = {
     },
 
     /**
-     * NUEVA: Obtiene productos de una categoría específica
+     * Obtiene productos de una categoría específica
      */
     async getCategoryProducts(categoryId: number, useCache: boolean = true) {
         const cacheKey = `category-products-${categoryId}`;
@@ -130,7 +149,7 @@ export const categoriesService = {
         }
 
         try {
-            // Obtener la categoría completa con sus productos
+            // PRIORIZAR API real
             const apiCategory = await apiClient.get<ApiCategory>(
                 `${ENDPOINTS.CATEGORIES}/${categoryId}`
             );
@@ -139,11 +158,17 @@ export const categoriesService = {
 
             cacheSearchResults(cacheKey, products);
             return products;
-        } catch (error) {
+        } catch (error: any) {
             console.warn(
                 `🔧 API no disponible para productos de categoría ${categoryId}`
             );
-            return [];
+
+            // Fallback: usar mock data filtrado por categoría
+            return (
+                MOCK_PRODUCTS.filter((product) =>
+                    product.categories.some((cat) => cat.id === categoryId)
+                ) || []
+            );
         }
     },
 };
