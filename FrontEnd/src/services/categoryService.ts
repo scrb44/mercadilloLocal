@@ -1,5 +1,6 @@
-// src/services/categoriesService.ts
+// src/services/categoryService.ts - ACTUALIZADO CON CONSTANTES
 import { createApiClient } from "./api";
+import { ENDPOINTS } from "../constants";
 import {
     cacheCategory,
     getCachedCategory,
@@ -23,7 +24,7 @@ export const categoriesService = {
 
         try {
             const category = await apiClient.get<CategoryInterface>(
-                `categories/${id}`
+                `${ENDPOINTS.CATEGORIES}/${id}`
             );
             cacheCategory(id, category);
             return category;
@@ -50,7 +51,7 @@ export const categoriesService = {
 
         try {
             const categories = await apiClient.get<CategoryInterface[]>(
-                "categories"
+                ENDPOINTS.CATEGORIES
             );
             cacheSearchResults(cacheKey, categories);
             return categories;
