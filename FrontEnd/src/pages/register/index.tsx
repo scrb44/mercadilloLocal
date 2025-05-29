@@ -2,8 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
+import { Footer, Header } from "../../componentes";
 
 import classes from "./register.module.css";
 

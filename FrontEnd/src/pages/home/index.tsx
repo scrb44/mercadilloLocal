@@ -6,10 +6,7 @@ import {
     type ProductInterface,
 } from "../../types/types";
 
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
-import ProductList from "../../componentes/productList";
-import CategoryList from "../../componentes/categoryList";
+import { Footer, Header, ProductList, CategoryList } from "../../componentes";
 
 import classes from "./home.module.css";
 

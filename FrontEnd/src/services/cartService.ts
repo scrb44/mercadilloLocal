@@ -1,5 +1,6 @@
-// src/services/cartService.ts
+// src/services/cartService.ts - ACTUALIZADO CON CONSTANTES Y TIPOS CENTRALIZADOS
 import { createApiClient } from "./api";
+import { ENDPOINTS } from "../constants";
 import { type CartInterface } from "../types/types";
 import { productsService } from "./productService";
 
@@ -14,7 +15,9 @@ export const cartService = {
         }
 
         try {
-            const cart = await apiClient.get<CartInterface>(`cart/${userId}`);
+            const cart = await apiClient.get<CartInterface>(
+                `${ENDPOINTS.CART}/${userId}`
+            );
             localCartCache[cacheKey] = cart;
             return cart;
         } catch (error: any) {
@@ -54,7 +57,7 @@ export const cartService = {
 
         try {
             const updatedCart = await apiClient.post<CartInterface>(
-                `cart/${userId}/add`,
+                `${ENDPOINTS.CART}/${userId}/add`,
                 { productId, quantity }
             );
             localCartCache[cacheKey] = updatedCart;
@@ -85,7 +88,7 @@ export const cartService = {
 
         try {
             const updatedCart = await apiClient.delete<CartInterface>(
-                `cart/${userId}/remove/${productId}`
+                `${ENDPOINTS.CART}/${userId}/remove/${productId}`
             );
             localCartCache[cacheKey] = updatedCart;
             return updatedCart;
@@ -122,7 +125,7 @@ export const cartService = {
 
         try {
             const updatedCart = await apiClient.put<CartInterface>(
-                `cart/${userId}/update`,
+                `${ENDPOINTS.CART}/${userId}/update`,
                 { productId, quantity }
             );
             localCartCache[cacheKey] = updatedCart;
@@ -140,7 +143,7 @@ export const cartService = {
         delete localCartCache[cacheKey];
 
         try {
-            await apiClient.delete(`cart/${userId}`);
+            await apiClient.delete(`${ENDPOINTS.CART}/${userId}`);
         } catch (error) {
             console.warn("🔧 API no disponible para limpiar carrito");
         }

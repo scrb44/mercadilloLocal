@@ -1,38 +1,13 @@
 // src/componentes/breadcrumb/index.tsx
 import { Link } from "react-router-dom";
 import {
-    type CategoryInterface,
-    type ProductInterface,
+    type BreadcrumbProps,
+    type BreadcrumbItem,
+    type CategoryBreadcrumbProps,
+    type ProductBreadcrumbProps,
+    type SimpleBreadcrumbProps,
 } from "../../types/types";
 import classes from "./breadcrumb.module.css";
-
-interface BreadcrumbProps {
-    items: BreadcrumbItem[];
-}
-
-interface BreadcrumbItem {
-    label: string;
-    path?: string; // Si no tiene path, es el elemento actual
-    isActive?: boolean;
-}
-
-// Props específicas para breadcrumb de categorías
-interface CategoryBreadcrumbProps {
-    currentCategory: CategoryInterface | null;
-    parentCategory?: CategoryInterface | null;
-}
-
-// Props específicas para breadcrumb de productos
-interface ProductBreadcrumbProps {
-    product: ProductInterface;
-}
-
-// Props para breadcrumbs simples
-interface SimpleBreadcrumbProps {
-    pageName: string;
-    parentPath?: string;
-    parentName?: string;
-}
 
 // Componente base de Breadcrumb
 function Breadcrumb({ items }: BreadcrumbProps) {

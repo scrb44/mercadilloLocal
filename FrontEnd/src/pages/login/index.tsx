@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts";
 
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
+import { Footer, Header } from "../../componentes";
 
 import classes from "./login.module.css";
 

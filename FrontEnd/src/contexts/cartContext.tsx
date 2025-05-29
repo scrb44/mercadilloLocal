@@ -7,22 +7,11 @@ import React, {
     type ReactNode,
 } from "react";
 import mercadilloService from "../services";
-import { type ProductInterface, type CartItemInterface } from "../types/types";
-
-// ============ INTERFACES SIMPLES ============
-interface CartContextType {
-    items: CartItemInterface[];
-    totalItems: number;
-    totalPrice: number;
-    loading: boolean;
-    error: string | null;
-    addItem: (product: ProductInterface, quantity?: number) => Promise<void>;
-    removeItem: (productId: number) => Promise<void>;
-    updateQuantity: (productId: number, quantity: number) => Promise<void>;
-    clearCart: () => Promise<void>;
-    getItemQuantity: (productId: number) => number;
-    isInCart: (productId: number) => boolean;
-}
+import {
+    type ProductInterface,
+    type CartItemInterface,
+    type CartContextType,
+} from "../types/types";
 
 // ============ CONTEXT ============
 const CartContext = createContext<CartContextType | undefined>(undefined);
