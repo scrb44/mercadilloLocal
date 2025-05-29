@@ -131,7 +131,6 @@ Rellenar
 
 ## Endpoints de la API REST
 
-
 ### <u>Productos:</u>
 ### - GET, Obtiene los productos de una categoría por su ID:
 api/productos/categorias/{categoriaId} 
@@ -153,6 +152,33 @@ api/productos/categorias/{categoriaId}:
 
 ### - DELETE, Elimina un producto por su ID:
  api/productos/{productoId}
+
+### <u>Usuarios:</u>
+
+## - Admin:
+### POST, Crear un admin:
+api/admin
+
+## - Compradores:
+### POST, Crear un comprador:
+api/comprador
+
+## - Vendedores:
+### POST, Crear un vendedor:
+api/vendedor
+
+### <u>Login:</u>
+
+## Iniciar sesión
+### POST, iniciar sesión con un usuario:
+api/auth/login
+
+### GET, Ver el estado si inicio sesión o no:
+api/auth/status
+
+### <u>Registro:</u>
+### POST, Registar a un usuario:
+api/auth/registro
 
 
 # 6. Planificación del desarrollo
