@@ -1,8 +1,6 @@
 // src/services/api.ts
-import { type ApiError } from "../types/types";
-
 import { API_BASE_URL } from "../constants";
-const API_BASE = API_BASE_URL;
+import { type ApiError } from "../types/types";
 
 export async function get<T = unknown>(
     url: string,
@@ -10,7 +8,7 @@ export async function get<T = unknown>(
 ): Promise<T> {
     try {
         const response = await fetch(
-            url.startsWith("http") ? url : API_BASE + url,
+            url.startsWith("http") ? url : API_BASE_URL + url,
             {
                 signal,
                 headers: {
@@ -41,7 +39,7 @@ export async function post<T = unknown>(
 ): Promise<T> {
     try {
         const response = await fetch(
-            url.startsWith("http") ? url : API_BASE + url,
+            url.startsWith("http") ? url : API_BASE_URL + url,
             {
                 method: "POST",
                 signal,
@@ -74,7 +72,7 @@ export async function put<T = unknown>(
 ): Promise<T> {
     try {
         const response = await fetch(
-            url.startsWith("http") ? url : API_BASE + url,
+            url.startsWith("http") ? url : API_BASE_URL + url,
             {
                 method: "PUT",
                 signal,
@@ -106,7 +104,7 @@ export async function deleteRequest<T = unknown>(
 ): Promise<T> {
     try {
         const response = await fetch(
-            url.startsWith("http") ? url : API_BASE + url,
+            url.startsWith("http") ? url : API_BASE_URL + url,
             {
                 method: "DELETE",
                 signal,
