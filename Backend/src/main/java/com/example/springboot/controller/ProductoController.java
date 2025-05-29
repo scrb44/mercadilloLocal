@@ -10,11 +10,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "*")
-public class ProductoControlador {
+public class ProductoController {
 
     private final ProductoService productoService;
 
-    public ProductoControlador(ProductoService productoService) {
+    public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
 
@@ -22,4 +22,14 @@ public class ProductoControlador {
     public List<Producto> obtenerProductos() {
         return productoService.obtenerTodos();
     }
+/*
+    @PostMapping
+    public Producto agregarProducto(@RequestBody Producto producto) {
+        return productoService.agregarProducto(producto);}
+
+    @PostMapping
+    public void eliminarProducto(@RequestBody Producto producto) {
+        productoService.eliminarProducto(producto.getId());
+    }*/
+
 }

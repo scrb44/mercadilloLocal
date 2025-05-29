@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.springboot.model.Producto;
 
-public interface ProductoRepositorio extends JpaRepository<Producto, Long> {}
+public interface ProductoRepository extends JpaRepository<Producto, Long> {
+    Producto findByNombre(String nombre);
+
+}

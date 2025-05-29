@@ -16,9 +16,10 @@ public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String imagen;
     private String nombre;
-
+    public Categoria(){}
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
     private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
@@ -28,8 +29,6 @@ public class Categoria {
 
     @OneToMany(mappedBy = "categoriaPadre")
     private List<Categoria> subcategorias;  // Subcategorías
-
-    public Categoria(){}
 
     public Categoria(Long id, String imagen, String nombre, Categoria categoriaPadre, List<Producto> productos, List<Categoria> subcategorias) {
         this.id = id;

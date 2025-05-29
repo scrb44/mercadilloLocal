@@ -2,7 +2,8 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Categoria;
-import com.example.springboot.repository.CategoriaRepositorio;
+import com.example.springboot.repository.CategoriaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,13 +11,17 @@ import java.util.List;
 @Service
 public class CategoriaService {
 
-    private final CategoriaRepositorio categoriaRepo;
+    @Autowired
+    private final CategoriaRepository categoriaRepo;
 
-    public CategoriaService(CategoriaRepositorio categoriaRepo) {
+    public CategoriaService(CategoriaRepository categoriaRepo) {
         this.categoriaRepo = categoriaRepo;
     }
 
-    public List<Categoria> obtenerTodas() {
-        return categoriaRepo.findAll();
-    }
+    public List<Categoria> obtenerTodos() {
+        return categoriaRepo.findAll();}/*
+    public Categoria agregarCategoria(Categoria categoria) {
+        return categoriaRepo.save(categoria);}
+    public void eliminarCategoria(Long id) {
+        categoriaRepo.deleteById(id);}*/
 }

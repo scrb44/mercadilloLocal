@@ -131,17 +131,55 @@ Rellenar
 
 ## Endpoints de la API REST
 
-### GET /productos/categorias/{categoriaId}: Obtiene los productos de una categoría.
+### <u>Productos:</u>
+### - GET, Obtiene los productos de una categoría por su ID:
+api/productos/categorias/{categoriaId} 
 
-### GET /productos/{productosId}: Obtienen los productos
+### - GET, Obtienen todos los productos:
+api/productos
 
-### POST /productos/categorias/{categoriaId}: Crea un producto dentro de una categoría.
+### - GET, Obtiene un producto por su ID:
+api/productos/{productosId}:
 
-### PUT /productos/{productoId}: Actualiza un producto existente.
+### - POST, Crea un producto dentro de una categoría:
+api/productos/categorias/{categoriaId}
 
-### PUT /productos/categorias/{categoriaId}: Actualiza un producto de una categoría
+### - PUT, Actualiza un producto existente por su ID:
+api/productos/{productoId}
 
-### DELETE /productos/{productoId}: Elimina un producto.
+### - PUT, Actualiza un producto de una categoría:
+api/productos/categorias/{categoriaId}:
+
+### - DELETE, Elimina un producto por su ID:
+ api/productos/{productoId}
+
+### <u>Usuarios:</u>
+
+## - Admin:
+### POST, Crear un admin:
+api/admin
+
+## - Compradores:
+### POST, Crear un comprador:
+api/comprador
+
+## - Vendedores:
+### POST, Crear un vendedor:
+api/vendedor
+
+### <u>Login:</u>
+
+## Iniciar sesión
+### POST, iniciar sesión con un usuario:
+api/auth/login
+
+### GET, Ver el estado si inicio sesión o no:
+api/auth/status
+
+### <u>Registro:</u>
+### POST, Registar a un usuario:
+api/auth/registro
+
 
 # 6. Planificación del desarrollo
 
