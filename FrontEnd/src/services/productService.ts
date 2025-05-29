@@ -11,9 +11,10 @@ import {
     type ProductInterface,
     type SearchFiltersInterface,
 } from "../types/types";
+import { ENDPOINTS } from "../constants";
 
 const apiClient = createApiClient();
-const PRODUCTS_ENDPOINT = "/api/productos";
+const PRODUCTS_ENDPOINT = ENDPOINTS.PRODUCTS;
 
 export const productsService = {
     async getProduct(
