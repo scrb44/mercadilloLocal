@@ -2,8 +2,8 @@ package com.example.springboot.config;
 
 import com.example.springboot.model.Categoria;
 import com.example.springboot.model.Producto;
-import com.example.springboot.repository.CategoriaRepositorio;
-import com.example.springboot.repository.ProductoRepositorio;
+import com.example.springboot.repository.CategoriaRepository;
+import com.example.springboot.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +16,8 @@ import java.util.Map;
 public class DataLoader {
 
     @Bean
-    CommandLineRunner initDatabase(ProductoRepositorio productoRepo,
-            CategoriaRepositorio categoriaRepo) {
+    CommandLineRunner initDatabase(ProductoRepository productoRepo,
+                                   CategoriaRepository categoriaRepo) {
         return args -> {
             // Crear categorías y guardarlas en un mapa para usar luego
             Map<String, Categoria> categorias = new HashMap<>();

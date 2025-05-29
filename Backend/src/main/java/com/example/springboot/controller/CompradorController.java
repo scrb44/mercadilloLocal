@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/compradores")
+@RequestMapping("/api/comprador")
 public class CompradorController {
 
     @Autowired
@@ -39,5 +39,13 @@ public class CompradorController {
     public ResponseEntity<Void> eliminarComprador(@PathVariable Long id) {
         compradorService.eliminarComprador(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{email}/carrito/{productoId}")
+    public ResponseEntity<Comprador> agregarProductoAlCarrito(
+            @PathVariable String email,
+            @PathVariable Long productoId) {
+        Comprador compradorActualizado = compradorService.agregarProductoAlCarrito(email, productoId);
+        return ResponseEntity.ok(compradorActualizado);
     }
 }

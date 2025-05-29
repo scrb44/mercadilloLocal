@@ -15,6 +15,8 @@ public class Provincia {
     @OneToMany(mappedBy = "provincia")
     private List<Vendedor> vendedores;
 
+    public Provincia(){}
+
     public Provincia(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;

@@ -16,7 +16,7 @@ public class Comprador {
     private String email;
     private String telf;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "carrito_comprador",  // Tabla intermedia
             joinColumns = @JoinColumn(name = "comprador_id"),

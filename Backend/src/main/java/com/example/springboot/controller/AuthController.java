@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     @Autowired
@@ -50,16 +51,16 @@ public class AuthController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<?> verificarSesion(@RequestParam String usuario, @RequestParam String contraseña) {
-        if (adminService.login(usuario, contraseña) != null) {
+    public ResponseEntity<?> verificarSesion(@RequestParam String usuario, @RequestParam String password) {
+        if (adminService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como ADMIN");
         }
 
-        if (compradorService.login(usuario, contraseña) != null) {
+        if (compradorService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como COMPRADOR");
         }
 
-        if (vendedorService.login(usuario, contraseña) != null) {
+        if (vendedorService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como VENDEDOR");
         }
 

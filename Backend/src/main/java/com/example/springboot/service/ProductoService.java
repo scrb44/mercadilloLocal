@@ -1,10 +1,9 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Producto;
-import com.example.springboot.repository.ProductoRepositorio;
+import com.example.springboot.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -12,9 +11,9 @@ import java.util.List;
 public class ProductoService {
 
     @Autowired
-    private final ProductoRepositorio productoRepo;
+    private final ProductoRepository productoRepo;
 
-    public ProductoService(ProductoRepositorio productoRepo) {
+    public ProductoService(ProductoRepository productoRepo) {
         this.productoRepo = productoRepo;
     }
 
