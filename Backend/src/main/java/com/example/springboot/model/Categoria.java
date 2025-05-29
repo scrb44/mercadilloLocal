@@ -20,23 +20,23 @@ public class Categoria {
     private String imagen;
     private String nombre;
     public Categoria(){}
-//    @ManyToOne
-//    @JoinColumn(name = "categoria_padre_id")
-//    private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
+    @ManyToOne
+    @JoinColumn(name = "categoria_padre_id")
+    private Producto categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
 
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
-//    @OneToMany(mappedBy = "categoriaPadre")
-//    private List<Categoria> subcategorias;  // Subcategorías
+    @OneToMany(mappedBy = "categoriaPadre")
+    private List<Producto> subcategorias;  // Subcategorías
 
-    public Categoria(Long id, String imagen, String nombre, Categoria categoriaPadre, List<Producto> productos, List<Categoria> subcategorias) {
+    public Categoria(Long id, String imagen, String nombre, Producto categoriaPadre, List<Producto> productos, List<Producto> subcategorias) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
-    //    this.categoriaPadre = categoriaPadre;
+        this.categoriaPadre = categoriaPadre;
         this.productos = productos;
-//        this.subcategorias = subcategorias;
+        this.subcategorias = subcategorias;
     }
 
     public Long getId() {
@@ -51,17 +51,17 @@ public class Categoria {
         return nombre;
     }
 
-    /*public Categoria getCategoriaPadre() {
+    public Producto getCategoriaPadre() {
         return categoriaPadre;
-    }*/
+    }
 
     public List<Producto> getProductos() {
         return productos;
     }
-/*
-    public List<Categoria> getSubcategorias() {
+
+    public List<Producto> getSubcategorias() {
         return subcategorias;
-    }*/
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -74,16 +74,16 @@ public class Categoria {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-/*
-    public void setCategoriaPadre(Categoria categoriaPadre) {
+
+    public void setCategoriaPadre(Producto categoriaPadre) {
         this.categoriaPadre = categoriaPadre;
-    }*/
+    }
 
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
     }
-/*
-    public void setSubcategorias(List<Categoria> subcategorias) {
+
+    public void setSubcategorias(List<Producto> subcategorias) {
         this.subcategorias = subcategorias;
-    }*/
+    }
 }

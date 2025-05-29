@@ -2,9 +2,7 @@ package com.example.springboot.model;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Comprador {
@@ -24,8 +22,6 @@ public class Comprador {
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
-    private Set<Carrito> carritos = new HashSet<>();//relacion muchos con muchos con carrito
-
     private List<Producto> productos;  // Relación muchos a muchos con Producto
 
     public Comprador(){}

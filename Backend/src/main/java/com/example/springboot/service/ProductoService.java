@@ -21,7 +21,7 @@ public class ProductoService {
     public List<Producto> obtenerTodos() {return productoRepo.findAll();}
     public Producto agregarProducto(Producto producto) {
         return productoRepo.save(producto);}
-    /*public void eliminarProducto(Long id) {
+    public void eliminarProducto(Long id) {
         productoRepo.deleteById(id);
-    }*/
+    }
 }
