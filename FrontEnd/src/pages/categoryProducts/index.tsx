@@ -7,13 +7,15 @@ import { type SearchFiltersInterface } from "../../types/types";
 import { useCategory, useProducts } from "../../hooks";
 
 // Componentes
-import Filter from "../../componentes/filter";
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
-import CategoryList from "../../componentes/categoryList";
-import { CategoryBreadcrumb } from "../../componentes/breadcrumb";
-import CategoryHeader from "../../componentes/categoryHeader";
-import ProductsSection from "../../componentes/productSection";
+import {
+    Filter,
+    Footer,
+    Header,
+    CategoryList,
+    CategoryBreadcrumb,
+    CategoryHeader,
+    ProductsSection,
+} from "../../componentes";
 
 import classes from "./CategoryProducts.module.css";
 
