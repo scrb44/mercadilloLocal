@@ -5,7 +5,7 @@ export const API_BASE_URL = "http://localhost:8080";
 
 export const ENDPOINTS = {
     PRODUCTS: "/api/productos",
-    CATEGORIES: "/api/categorias",
+    CATEGORIES: "/api/Categoria",
     VENDORS: "/api/vendedores",
     CART: "/api/carrito",
     AUTH: "/api/auth",
