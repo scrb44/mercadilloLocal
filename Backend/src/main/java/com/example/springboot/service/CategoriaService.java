@@ -21,9 +21,9 @@ public class CategoriaService {
     }
 
     public List<Categoria> obtenerTodos() {
-        return categoriaRepo.findAll();}
+        return categoriaRepo.findAll();}/*
     public Categoria agregarCategoria(Categoria categoria) {
         return categoriaRepo.save(categoria);}
     public void eliminarCategoria(Long id) {
-        categoriaRepo.deleteById(id);}
+        categoriaRepo.deleteById(id);}*/
 }

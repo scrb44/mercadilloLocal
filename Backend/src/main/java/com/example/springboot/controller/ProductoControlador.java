@@ -22,7 +22,7 @@ public class ProductoControlador {
     public List<Producto> obtenerProductos() {
         return productoService.obtenerTodos();
     }
-
+/*
     @PostMapping
     public Producto agregarProducto(@RequestBody Producto producto) {
         return productoService.agregarProducto(producto);}
@@ -30,6 +30,6 @@ public class ProductoControlador {
     @PostMapping
     public void eliminarProducto(@RequestBody Producto producto) {
         productoService.eliminarProducto(producto.getId());
-    }
+    }*/
 
 }

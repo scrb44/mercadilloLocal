@@ -22,15 +22,15 @@ public class Categoria {
     public Categoria(){}
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
-    private Producto categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
+    private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
 
     @OneToMany(mappedBy = "categoria")
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
     @OneToMany(mappedBy = "categoriaPadre")
-    private List<Producto> subcategorias;  // Subcategorías
+    private List<Categoria> subcategorias;  // Subcategorías
 
-    public Categoria(Long id, String imagen, String nombre, Producto categoriaPadre, List<Producto> productos, List<Producto> subcategorias) {
+    public Categoria(Long id, String imagen, String nombre, Categoria categoriaPadre, List<Producto> productos, List<Categoria> subcategorias) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
@@ -51,7 +51,7 @@ public class Categoria {
         return nombre;
     }
 
-    public Producto getCategoriaPadre() {
+    public Categoria getCategoriaPadre() {
         return categoriaPadre;
     }
 
@@ -59,7 +59,7 @@ public class Categoria {
         return productos;
     }
 
-    public List<Producto> getSubcategorias() {
+    public List<Categoria> getSubcategorias() {
         return subcategorias;
     }
 
@@ -75,7 +75,7 @@ public class Categoria {
         this.nombre = nombre;
     }
 
-    public void setCategoriaPadre(Producto categoriaPadre) {
+    public void setCategoriaPadre(Categoria categoriaPadre) {
         this.categoriaPadre = categoriaPadre;
     }
 
@@ -83,7 +83,7 @@ public class Categoria {
         this.productos = productos;
     }
 
-    public void setSubcategorias(List<Producto> subcategorias) {
+    public void setSubcategorias(List<Categoria> subcategorias) {
         this.subcategorias = subcategorias;
     }
 }

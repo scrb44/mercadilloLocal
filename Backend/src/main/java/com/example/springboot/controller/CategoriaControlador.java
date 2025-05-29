@@ -23,12 +23,12 @@ private final CategoriaService categoriaService;
         return categoriaService.obtenerTodos();
     }
 
-    @PostMapping
+    /*@PostMapping
     public Categoria agregarCategoria(@RequestBody Categoria categoria) {
         return categoriaService.agregarCategoria(categoria);}
 
     @PostMapping
     public void eliminarCategoria(@RequestBody Categoria categoria) {
         categoriaService.eliminarCategoria(categoria.getId());
-    }
+    }*/
 }
