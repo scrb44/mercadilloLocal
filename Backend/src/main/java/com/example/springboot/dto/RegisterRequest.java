@@ -3,8 +3,8 @@ package com.example.springboot.dto;
 public class RegisterRequest {
     private String usuario;
     private String nombre;
-    private String contraseña;
-    private String correo;
+    private String password;
+    private String email;
     private String telf;
     private String rol; // "ADMIN", "COMPRADOR", "VENDEDOR"
 
@@ -24,20 +24,20 @@ public class RegisterRequest {
         this.nombre = nombre;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getTelf() {

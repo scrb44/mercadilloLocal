@@ -1,4 +1,5 @@
-// src/context/UserContext.tsx - VERSIÓN SIMPLIFICADA
+import axios from "axios";
+
 import React, {
     createContext,
     useContext,
@@ -8,7 +9,8 @@ import React, {
 import mercadilloService from "../services";
 import { type UserInterface, type LoginCredentials } from "../types/types";
 
-// ============ INTERFACES SIMPLES ============
+// ============ INTERFACES ============
+
 interface UserContextType {
     user: UserInterface | null;
     isAuthenticated: boolean;
@@ -18,10 +20,10 @@ interface UserContextType {
     logout: () => void;
 }
 
-// ============ CONTEXT ============
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// ============ PROVIDER SIMPLIFICADO ============
+// ============ PROVIDER ============
+
 interface UserProviderProps {
     children: ReactNode;
 }
@@ -33,30 +35,38 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     const isAuthenticated = user !== null;
 
-    const login = async (credentials: LoginCredentials) => {
-        try {
-            setLoading(true);
-            setError(null);
+const login = async (credentials: LoginCredentials) => {
+    try {
+        setLoading(true);
+        setError(null);
 
-            // Implementar llamada real a API
-            // Por ahora, simular login exitoso
-            const mockUser: UserInterface = {
-                id: 1,
-                name: "Usuario Demo",
-                email: credentials.email,
-                role: "user",
-                isEmailVerified: true,
-            };
+        // ✅ Llamada real al backend con "password"
+        const response = await axios.post("http://localhost:8080/api/auth/login", {
+            email: credentials.email,
+            password: credentials.password,
+        });
 
-            setUser(mockUser);
-            console.log("🔧 Login simulado exitoso:", mockUser);
-        } catch (err: any) {
-            setError(err.message || "Error de login");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
-    };
+        const { rol, nombre } = response.data;
+
+        const userData: UserInterface = {
+            id: 1, // puedes reemplazarlo si el backend devuelve un ID real
+            name: nombre,
+            email: credentials.email,
+            role: rol,
+            isEmailVerified: true,
+        };
+
+        setUser(userData);
+        console.log("✅ Login exitoso:", userData);
+    } catch (err: any) {
+        console.error("❌ Error en login:", err);
+        setError(err.response?.data || "Error de login");
+        throw err;
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const logout = () => {
         setUser(null);
@@ -82,6 +92,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 };
 
 // ============ HOOK ============
+
 export const useUser = (): UserContextType => {
     const context = useContext(UserContext);
     if (context === undefined) {

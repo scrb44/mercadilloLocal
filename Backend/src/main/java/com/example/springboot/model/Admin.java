@@ -13,41 +13,34 @@ public class Admin {
     private Long id;
     private String nombre;
     private String usuario;
-    private String contraseña;
+    private String password;
+    private String email;
 
     public Admin() {
     }
 
-
-    public Admin(Long id, String nombre, String usuario, String contraseña) {
+    public Admin(Long id, String nombre, String usuario, String password, String email) {
         this.id = id;
         this.nombre = nombre;
         this.usuario = usuario;
-        this.contraseña = contraseña;
+        this.password = password;
+        this.email = email;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public String getContraseña() {
-        return contraseña;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getUsuario() {
@@ -56,5 +49,21 @@ public class Admin {
 
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
