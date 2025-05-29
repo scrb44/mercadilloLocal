@@ -1,4 +1,4 @@
-// src/services/productService.ts - ACTUALIZADO CON ADAPTADORES
+// src/services/productService.ts - PRIORIZA API REAL
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -13,7 +13,11 @@ import {
     type SearchFiltersInterface,
 } from "../types/types";
 import { type ApiProduct } from "../types/apiTypes";
-import { adaptApiProduct, adaptValidApiProducts } from "../adapters";
+import {
+    adaptApiProduct,
+    adaptApiProducts,
+    adaptValidApiProducts,
+} from "../adapters";
 
 const apiClient = createApiClient();
 
@@ -28,7 +32,7 @@ export const productsService = {
         }
 
         try {
-            // La API devuelve ApiProduct, lo adaptamos a ProductInterface
+            // SIEMPRE intentar API real primero
             const apiProduct = await apiClient.get<ApiProduct>(
                 `${ENDPOINTS.PRODUCTS}/${id}`
             );
@@ -36,15 +40,32 @@ export const productsService = {
             const adaptedProduct = adaptApiProduct(apiProduct);
             cacheProduct(id, adaptedProduct);
             return adaptedProduct;
-        } catch (error) {
-            console.warn(
-                "🔧 API no disponible para producto, usando datos de ejemplo"
-            );
-            const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
-            if (mockProduct) {
-                return mockProduct;
+        } catch (error: any) {
+            console.warn(`🔧 API falló para producto ${id}:`, error.message);
+
+            // SOLO usar mock si la API definitivamente no está disponible
+            // Y SOLO para IDs que realmente existen en el mock
+            if (error.status === 404) {
+                // Si el producto no existe en la API, buscar en mock
+                const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
+                if (mockProduct) {
+                    console.log(`📦 Usando producto mock para ID ${id}`);
+                    return mockProduct;
+                }
+            } else if (error.message?.includes("fetch")) {
+                // Si hay problema de red, usar mock temporalmente
+                const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
+                if (mockProduct) {
+                    console.log(
+                        `🌐 API no disponible, usando mock para ID ${id}`
+                    );
+                    return mockProduct;
+                }
             }
-            throw new Error(`Producto con ID ${id} no encontrado`);
+
+            throw new Error(
+                `Producto con ID ${id} no encontrado en API ni en datos locales`
+            );
         }
     },
 
@@ -76,14 +97,16 @@ export const productsService = {
                 params.toString() ? "?" + params.toString() : ""
             }`;
 
-            // La API devuelve ApiProduct[], lo adaptamos a ProductInterface[]
+            // PRIORIZAR API real
             const apiProducts = await apiClient.get<ApiProduct[]>(url);
             const adaptedProducts = adaptValidApiProducts(apiProducts);
 
             cacheSearchResults(cacheKey, adaptedProducts);
             return adaptedProducts;
-        } catch (error) {
-            console.warn("🔧 API no disponible, usando datos de ejemplo");
+        } catch (error: any) {
+            console.warn(
+                "🔧 API de productos no disponible, usando datos de ejemplo"
+            );
 
             let filteredProducts = MOCK_PRODUCTS;
 
@@ -94,6 +117,15 @@ export const productsService = {
                     (p) =>
                         p.name.toLowerCase().includes(query) ||
                         p.description.toLowerCase().includes(query)
+                );
+            }
+
+            // Filtrar por categoría si se especifica
+            if (filters?.category) {
+                filteredProducts = filteredProducts.filter((product) =>
+                    product.categories.some(
+                        (cat) => cat.id === filters.category
+                    )
                 );
             }
 
