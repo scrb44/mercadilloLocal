@@ -1,11 +1,7 @@
 // src/pages/cart/index.tsx - MODULARIZADO CON CARTITEM
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
-import { SimpleBreadcrumb } from "../../componentes/breadcrumb";
-import CartItem from "../../componentes/cartItem";
-
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
+import { SimpleBreadcrumb, CartItem, Footer, Header } from "../../componentes";
 
 import classes from "./Cart.module.css";
 
