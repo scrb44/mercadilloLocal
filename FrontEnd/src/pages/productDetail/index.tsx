@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import { useProduct } from "../../hooks";
-import { ProductBreadcrumb } from "../../componentes/breadcrumb";
-import ProductGallery from "../../componentes/productGallery";
-
-import Footer from "../../componentes/footer";
-import Header from "../../componentes/header";
+import {
+    ProductBreadcrumb,
+    ProductGallery,
+    Footer,
+    Header,
+} from "../../componentes";
 
 import classes from "./productDetail.module.css";
 
