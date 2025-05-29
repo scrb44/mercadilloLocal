@@ -1,5 +1,6 @@
-// src/services/productsService.ts
+// src/services/productService.ts - ACTUALIZADO CON ADAPTADORES
 import { createApiClient } from "./api";
+import { ENDPOINTS } from "../constants";
 import {
     cacheProduct,
     getCachedProduct,
@@ -11,10 +12,10 @@ import {
     type ProductInterface,
     type SearchFiltersInterface,
 } from "../types/types";
-import { ENDPOINTS } from "../constants";
+import { type ApiProduct } from "../types/apiTypes";
+import { adaptApiProduct, adaptValidApiProducts } from "../adapters";
 
 const apiClient = createApiClient();
-const PRODUCTS_ENDPOINT = ENDPOINTS.PRODUCTS;
 
 export const productsService = {
     async getProduct(
@@ -27,11 +28,14 @@ export const productsService = {
         }
 
         try {
-            const product = await apiClient.get<ProductInterface>(
-                `${PRODUCTS_ENDPOINT}/${id}`
+            // La API devuelve ApiProduct, lo adaptamos a ProductInterface
+            const apiProduct = await apiClient.get<ApiProduct>(
+                `${ENDPOINTS.PRODUCTS}/${id}`
             );
-            cacheProduct(id, product);
-            return product;
+
+            const adaptedProduct = adaptApiProduct(apiProduct);
+            cacheProduct(id, adaptedProduct);
+            return adaptedProduct;
         } catch (error) {
             console.warn(
                 "🔧 API no disponible para producto, usando datos de ejemplo"
@@ -68,13 +72,16 @@ export const productsService = {
                 params.append("maxPrice", filters.maxPrice.toString());
             if (filters?.query) params.append("q", filters.query);
 
-            const url = `${PRODUCTS_ENDPOINT}${
+            const url = `${ENDPOINTS.PRODUCTS}${
                 params.toString() ? "?" + params.toString() : ""
             }`;
-            const products = await apiClient.get<ProductInterface[]>(url);
 
-            cacheSearchResults(cacheKey, products);
-            return products;
+            // La API devuelve ApiProduct[], lo adaptamos a ProductInterface[]
+            const apiProducts = await apiClient.get<ApiProduct[]>(url);
+            const adaptedProducts = adaptValidApiProducts(apiProducts);
+
+            cacheSearchResults(cacheKey, adaptedProducts);
+            return adaptedProducts;
         } catch (error) {
             console.warn("🔧 API no disponible, usando datos de ejemplo");
 
