@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.springboot.model.Comprador;
 
 public interface CompradorRepository extends JpaRepository<Comprador, Long> {
-    Comprador findByUsuarioAndContraseña(String usuario, String contraseña);
+    Comprador findByUsuarioAndPassword(String usuario, String password);
     boolean existsByUsuario(String usuario);
+    Comprador findByEmail(String email);
 }

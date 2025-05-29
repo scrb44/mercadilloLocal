@@ -1,7 +1,6 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Categoria;
-import com.example.springboot.model.Producto;
 import com.example.springboot.service.CategoriaService;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +9,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/Categoria")
 @CrossOrigin(origins = "*")
-public class CategoriaControlador{
+public class CategoriaController {
 
 private final CategoriaService categoriaService;
 
-    public CategoriaControlador(CategoriaService categoriaService) {
+    public CategoriaController(CategoriaService categoriaService) {
         this.categoriaService = categoriaService;
     }
 

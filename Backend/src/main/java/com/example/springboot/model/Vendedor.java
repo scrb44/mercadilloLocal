@@ -12,8 +12,8 @@ public class Vendedor {
     private Long id;
     private String usuario;
     private String nombre;
-    private String contraseña;
-    private String correo;
+    private String password;
+    private String email;
     private String telf;
     private Boolean verificado;
 
@@ -25,12 +25,12 @@ public class Vendedor {
 
     public Vendedor(){}
 
-    public Vendedor(Long id, String usuario, String contraseña, String nombre, String correo, String telf, Boolean verificado, List<Producto> productos) {
+    public Vendedor(Long id, String usuario, String password, String nombre, String email, String telf, Boolean verificado, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
-        this.contraseña = contraseña;
+        this.password = password;
         this.nombre = nombre;
-        this.correo = correo;
+        this.email = email;
         this.telf = telf;
         this.verificado = verificado;
         this.productos = productos;
@@ -60,20 +60,20 @@ public class Vendedor {
         this.usuario = usuario;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getTelf() {
@@ -98,5 +98,13 @@ public class Vendedor {
 
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
+    }
+
+    public Provincia getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(Provincia provincia) {
+        this.provincia = provincia;
     }
 }

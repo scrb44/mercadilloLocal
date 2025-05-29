@@ -29,12 +29,18 @@ public class AdminService {
         adminRepository.deleteById(id);
     }
 
-    public Admin login(String nombre, String contraseña) {
-        return adminRepository.findByNombreAndContraseña(nombre, contraseña);
-    }
-
     public boolean existePorUsuario(String usuario) {
         return adminRepository.existsByUsuario(usuario);
     }
+
+    public Admin login(String email, String password) {
+        Admin admin = adminRepository.findByEmail(email);
+        if (admin != null && admin.getPassword().equals(password)) {
+            return admin;
+        }
+        return null;
+    }
+
+
 
 }

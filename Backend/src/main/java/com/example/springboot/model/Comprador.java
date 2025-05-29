@@ -12,11 +12,11 @@ public class Comprador {
     private Long id;
     private String usuario;
     private String nombre;
-    private String contraseña;
-    private String correo;
+    private String password;
+    private String email;
     private String telf;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "carrito_comprador",  // Tabla intermedia
             joinColumns = @JoinColumn(name = "comprador_id"),
@@ -26,12 +26,12 @@ public class Comprador {
 
     public Comprador(){}
 
-    public Comprador(Long id, String usuario, String nombre, String contraseña, String correo, String telf, List<Producto> productos) {
+    public Comprador(Long id, String usuario, String nombre, String password, String email, String telf, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
-        this.contraseña = contraseña;
-        this.correo = correo;
+        this.password = password;
+        this.email = email;
         this.telf = telf;
         this.productos = productos;
     }
@@ -60,20 +60,20 @@ public class Comprador {
         this.nombre = nombre;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getCorreo() {
-        return correo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getTelf() {

@@ -2,11 +2,9 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Categoria;
-import com.example.springboot.model.Producto;
-import com.example.springboot.repository.CategoriaRepositorio;
+import com.example.springboot.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -14,9 +12,9 @@ import java.util.List;
 public class CategoriaService {
 
     @Autowired
-    private final CategoriaRepositorio categoriaRepo;
+    private final CategoriaRepository categoriaRepo;
 
-    public CategoriaService(CategoriaRepositorio categoriaRepo) {
+    public CategoriaService(CategoriaRepository categoriaRepo) {
         this.categoriaRepo = categoriaRepo;
     }
 

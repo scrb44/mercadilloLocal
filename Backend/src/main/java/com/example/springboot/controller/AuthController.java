@@ -14,7 +14,8 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     @Autowired
@@ -28,49 +29,44 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String usuario = loginRequest.getUsuario();
-        String contraseña = loginRequest.getContraseña();
+        String correo = loginRequest.getEmail();
+        String contraseña = loginRequest.getPassword();
 
-        Admin admin = adminService.login(usuario, contraseña);
+        Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
-            return ResponseEntity.ok(new LoginResponse("ADMIN", admin.getNombre()));
+            return ResponseEntity.ok(new LoginResponse("ADMIN", admin.getNombre(), admin.getEmail()));
         }
 
-        Comprador comprador = compradorService.login(usuario, contraseña);
+        Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
-            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario()));
+            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), admin.getEmail()));
         }
 
-        Vendedor vendedor = vendedorService.login(usuario, contraseña);
+        Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
-            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario()));
+            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), admin.getEmail()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
     }
 
     @GetMapping("/status")
-    public ResponseEntity<?> verificarSesion(
-            @RequestParam String usuario,
-            @RequestParam String contraseña
-    ) {
-        Admin admin = adminService.login(usuario, contraseña);
-        if (admin != null) {
+    public ResponseEntity<?> verificarSesion(@RequestParam String usuario, @RequestParam String password) {
+        if (adminService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como ADMIN");
         }
 
-        Comprador comprador = compradorService.login(usuario, contraseña);
-        if (comprador != null) {
+        if (compradorService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como COMPRADOR");
         }
 
-        Vendedor vendedor = vendedorService.login(usuario, contraseña);
-        if (vendedor != null) {
+        if (vendedorService.login(usuario, password) != null) {
             return ResponseEntity.ok("Sesión iniciada como VENDEDOR");
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No hay sesión activa");
     }
+
 
 
     @PostMapping("/registro")
@@ -91,7 +87,8 @@ public class AuthController {
                 Admin admin = new Admin();
                 admin.setUsuario(usuario);
                 admin.setNombre(request.getNombre());
-                admin.setContraseña(request.getContraseña());
+                admin.setEmail(request.getEmail());
+                admin.setPassword(request.getPassword());
                 adminService.guardarAdmin(admin);
                 return ResponseEntity.ok("Admin registrado");
 
@@ -99,8 +96,8 @@ public class AuthController {
                 Comprador comprador = new Comprador();
                 comprador.setUsuario(usuario);
                 comprador.setNombre(request.getNombre());
-                comprador.setContraseña(request.getContraseña());
-                comprador.setCorreo(request.getCorreo());
+                comprador.setPassword(request.getPassword());
+                comprador.setEmail(request.getEmail());
                 comprador.setTelf(request.getTelf());
                 compradorService.guardarComprador(comprador);
                 return ResponseEntity.ok("Comprador registrado");
@@ -109,8 +106,8 @@ public class AuthController {
                 Vendedor vendedor = new Vendedor();
                 vendedor.setUsuario(usuario);
                 vendedor.setNombre(request.getNombre());
-                vendedor.setContraseña(request.getContraseña());
-                vendedor.setCorreo(request.getCorreo());
+                vendedor.setPassword(request.getPassword());
+                vendedor.setEmail(request.getEmail());
                 vendedor.setTelf(request.getTelf());
                 vendedorService.guardarVendedor(vendedor);
                 return ResponseEntity.ok("Vendedor registrado");
