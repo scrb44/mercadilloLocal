@@ -29,9 +29,14 @@ public class VendedorService {
         vendedorRepository.deleteById(id);
     }
 
-    public Vendedor login(String usuario, String password) {
-        return vendedorRepository.findByUsuarioAndPassword(usuario, password);
+    public Vendedor login(String email, String password) {
+        Vendedor vendedor = vendedorRepository.findByEmail(email);
+        if (vendedor != null && vendedor.getPassword().equals(password)) {
+            return vendedor;
+        }
+        return null;
     }
+
 
     public boolean existePorUsuario(String usuario) {
         return vendedorRepository.existsByUsuario(usuario);

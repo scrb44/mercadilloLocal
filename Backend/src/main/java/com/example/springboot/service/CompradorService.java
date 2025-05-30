@@ -36,8 +36,12 @@ public class CompradorService {
         compradorRepository.deleteById(id);
     }
 
-    public Comprador login(String usuario, String password) {
-        return compradorRepository.findByUsuarioAndPassword(usuario, password);
+    public Comprador login(String email, String password) {
+        Comprador comprador = compradorRepository.findByEmail(email);
+        if (comprador != null && comprador.getPassword().equals(password)) {
+            return comprador;
+        }
+        return null;
     }
 
     public boolean existePorUsuario(String usuario) {
