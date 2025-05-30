@@ -71,6 +71,7 @@ export interface UserInterface {
     avatar?: string;
     role: "user" | "vendor" | "admin";
     isEmailVerified: boolean;
+     token?: string | null; // token opcional
 }
 
 export interface LoginCredentials {

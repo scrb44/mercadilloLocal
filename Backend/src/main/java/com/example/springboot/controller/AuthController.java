@@ -8,11 +8,13 @@ import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CompradorRepository;
 import com.example.springboot.repository.VendedorRepository;
+import com.example.springboot.security.JwtUtil;
 import com.example.springboot.service.AdminService;
 import com.example.springboot.service.CompradorService;
 import com.example.springboot.service.VendedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,6 +37,12 @@ public class AuthController {
     @Autowired
     private CompradorRepository compradorRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         String correo = loginRequest.getEmail();
@@ -42,17 +50,19 @@ public class AuthController {
 
         Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
-            return ResponseEntity.ok(new LoginResponse("ADMIN", admin.getNombre(), admin.getEmail()));
+            return ResponseEntity.ok(new LoginResponse("ADMIN", admin.getNombre(), admin.getEmail(), null));
         }
 
         Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
-            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), comprador.getEmail()));
+            String token = jwtUtil.generateToken(comprador.getEmail(), "COMPRADOR");
+            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), comprador.getEmail(), token));
         }
 
         Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
-            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), vendedor.getEmail()));
+            String token = jwtUtil.generateToken(vendedor.getEmail(), "VENDEDOR");
+            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), vendedor.getEmail(), token));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
@@ -83,7 +93,7 @@ public class AuthController {
                 comprador.setUsuario(dto.getUsuario());
                 comprador.setNombre(dto.getNombre());
                 comprador.setEmail(dto.getEmail());
-                comprador.setPassword(dto.getPassword());
+                comprador.setPassword(passwordEncoder.encode(dto.getPassword()));
                 comprador.setTelf(dto.getTelf());
                 compradorRepository.save(comprador);
                 System.out.println("DTO recibido: " + dto.getUsuario() + ", " + dto.getNombre());
@@ -92,7 +102,7 @@ public class AuthController {
                 vendedor.setUsuario(dto.getUsuario());
                 vendedor.setNombre(dto.getNombre());
                 vendedor.setEmail(dto.getEmail());
-                vendedor.setPassword(dto.getPassword());
+                vendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
                 vendedor.setTelf(dto.getTelf());
                 vendedor.setVerificado(false);
                 vendedorRepository.save(vendedor);

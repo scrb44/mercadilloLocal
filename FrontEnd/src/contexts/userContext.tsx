@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../services/axiosConfig"; // ajusta ruta si es necesario
 
 import React, {
     createContext,
@@ -36,37 +36,44 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const isAuthenticated = user !== null;
 
 const login = async (credentials: LoginCredentials) => {
-    try {
-        setLoading(true);
-        setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-        // ✅ Llamada real al backend con "password"
-        const response = await axios.post("http://localhost:8080/api/auth/login", {
-            email: credentials.email,
-            password: credentials.password,
-        });
+const response = await axiosInstance.post("/auth/login", {
 
-        const { rol, nombre } = response.data;
+      email: credentials.email,
+      password: credentials.password,
+    });
 
-        const userData: UserInterface = {
-            id: 1, // puedes reemplazarlo si el backend devuelve un ID real
-            name: nombre,
-            email: credentials.email,
-            role: rol,
-            isEmailVerified: true,
-        };
+    const { rol, nombre, token } = response.data;
 
-        setUser(userData);
-        console.log("✅ Login exitoso:", userData);
-    } catch (err: any) {
-        console.error("❌ Error en login:", err);
-        setError(err.response?.data || "Error de login");
-        throw err;
-    } finally {
-        setLoading(false);
+    // Guarda el token solo si existe (NO para admin)
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
     }
-};
 
+    const userData: UserInterface = {
+      id: 1, // reemplaza con id real si backend lo envía
+      name: nombre,
+      email: credentials.email,
+      role: rol,
+      isEmailVerified: true,
+      token: token || null, // si quieres guardar token en user
+    };
+
+    setUser(userData);
+    console.log("✅ Login exitoso:", userData);
+  } catch (err: any) {
+    console.error("❌ Error en login:", err);
+    setError(err.response?.data || "Error de login");
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
 
     const logout = () => {
         setUser(null);
