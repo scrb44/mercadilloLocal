@@ -65,12 +65,14 @@ export interface CartContextType {
 
 // ============ INTERFACES DE USUARIO ============
 export interface UserInterface {
-    id: string | number;
-    name: string;
-    email: string;
-    avatar?: string;
-    role: "user" | "vendor" | "admin";
-    isEmailVerified: boolean;
+  id: number;
+  role: "COMPRADOR" | "ADMIN" | "VENDEDOR";
+  usuario: string;
+  nombre: string;
+  email: string;
+  password?: string;
+  telf?: string;
+  verificado?: boolean;
 }
 
 export interface LoginCredentials {

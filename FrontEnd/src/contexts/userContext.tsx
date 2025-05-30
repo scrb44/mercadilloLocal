@@ -48,13 +48,15 @@ const login = async (credentials: LoginCredentials) => {
 
         const { rol, nombre } = response.data;
 
-        const userData: UserInterface = {
-            id: 1, // puedes reemplazarlo si el backend devuelve un ID real
-            name: nombre,
-            email: credentials.email,
-            role: rol,
-            isEmailVerified: true,
-        };
+const userData: UserInterface = {
+  id: 1,
+  usuario: "usuario123",    // por ejemplo
+  nombre: nombre,           // si tienes la variable nombre
+  email: credentials.email,
+  role: rol,
+  // puedes agregar opcionales si los tienes, ejemplo telf o verificado
+};
+
 
         setUser(userData);
         console.log("✅ Login exitoso:", userData);

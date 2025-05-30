@@ -24,11 +24,20 @@ function Header() {
                         </Link>
                     </li>
 
+                      {/* Nuevo enlace PERFIL solo si está autenticado */}
+  {isAuthenticated && (
+    <li>
+      <Link to="/perfil" className={classes["page-header__link"]}>
+        Mi perfil
+      </Link>
+    </li>
+  )}
+
                     {/* Mostrar diferente contenido según autenticación */}
                     {isAuthenticated ? (
                         <>
                             <li className={classes["page-header__user"]}>
-                                Hola, {user?.name}
+                                Hola, {user?.usuario}
                             </li>
                             <li>
                                 <button
