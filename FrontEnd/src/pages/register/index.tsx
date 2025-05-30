@@ -1,29 +1,28 @@
-// src/pages/register/index.tsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import { Footer, Header } from "../../componentes";
-
 import classes from "./register.module.css";
 
 function Register() {
     const navigate = useNavigate();
 
-    // ============ ESTADO LOCAL ============
     const [formData, setFormData] = useState({
+        usuario: "",
         name: "",
         email: "",
+        telf: "",
         password: "",
         confirmPassword: "",
         acceptTerms: false,
+        role: "comprador",
     });
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    // ============ HANDLERS ============
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
@@ -31,7 +30,6 @@ function Register() {
             [name]: type === "checkbox" ? checked : value,
         }));
 
-        // Limpiar error específico del campo
         if (formErrors[name]) {
             setFormErrors((prev) => ({
                 ...prev,
@@ -53,6 +51,16 @@ function Register() {
             errors.email = "El email es obligatorio";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             errors.email = "Email no válido";
+        }
+
+        if (!formData.usuario.trim()) {
+            errors.usuario = "El nombre de usuario es obligatorio";
+        }
+
+        if (!formData.telf.trim()) {
+            errors.telf = "El teléfono es obligatorio";
+        } else if (!/^[0-9]{7,15}$/.test(formData.telf)) {
+            errors.telf = "Número de teléfono inválido";
         }
 
         if (!formData.password) {
@@ -81,28 +89,34 @@ function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!validateForm()) {
-            return;
-        }
-
+        if (!validateForm()) return;
         setLoading(true);
 
         try {
-            // Simular llamada a API
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+await fetch("http://localhost:8080/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    usuario: formData.usuario,
+                    nombre: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    telf: formData.telf,
+                    role: formData.role,
+                }),
+            });
 
-            console.log("🔧 Registro simulado:", {
-                name: formData.name,
+            console.log("✅ Registro enviado:", {
+                usuario: formData.usuario,
+                nombre: formData.name,
                 email: formData.email,
-                // No logueamos la contraseña por seguridad
+                telf: formData.telf,
             });
 
             setSuccess(true);
-
-            // Redirigir al login después de 3 segundos
-            setTimeout(() => {
-                navigate("/login");
-            }, 3000);
+            setTimeout(() => navigate("/login"), 3000);
         } catch (err) {
             setFormErrors({
                 general: "Error al crear la cuenta. Inténtalo de nuevo.",
@@ -112,9 +126,7 @@ function Register() {
         }
     };
 
-    const togglePasswordVisibility = (
-        field: "password" | "confirmPassword"
-    ) => {
+    const togglePasswordVisibility = (field: "password" | "confirmPassword") => {
         if (field === "password") {
             setShowPassword(!showPassword);
         } else {
@@ -122,7 +134,6 @@ function Register() {
         }
     };
 
-    // ============ RENDER SUCCESS ============
     if (success) {
         return (
             <div className={classes.register}>
@@ -130,19 +141,14 @@ function Register() {
                 <div className={classes.container}>
                     <div className={classes.successCard}>
                         <div className={classes.successIcon}>✅</div>
-                        <h1 className={classes.successTitle}>
-                            ¡Cuenta creada exitosamente!
-                        </h1>
+                        <h1 className={classes.successTitle}>¡Cuenta creada exitosamente!</h1>
                         <p className={classes.successText}>
-                            Te hemos enviado un email de confirmación a{" "}
-                            <strong>{formData.email}</strong>
+                            Te hemos enviado un email de confirmación a <strong>{formData.email}</strong>
                         </p>
                         <p className={classes.redirectText}>
                             Serás redirigido al login en unos segundos...
                         </p>
-                        <Link to="/login" className={classes.loginLink}>
-                            Ir al login ahora
-                        </Link>
+                        <Link to="/login" className={classes.loginLink}>Ir al login ahora</Link>
                     </div>
                 </div>
                 <Footer />
@@ -150,183 +156,163 @@ function Register() {
         );
     }
 
-    // ============ RENDER FORM ============
     return (
         <div className={classes.register}>
             <Header />
-
             <div className={classes.container}>
                 <main className={classes.main}>
                     <div className={classes.registerCard}>
-                        <div className={classes.registerHeader}>
-                            <h1 className={classes.registerTitle}>
-                                Crear Cuenta
-                            </h1>
-                            <p className={classes.registerSubtitle}>
-                                Únete a Mercadillo Local y empieza a comprar
-                            </p>
-                        </div>
-
-                        <form
-                            onSubmit={handleSubmit}
-                            className={classes.registerForm}
-                        >
+                        <form onSubmit={handleSubmit} className={classes.registerForm}>
                             {formErrors.general && (
                                 <div className={classes.errorBanner}>
-                                    <span className={classes.errorIcon}>
-                                        ⚠️
-                                    </span>
-                                    <span className={classes.errorText}>
-                                        {formErrors.general}
-                                    </span>
+                                    <span className={classes.errorIcon}>⚠️</span>
+                                    <span className={classes.errorText}>{formErrors.general}</span>
                                 </div>
                             )}
 
-                            {/* Campo Nombre */}
+                            {/* Nombre */}
                             <div className={classes.inputGroup}>
-                                <label
-                                    htmlFor="name"
-                                    className={classes.inputLabel}
-                                >
-                                    Nombre completo *
-                                </label>
+                                <label htmlFor="name" className={classes.inputLabel}>Nombre completo *</label>
                                 <input
                                     type="text"
                                     id="name"
                                     name="name"
+                                    value={formData.name}
                                     onChange={handleInputChange}
-                                    className={`${classes.inputField} ${
-                                        formErrors.name
-                                            ? classes.inputError
-                                            : ""
-                                    }`}
+                                    className={`${classes.inputField} ${formErrors.name ? classes.inputError : ""}`}
                                     placeholder="Tu nombre completo"
                                     disabled={loading}
                                 />
-                                {formErrors.name && (
-                                    <span className={classes.fieldError}>
-                                        {formErrors.name}
-                                    </span>
-                                )}
+                                {formErrors.name && <span className={classes.fieldError}>{formErrors.name}</span>}
                             </div>
 
-                            {/* Campo Email */}
+                            {/* Email */}
                             <div className={classes.inputGroup}>
-                                <label
-                                    htmlFor="email"
-                                    className={classes.inputLabel}
-                                >
-                                    Email *
-                                </label>
+                                <label htmlFor="email" className={classes.inputLabel}>Email *</label>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className={`${classes.inputField} ${
-                                        formErrors.email
-                                            ? classes.inputError
-                                            : ""
-                                    }`}
+                                    className={`${classes.inputField} ${formErrors.email ? classes.inputError : ""}`}
                                     placeholder="tu@email.com"
                                     disabled={loading}
                                 />
-                                {formErrors.email && (
-                                    <span className={classes.fieldError}>
-                                        {formErrors.email}
-                                    </span>
-                                )}
+                                {formErrors.email && <span className={classes.fieldError}>{formErrors.email}</span>}
                             </div>
 
-                            {/* Campo Contraseña */}
+                            {/* Usuario */}
                             <div className={classes.inputGroup}>
-                                <label
-                                    htmlFor="password"
-                                    className={classes.inputLabel}
-                                >
-                                    Contraseña *
-                                </label>
+                                <label htmlFor="usuario" className={classes.inputLabel}>Usuario *</label>
+                                <input
+                                    type="text"
+                                    id="usuario"
+                                    name="usuario"
+                                    value={formData.usuario}
+                                    onChange={handleInputChange}
+                                    className={`${classes.inputField} ${formErrors.usuario ? classes.inputError : ""}`}
+                                    placeholder="Tu nombre de usuario"
+                                    disabled={loading}
+                                />
+                                {formErrors.usuario && <span className={classes.fieldError}>{formErrors.usuario}</span>}
+                            </div>
+                            <div className={classes.inputGroup}>
+    <label className={classes.inputLabel}>Tipo de cuenta *</label>
+    <div className={classes.radioGroup}>
+        <label>
+            <input
+                type="radio"
+                name="role"
+                value="comprador"
+                checked={formData.role === "comprador"}
+                onChange={handleInputChange}
+            />
+            Comprador
+        </label>
+        <label>
+            <input
+                type="radio"
+                name="role"
+                value="vendedor"
+                checked={formData.role === "vendedor"}
+                onChange={handleInputChange}
+            />
+            Vendedor
+        </label>
+    </div>
+    {formErrors.role && (
+        <span className={classes.fieldError}>{formErrors.role}</span>
+    )}
+</div>
+
+
+                            {/* Teléfono */}
+                            <div className={classes.inputGroup}>
+                                <label htmlFor="telf" className={classes.inputLabel}>Teléfono *</label>
+                                <input
+                                    type="tel"
+                                    id="telf"
+                                    name="telf"
+                                    value={formData.telf}
+                                    onChange={handleInputChange}
+                                    className={`${classes.inputField} ${formErrors.telf ? classes.inputError : ""}`}
+                                    placeholder="Tu número de teléfono"
+                                    disabled={loading}
+                                />
+                                {formErrors.telf && <span className={classes.fieldError}>{formErrors.telf}</span>}
+                            </div>
+
+                            {/* Contraseña */}
+                            <div className={classes.inputGroup}>
+                                <label htmlFor="password" className={classes.inputLabel}>Contraseña *</label>
                                 <div className={classes.passwordContainer}>
                                     <input
-                                        type={
-                                            showPassword ? "text" : "password"
-                                        }
+                                        type={showPassword ? "text" : "password"}
                                         id="password"
                                         name="password"
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className={`${classes.inputField} ${
-                                            formErrors.password
-                                                ? classes.inputError
-                                                : ""
-                                        }`}
+                                        className={`${classes.inputField} ${formErrors.password ? classes.inputError : ""}`}
                                         placeholder="Mínimo 6 caracteres"
                                         disabled={loading}
                                     />
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            togglePasswordVisibility("password")
-                                        }
+                                        onClick={() => togglePasswordVisibility("password")}
                                         className={classes.passwordToggle}
                                         disabled={loading}
                                     >
                                         {showPassword ? "👁️" : "👁️‍🗨️"}
                                     </button>
                                 </div>
-                                {formErrors.password && (
-                                    <span className={classes.fieldError}>
-                                        {formErrors.password}
-                                    </span>
-                                )}
+                                {formErrors.password && <span className={classes.fieldError}>{formErrors.password}</span>}
                             </div>
 
-                            {/* Campo Confirmar Contraseña */}
+                            {/* Confirmar contraseña */}
                             <div className={classes.inputGroup}>
-                                <label
-                                    htmlFor="confirmPassword"
-                                    className={classes.inputLabel}
-                                >
-                                    Confirmar contraseña *
-                                </label>
+                                <label htmlFor="confirmPassword" className={classes.inputLabel}>Confirmar contraseña *</label>
                                 <div className={classes.passwordContainer}>
                                     <input
-                                        type={
-                                            showConfirmPassword
-                                                ? "text"
-                                                : "password"
-                                        }
+                                        type={showConfirmPassword ? "text" : "password"}
                                         id="confirmPassword"
                                         name="confirmPassword"
                                         value={formData.confirmPassword}
                                         onChange={handleInputChange}
-                                        className={`${classes.inputField} ${
-                                            formErrors.confirmPassword
-                                                ? classes.inputError
-                                                : ""
-                                        }`}
+                                        className={`${classes.inputField} ${formErrors.confirmPassword ? classes.inputError : ""}`}
                                         placeholder="Repite tu contraseña"
                                         disabled={loading}
                                     />
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            togglePasswordVisibility(
-                                                "confirmPassword"
-                                            )
-                                        }
+                                        onClick={() => togglePasswordVisibility("confirmPassword")}
                                         className={classes.passwordToggle}
                                         disabled={loading}
                                     >
                                         {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
                                     </button>
                                 </div>
-                                {formErrors.confirmPassword && (
-                                    <span className={classes.fieldError}>
-                                        {formErrors.confirmPassword}
-                                    </span>
-                                )}
+                                {formErrors.confirmPassword && <span className={classes.fieldError}>{formErrors.confirmPassword}</span>}
                             </div>
 
                             {/* Términos y condiciones */}
@@ -342,63 +328,28 @@ function Register() {
                                     />
                                     <span className={classes.checkboxLabel}>
                                         Acepto los{" "}
-                                        <Link
-                                            to="/terminos"
-                                            className={classes.termsLink}
-                                        >
-                                            términos y condiciones
-                                        </Link>{" "}
-                                        y la{" "}
-                                        <Link
-                                            to="/privacidad"
-                                            className={classes.termsLink}
-                                        >
-                                            política de privacidad
-                                        </Link>
+                                        <Link to="/terminos" className={classes.termsLink}>términos y condiciones</Link> y la{" "}
+                                        <Link to="/privacidad" className={classes.termsLink}>política de privacidad</Link>
                                     </span>
                                 </label>
-                                {formErrors.acceptTerms && (
-                                    <span className={classes.fieldError}>
-                                        {formErrors.acceptTerms}
-                                    </span>
-                                )}
+                                {formErrors.acceptTerms && <span className={classes.fieldError}>{formErrors.acceptTerms}</span>}
                             </div>
 
-                            {/* Botón de submit */}
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={classes.submitButton}
-                            >
-                                {loading ? (
-                                    <>
-                                        <span
-                                            className={classes.spinner}
-                                        ></span>
-                                        Creando cuenta...
-                                    </>
-                                ) : (
-                                    "Crear Cuenta"
-                                )}
+                            <button type="submit" disabled={loading} className={classes.submitButton}>
+                                {loading ? <><span className={classes.spinner}></span> Creando cuenta...</> : "Crear Cuenta"}
                             </button>
                         </form>
 
-                        {/* Enlaces adicionales */}
                         <div className={classes.registerFooter}>
                             <p className={classes.footerText}>
                                 ¿Ya tienes una cuenta?{" "}
-                                <Link to="/login" className={classes.loginLink}>
-                                    Iniciar sesión
-                                </Link>
+                                <Link to="/login" className={classes.loginLink}>Iniciar sesión</Link>
                             </p>
-                            <Link to="/" className={classes.backLink}>
-                                ← Volver al inicio
-                            </Link>
+                            <Link to="/" className={classes.backLink}>← Volver al inicio</Link>
                         </div>
                     </div>
                 </main>
             </div>
-
             <Footer />
         </div>
     );
