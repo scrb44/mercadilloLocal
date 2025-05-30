@@ -1,7 +1,9 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Categoria;
+import com.example.springboot.model.Producto;
 import com.example.springboot.service.CategoriaService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +22,18 @@ private final CategoriaService categoriaService;
     @GetMapping
     public List<Categoria> obtenerCagorias() {
         return categoriaService.obtenerTodos();
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Categoria> obtenerComprador(@PathVariable Long id) {
+        Categoria categoria = categoriaService.buscarPorId(id);
+
+        if (categoria != null) {
+            return ResponseEntity.ok(categoria);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /*@PostMapping

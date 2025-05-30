@@ -1,4 +1,3 @@
-
 package com.example.springboot.service;
 
 import com.example.springboot.model.Categoria;
@@ -7,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaService {
@@ -19,9 +19,18 @@ public class CategoriaService {
     }
 
     public List<Categoria> obtenerTodos() {
-        return categoriaRepo.findAll();}/*
+        return categoriaRepo.findAll();
+    }
+
+    public Categoria buscarPorId(Long id) {
+        return categoriaRepo.getReferenceById(id);
+    }
+
     public Categoria agregarCategoria(Categoria categoria) {
-        return categoriaRepo.save(categoria);}
+        return categoriaRepo.save(categoria);
+    }
+
     public void eliminarCategoria(Long id) {
-        categoriaRepo.deleteById(id);}*/
+        categoriaRepo.deleteById(id);
+    }
 }
