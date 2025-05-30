@@ -16,7 +16,7 @@ public class CorsConfig {
                 registry.addMapping("/api/**")          // rutas que permiten CORS
                         .allowedOrigins("http://localhost:5173")  // frontend permitido
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // métodos HTTP permitidos
-                        .allowCredentials(true);
+                        .allowCredentials(false);
             }
         };
     }
