@@ -6,6 +6,8 @@ import com.example.springboot.dto.RegisterRequest;
 import com.example.springboot.model.Admin;
 import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Vendedor;
+import com.example.springboot.repository.CompradorRepository;
+import com.example.springboot.repository.VendedorRepository;
 import com.example.springboot.service.AdminService;
 import com.example.springboot.service.CompradorService;
 import com.example.springboot.service.VendedorService;
@@ -27,6 +29,12 @@ public class AuthController {
     @Autowired
     private VendedorService vendedorService;
 
+    @Autowired
+    private VendedorRepository vendedorRepository;
+
+    @Autowired
+    private CompradorRepository compradorRepository;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         String correo = loginRequest.getEmail();
@@ -39,12 +47,12 @@ public class AuthController {
 
         Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
-            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), admin.getEmail()));
+            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), comprador.getEmail()));
         }
 
         Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
-            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), admin.getEmail()));
+            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), vendedor.getEmail()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
@@ -67,53 +75,34 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No hay sesión activa");
     }
 
-
-
-    @PostMapping("/registro")
-    public ResponseEntity<?> registrarUsuario(@RequestBody RegisterRequest request) {
-        String usuario = request.getUsuario();
-
-        // Verificar si el usuario ya existe en cualquiera de las tablas
-        boolean existeUsuario = compradorService.existePorUsuario(usuario) ||
-                vendedorService.existePorUsuario(usuario) ||
-                adminService.existePorUsuario(usuario);
-
-        if (existeUsuario) {
-            return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
-        }
-
-        switch (request.getRol().toUpperCase()) {
-            case "ADMIN":
-                Admin admin = new Admin();
-                admin.setUsuario(usuario);
-                admin.setNombre(request.getNombre());
-                admin.setEmail(request.getEmail());
-                admin.setPassword(request.getPassword());
-                adminService.guardarAdmin(admin);
-                return ResponseEntity.ok("Admin registrado");
-
-            case "COMPRADOR":
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest dto) {
+        try {
+            if (dto.getRole().equalsIgnoreCase("comprador")) {
                 Comprador comprador = new Comprador();
-                comprador.setUsuario(usuario);
-                comprador.setNombre(request.getNombre());
-                comprador.setPassword(request.getPassword());
-                comprador.setEmail(request.getEmail());
-                comprador.setTelf(request.getTelf());
-                compradorService.guardarComprador(comprador);
-                return ResponseEntity.ok("Comprador registrado");
-
-            case "VENDEDOR":
+                comprador.setUsuario(dto.getUsuario());
+                comprador.setNombre(dto.getNombre());
+                comprador.setEmail(dto.getEmail());
+                comprador.setPassword(dto.getPassword());
+                comprador.setTelf(dto.getTelf());
+                compradorRepository.save(comprador);
+                System.out.println("DTO recibido: " + dto.getUsuario() + ", " + dto.getNombre());
+            } else if (dto.getRole().equalsIgnoreCase("vendedor")) {
                 Vendedor vendedor = new Vendedor();
-                vendedor.setUsuario(usuario);
-                vendedor.setNombre(request.getNombre());
-                vendedor.setPassword(request.getPassword());
-                vendedor.setEmail(request.getEmail());
-                vendedor.setTelf(request.getTelf());
-                vendedorService.guardarVendedor(vendedor);
-                return ResponseEntity.ok("Vendedor registrado");
-
-            default:
-                return ResponseEntity.badRequest().body("Rol no válido");
+                vendedor.setUsuario(dto.getUsuario());
+                vendedor.setNombre(dto.getNombre());
+                vendedor.setEmail(dto.getEmail());
+                vendedor.setPassword(dto.getPassword());
+                vendedor.setTelf(dto.getTelf());
+                vendedor.setVerificado(false);
+                vendedorRepository.save(vendedor);
+            } else {
+                return ResponseEntity.badRequest().body("Rol inválido");
+            }
+            return ResponseEntity.ok("Usuario creado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el usuario: " + e.getMessage());
         }
     }
 
