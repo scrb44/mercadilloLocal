@@ -29,10 +29,6 @@ public class ProductoController {
     public ResponseEntity<Producto> obtenerComprador(@PathVariable Long id) {
         Producto producto = productoService.getProducto(id);
 
-        System.out.println("\n\n\n");
-        System.out.println("Hola: ");
-        System.out.println(producto.getClass());
-        System.out.println("\n\n\n");
         if (producto != null) {
             return ResponseEntity.ok(producto);
         } else {
