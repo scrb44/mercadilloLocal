@@ -7,7 +7,9 @@ import com.example.springboot.service.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -21,8 +23,30 @@ public class ProductoController {
     }
 
     @GetMapping
-    public List<Producto> obtenerProductos() {
-        return productoService.obtenerTodos();
+    public List<Producto> obtenerProductos(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String q
+    ) {
+        return productoService.obtenerTodos().stream()
+                // Filtro por precio mínimo
+                .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
+                // Filtro por precio máximo
+                .filter(p -> maxPrice == null || p.getPrecio().compareTo(maxPrice) <= 0)
+                // Filtro por vendedor
+                .filter(p -> vendorId == null ||
+                        (p.getVendedor() != null && p.getVendedor().getId().equals(vendorId)))
+                // Filtro por categoría
+                .filter(p -> categoryId == null ||
+                        (p.getCategoria() != null && p.getCategoria().getId().equals(categoryId)))
+                // Filtro por búsqueda de texto
+                .filter(p -> q == null || q.trim().isEmpty() ||
+                        p.getNombre().toLowerCase().contains(q.toLowerCase()) ||
+                        p.getDescripcion().toLowerCase().contains(q.toLowerCase()))
+
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
