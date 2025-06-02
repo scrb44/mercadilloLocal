@@ -22,6 +22,7 @@ interface MunicipioContextType {
     setMunicipio: (municipio: MunicipioInterface) => void;
     clearMunicipio: () => void;
     hasMunicipio: boolean;
+    isReady: boolean; // NUEVO: indica si ya terminó la carga inicial
 }
 
 // ============ DATOS DE MUNICIPIOS DE MÁLAGA ============
@@ -55,10 +56,20 @@ function getMunicipioFromCache(): MunicipioInterface | null {
     try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
-            return JSON.parse(cached);
+            const parsed = JSON.parse(cached);
+            // Verificar que el municipio cached sea válido
+            if (parsed && parsed.id && parsed.nombre && parsed.provincia) {
+                return parsed;
+            }
         }
     } catch (error) {
         console.warn("Error leyendo municipio del cache:", error);
+        // Limpiar cache corrupto
+        try {
+            localStorage.removeItem(CACHE_KEY);
+        } catch (e) {
+            // Ignore
+        }
     }
     return null;
 }
@@ -96,9 +107,10 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
         null
     );
     const [loading, setLoading] = useState(true);
+    const [isReady, setIsReady] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Cargar municipio del cache al inicializar
+    // Cargar municipio del cache INMEDIATAMENTE (síncrono)
     useEffect(() => {
         const cachedMunicipio = getMunicipioFromCache();
         if (cachedMunicipio) {
@@ -113,8 +125,11 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
                 clearMunicipioFromCache();
             }
         }
+
+        // Marcar como listo INMEDIATAMENTE
         setLoading(false);
-    }, []);
+        setIsReady(true);
+    }, []); // Solo ejecutar una vez al montar
 
     // ============ FUNCIONES ============
     const setMunicipio = (newMunicipio: MunicipioInterface) => {
@@ -140,6 +155,7 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
         setMunicipio,
         clearMunicipio,
         hasMunicipio,
+        isReady, // NUEVO
     };
 
     return (
