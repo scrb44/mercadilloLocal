@@ -8,12 +8,16 @@ import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CompradorRepository;
 import com.example.springboot.repository.VendedorRepository;
+import com.example.springboot.security.JwtUtil;
 import com.example.springboot.service.AdminService;
 import com.example.springboot.service.CompradorService;
 import com.example.springboot.service.VendedorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,6 +39,13 @@ public class AuthController {
     @Autowired
     private CompradorRepository compradorRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         String correo = loginRequest.getEmail();
@@ -44,54 +55,53 @@ public class AuthController {
 
         Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
-            String imagen = admin.getImagen();
-            if (imagen == null || imagen.isEmpty()) {
-                imagen = imagenPorDefecto;
-            }
+            String imagen = (admin.getImagen() == null || admin.getImagen().isEmpty()) ? imagenPorDefecto : admin.getImagen();
             return ResponseEntity.ok(new LoginResponse(
                     admin.getId(),
                     "ADMIN",
                     admin.getUsuario(),
                     admin.getNombre(),
                     admin.getEmail(),
-                    imagen
+                    imagen,
+                    "" // o null si prefieres
             ));
         }
 
         Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
-            String imagen = comprador.getImagen();
-            if (imagen == null || imagen.isEmpty()) {
-                imagen = imagenPorDefecto;
-            }
+            String token = jwtUtil.generateToken(comprador.getEmail(), "COMPRADOR");
+            String imagen = (comprador.getImagen() == null || comprador.getImagen().isEmpty()) ? imagenPorDefecto : comprador.getImagen();
             return ResponseEntity.ok(new LoginResponse(
                     comprador.getId(),
                     "COMPRADOR",
                     comprador.getUsuario(),
                     comprador.getNombre(),
                     comprador.getEmail(),
-                    imagen
+                    imagen,
+                    token
             ));
         }
 
         Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
-            String imagen = vendedor.getImagen();
-            if (imagen == null || imagen.isEmpty()) {
-                imagen = imagenPorDefecto;
-            }
+            String token = jwtUtil.generateToken(vendedor.getEmail(), "VENDEDOR");
+            String imagen = (vendedor.getImagen() == null || vendedor.getImagen().isEmpty()) ? imagenPorDefecto : vendedor.getImagen();
             return ResponseEntity.ok(new LoginResponse(
                     vendedor.getId(),
                     "VENDEDOR",
                     vendedor.getUsuario(),
                     vendedor.getNombre(),
                     vendedor.getEmail(),
-                    imagen
+                    imagen,
+                    token
             ));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap("mensaje", "Credenciales inválidas"));
+
     }
+
 
 
     /*
@@ -117,21 +127,22 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest dto) {
         try {
+            System.out.println("Registrando usuario: " + dto.getUsuario() + ", email: " + dto.getEmail() + ", rol: " + dto.getRole());
+
             if (dto.getRole().equalsIgnoreCase("comprador")) {
                 Comprador comprador = new Comprador();
                 comprador.setUsuario(dto.getUsuario());
                 comprador.setNombre(dto.getNombre());
                 comprador.setEmail(dto.getEmail());
-                comprador.setPassword(dto.getPassword());
+                comprador.setPassword(passwordEncoder.encode(dto.getPassword()));
                 comprador.setTelf(dto.getTelf());
                 compradorRepository.save(comprador);
-                System.out.println("DTO recibido: " + dto.getUsuario() + ", " + dto.getNombre());
             } else if (dto.getRole().equalsIgnoreCase("vendedor")) {
                 Vendedor vendedor = new Vendedor();
                 vendedor.setUsuario(dto.getUsuario());
                 vendedor.setNombre(dto.getNombre());
                 vendedor.setEmail(dto.getEmail());
-                vendedor.setPassword(dto.getPassword());
+                vendedor.setPassword(passwordEncoder.encode(dto.getPassword()));
                 vendedor.setTelf(dto.getTelf());
                 vendedor.setVerificado(false);
                 vendedorRepository.save(vendedor);
@@ -141,8 +152,10 @@ public class AuthController {
             return ResponseEntity.ok("Usuario creado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el usuario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al guardar el usuario: " + e.getMessage());
         }
     }
+
 
 }

@@ -5,6 +5,7 @@ import com.example.springboot.model.Producto;
 import com.example.springboot.repository.CompradorRepository;
 import com.example.springboot.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +20,10 @@ public class CompradorService {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     public List<Comprador> listarCompradores() {
         return compradorRepository.findAll();
@@ -36,13 +41,24 @@ public class CompradorService {
         compradorRepository.deleteById(id);
     }
 
-    public Comprador login(String email, String password) {
+    // Ejemplo en CompradorService
+    public Comprador login(String email, String rawPassword) {
         Comprador comprador = compradorRepository.findByEmail(email);
-        if (comprador != null && comprador.getPassword().equals(password)) {
+        if (comprador == null) {
+            System.out.println("No existe comprador con email: " + email);
+            return null;
+        }
+        System.out.println("Contraseña almacenada: " + comprador.getPassword());
+        System.out.println("Contraseña recibida: " + rawPassword);
+        boolean matches = passwordEncoder.matches(rawPassword, comprador.getPassword());
+        System.out.println("¿Coinciden las contraseñas? " + matches);
+        if (matches) {
             return comprador;
         }
         return null;
     }
+
+
 
     public boolean existePorUsuario(String usuario) {
         return compradorRepository.existsByUsuario(usuario);

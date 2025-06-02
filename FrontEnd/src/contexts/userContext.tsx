@@ -36,35 +36,41 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const isAuthenticated = user !== null;
 
 const login = async (credentials: LoginCredentials) => {
-    try {
-        setLoading(true);
-        setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-        const response = await axios.post("http://localhost:8080/api/auth/login", {
-            email: credentials.email,
-            password: credentials.password,
-        });
+    const response = await axios.post("http://localhost:8080/api/auth/login", {
+      email: credentials.email,
+      password: credentials.password,
+    });
 
-        const { rol, nombre, usuario, id } = response.data;
+    const { token, rol, nombre, usuario, id } = response.data;
 
-        const userData: UserInterface = {
-            id: id || 1, // o asegúrate de que venga del backend
-            usuario: usuario,
-            nombre: nombre,
-            email: credentials.email,
-            role: rol,
-        };
+    // Guardar token localmente para usar en otras peticiones
+    localStorage.setItem("token", token);
 
-        setUser(userData);
-        console.log("✅ Login exitoso:", userData);
-    } catch (err: unknown) {
-        console.error("❌ Error en login:", err);
-        throw err;
-    } finally {
-        setLoading(false);
+    const userData: UserInterface = {
+      id,
+      usuario,
+      nombre,
+      email: credentials.email,
+      role: rol,
+      token,
+    };
+
+    setUser(userData);
+  } catch (err: any) {
+    if (err.response?.data?.message) {
+      setError(err.response.data.message);
+    } else {
+      setError("Credenciales incorrectas");
     }
+    throw err;
+  } finally {
+    setLoading(false);
+  }
 };
-
 
 
     const logout = () => {

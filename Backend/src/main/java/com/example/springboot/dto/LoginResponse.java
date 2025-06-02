@@ -7,18 +7,22 @@ public class LoginResponse {
     private String nombre;
     private String email;
     private String imagen;
+    private String token;  // <-- campo para el JWT
 
     public LoginResponse() {
     }
 
-    public LoginResponse(Long id, String rol, String usuario, String nombre, String email, String imagen) {
+    public LoginResponse(Long id, String rol, String usuario, String nombre, String email, String imagen, String token) {
         this.id = id;
         this.rol = rol;
         this.usuario = usuario;
         this.nombre = nombre;
         this.email = email;
         this.imagen = imagen;
+        this.token = token;  // <-- asignamos el token
     }
+
+    // Getters y setters
 
     public Long getId() {
         return id;
@@ -66,5 +70,13 @@ public class LoginResponse {
 
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
