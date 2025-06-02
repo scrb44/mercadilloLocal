@@ -1,22 +1,33 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useUser } from "../../contexts";
 import styles from "./perfil.module.css";
-import Header from "../../componentes/header"; // Asegúrate de que la ruta sea correcta
+import Header from "../../componentes/header";
+import { useNavigate } from "react-router-dom";
 
 const Perfil: React.FC = () => {
-  const { user, isAuthenticated } = useUser();
+  const { user, isAuthenticated, logout } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [profileImage, setProfileImage] = useState<string | null>(
+    () => localStorage.getItem("profileImage")
+  );
 
-  if (!isAuthenticated || !user) {
-    return <p>No has iniciado sesión.</p>;
-  }
+  // Redirigir si no hay sesión
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      navigate("/");
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setProfileImage(reader.result as string);
+      reader.onloadend = () => {
+        const imageData = reader.result as string;
+        setProfileImage(imageData);
+        localStorage.setItem("profileImage", imageData);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -24,6 +35,15 @@ const Perfil: React.FC = () => {
   const handleClickUpload = () => {
     fileInputRef.current?.click();
   };
+
+  const handleLogout = () => {
+    logout(); // Limpia la sesión
+    navigate("/", { replace: true }); // Redirige a Home
+  };
+
+  if (!isAuthenticated || !user) {
+    return null; // Mientras se redirige
+  }
 
   return (
     <>
@@ -62,6 +82,9 @@ const Perfil: React.FC = () => {
             {user.role === "VENDEDOR" && (
               <p><strong>Verificado:</strong> {user.verificado ? "Sí" : "No"}</p>
             )}
+            <button onClick={handleLogout} className={styles.logoutBtn}>
+              Cerrar sesión
+            </button>
           </div>
         </div>
       </div>
