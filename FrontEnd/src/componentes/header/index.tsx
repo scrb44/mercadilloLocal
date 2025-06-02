@@ -1,6 +1,7 @@
-// src/componentes/header/index.tsx
+// src/componentes/header/index.tsx - ACTUALIZADO CON MUNICIPIO
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
+import MunicipioIndicator from "../municipioIndicator";
 import classes from "./header.module.css";
 
 function Header() {
@@ -18,9 +19,20 @@ function Header() {
     return (
         <header className={classes["page-header"]}>
             <div className={classes["page-header__content"]}>
-                <Link to="/" className={classes["page-header__logo"]}>
-                    <h1>Mercadillo Local</h1>
-                </Link>
+                <div className={classes["page-header__left"]}>
+                    <Link to="/" className={classes["page-header__logo"]}>
+                        <h1>Mercadillo Local</h1>
+                    </Link>
+
+                    {/* Indicador de municipio */}
+                    <div className={classes["page-header__municipio"]}>
+                        <MunicipioIndicator
+                            size="small"
+                            style="chip"
+                            showChangeButton={true}
+                        />
+                    </div>
+                </div>
 
                 <ul className={classes["page-header__list"]}>
                     <li>
@@ -32,7 +44,10 @@ function Header() {
                     {/* Enlace PERFIL solo si está autenticado */}
                     {isAuthenticated && (
                         <li>
-                            <Link to="/perfil" className={classes["page-header__link"]}>
+                            <Link
+                                to="/perfil"
+                                className={classes["page-header__link"]}
+                            >
                                 Mi perfil
                             </Link>
                         </li>
@@ -66,12 +81,20 @@ function Header() {
                                         </span>
                                     )}
                                     {cart?.loading && (
-                                        <span className={classes["loading-indicator"]}>
+                                        <span
+                                            className={
+                                                classes["loading-indicator"]
+                                            }
+                                        >
                                             🔄
                                         </span>
                                     )}
                                     {cart?.error && (
-                                        <span className={classes["error-indicator"]}>
+                                        <span
+                                            className={
+                                                classes["error-indicator"]
+                                            }
+                                        >
                                             ⚠️
                                         </span>
                                     )}
@@ -81,12 +104,18 @@ function Header() {
                     ) : (
                         <>
                             <li>
-                                <Link to="/login" className={classes["page-header__login"]}>
+                                <Link
+                                    to="/login"
+                                    className={classes["page-header__login"]}
+                                >
                                     Iniciar sesión
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/registro" className={classes["page-header__link"]}>
+                                <Link
+                                    to="/registro"
+                                    className={classes["page-header__link"]}
+                                >
                                     Crear cuenta
                                 </Link>
                             </li>

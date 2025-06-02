@@ -1,4 +1,4 @@
-// src/pages/home/index.tsx - SOLO CATEGORÍAS PRINCIPALES Y PRODUCTOS MÁS VENDIDOS
+// src/pages/home/index.tsx - ACTUALIZADO CON MUNICIPIO
 import { useEffect, useState, useCallback } from "react";
 import mercadilloService from "../../services";
 import {
@@ -7,6 +7,7 @@ import {
 } from "../../types/types";
 
 import { Footer, Header, ProductList, CategoryList } from "../../componentes";
+import MunicipioIndicator from "../../componentes/municipioIndicator";
 
 import classes from "./home.module.css";
 
@@ -122,15 +123,21 @@ function Home() {
 
             <div className={classes.container}>
                 <main className={classes.main}>
-                    {/* Sección de bienvenida */}
+                    {/* Sección de bienvenida con indicador de municipio */}
                     <div className={classes.welcomeSection}>
                         <h1 className={classes.welcomeTitle}>
                             Bienvenido a Mercadillo Local
                         </h1>
                         <p className={classes.welcomeSubtitle}>
-                            Explora nuestras categorías principales y descubre
-                            los productos más vendidos
+                            Explora productos y tiendas cerca de ti
                         </p>
+
+                        {/* Indicador de municipio en banner */}
+                        <MunicipioIndicator
+                            style="banner"
+                            size="large"
+                            showChangeButton={true}
+                        />
                     </div>
 
                     {/* Sección de categorías principales */}
@@ -140,8 +147,7 @@ function Home() {
                                 Categorías Principales
                             </h2>
                             <p className={classes.sectionSubtitle}>
-                                Navega por nuestras categorías principales para
-                                encontrar lo que buscas
+                                Encuentra productos organizados por categorías
                             </p>
                         </div>
 
@@ -161,8 +167,7 @@ function Home() {
                                 Productos Más Vendidos
                             </h2>
                             <p className={classes.sectionSubtitle}>
-                                Descubre los productos favoritos de nuestra
-                                comunidad
+                                Los favoritos de tu zona
                             </p>
                         </div>
 
