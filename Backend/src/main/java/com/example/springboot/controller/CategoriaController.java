@@ -36,12 +36,13 @@ private final CategoriaService categoriaService;
         }
     }
 
-    /*@PostMapping
-    public Categoria agregarCategoria(@RequestBody Categoria categoria) {
-        return categoriaService.agregarCategoria(categoria);}
-
     @PostMapping
-    public void eliminarCategoria(@RequestBody Categoria categoria) {
-        categoriaService.eliminarCategoria(categoria.getId());
-    }*/
+    public Categoria agregarCategoria(@RequestBody Categoria categoria) {
+        return categoriaService.agregarCategoria(categoria);
+    }
+
+    @GetMapping("/Categoria/{id}")
+    public void eliminarCategoria(long id) {
+        categoriaService.eliminarCategoria(id);
+    }
 }
