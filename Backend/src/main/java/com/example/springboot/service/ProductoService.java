@@ -17,9 +17,17 @@ public class ProductoService {
         this.productoRepo = productoRepo;
     }
 
-    public List<Producto> obtenerTodos() {return productoRepo.findAll();}
+    public List<Producto> obtenerTodos() {
+        return productoRepo.findAll();
+    }
+
+    public Producto getProducto(Long id) {
+        return productoRepo.getReferenceById(id);
+    }
+
     public Producto agregarProducto(Producto producto) {
-        return productoRepo.save(producto);}
+        return productoRepo.save(producto);
+    }
     public void eliminarProducto(Long id) {
         productoRepo.deleteById(id);
     }

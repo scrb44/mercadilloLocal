@@ -1,7 +1,9 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Categoria;
+import com.example.springboot.model.Producto;
 import com.example.springboot.service.CategoriaService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +24,25 @@ private final CategoriaService categoriaService;
         return categoriaService.obtenerTodos();
     }
 
-    /*@PostMapping
-    public Categoria agregarCategoria(@RequestBody Categoria categoria) {
-        return categoriaService.agregarCategoria(categoria);}
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Categoria> obtenerComprador(@PathVariable Long id) {
+        Categoria categoria = categoriaService.buscarPorId(id);
+
+        if (categoria != null) {
+            return ResponseEntity.ok(categoria);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PostMapping
-    public void eliminarCategoria(@RequestBody Categoria categoria) {
-        categoriaService.eliminarCategoria(categoria.getId());
-    }*/
+    public Categoria agregarCategoria(@RequestBody Categoria categoria) {
+        return categoriaService.agregarCategoria(categoria);
+    }
+
+    @GetMapping("/Categoria/{id}")
+    public void eliminarCategoria(long id) {
+        categoriaService.eliminarCategoria(id);
+    }
 }

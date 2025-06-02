@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
+    row-gap: 50px;
     padding: 20px 0;
 }
 
@@ -118,6 +119,7 @@
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 16px;
         padding: 16px 0;
+        row-gap: 50px;
     }
 
     .loadingContainer,

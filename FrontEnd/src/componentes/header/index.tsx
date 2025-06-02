@@ -1,11 +1,16 @@
-// src/componentes/header/index.tsx - ACTUALIZADO CON ESTRUCTURA PARA BANDA
-import { Link } from "react-router-dom";
+// src/componentes/header/index.tsx
+import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import classes from "./header.module.css";
 
 function Header() {
-    // ============ CONTEXTS ============
+    const navigate = useNavigate();
     const { user, isAuthenticated, logout } = useUser();
+
+    const handleLogout = () => {
+        logout();
+        navigate("/", { replace: true });
+    };
 
     // Solo usar cart si el usuario está autenticado
     const cart = isAuthenticated ? useCart() : null;
@@ -24,23 +29,30 @@ function Header() {
                         </Link>
                     </li>
 
-                    {/* Mostrar diferente contenido según autenticación */}
+                    {/* Enlace PERFIL solo si está autenticado */}
+                    {isAuthenticated && (
+                        <li>
+                            <Link to="/perfil" className={classes["page-header__link"]}>
+                                Mi perfil
+                            </Link>
+                        </li>
+                    )}
+
                     {isAuthenticated ? (
                         <>
                             <li className={classes["page-header__user"]}>
-                                Hola, {user?.name}
+                                Hola, {user?.usuario}
                             </li>
                             <li>
                                 <button
                                     className={classes["page-header__logout"]}
-                                    onClick={logout}
+                                    onClick={handleLogout}
                                     aria-label="Cerrar sesión"
                                 >
                                     Cerrar sesión
                                 </button>
                             </li>
 
-                            {/* CARRITO - Solo para usuarios autenticados */}
                             <li>
                                 <Link
                                     to="/carrito"
@@ -48,28 +60,18 @@ function Header() {
                                     aria-label="Ver carrito"
                                 >
                                     🛒 Carrito ({cart?.totalItems || 0})
-                                    {/* Mostrar precio total si hay productos */}
                                     {cart && cart.totalPrice > 0 && (
                                         <span className={classes["cart-total"]}>
                                             - €{cart.totalPrice.toFixed(2)}
                                         </span>
                                     )}
-                                    {/* Indicadores de estado */}
                                     {cart?.loading && (
-                                        <span
-                                            className={
-                                                classes["loading-indicator"]
-                                            }
-                                        >
+                                        <span className={classes["loading-indicator"]}>
                                             🔄
                                         </span>
                                     )}
                                     {cart?.error && (
-                                        <span
-                                            className={
-                                                classes["error-indicator"]
-                                            }
-                                        >
+                                        <span className={classes["error-indicator"]}>
                                             ⚠️
                                         </span>
                                     )}
@@ -79,18 +81,12 @@ function Header() {
                     ) : (
                         <>
                             <li>
-                                <Link
-                                    to="/login"
-                                    className={classes["page-header__login"]}
-                                >
+                                <Link to="/login" className={classes["page-header__login"]}>
                                     Iniciar sesión
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/registro"
-                                    className={classes["page-header__link"]}
-                                >
+                                <Link to="/registro" className={classes["page-header__link"]}>
                                     Crear cuenta
                                 </Link>
                             </li>

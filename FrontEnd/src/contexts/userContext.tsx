@@ -40,32 +40,31 @@ const login = async (credentials: LoginCredentials) => {
         setLoading(true);
         setError(null);
 
-        // ✅ Llamada real al backend con "password"
         const response = await axios.post("http://localhost:8080/api/auth/login", {
             email: credentials.email,
             password: credentials.password,
         });
 
-        const { rol, nombre } = response.data;
+        const { rol, nombre, usuario, id } = response.data;
 
         const userData: UserInterface = {
-            id: 1, // puedes reemplazarlo si el backend devuelve un ID real
-            name: nombre,
+            id: id || 1, // o asegúrate de que venga del backend
+            usuario: usuario,
+            nombre: nombre,
             email: credentials.email,
             role: rol,
-            isEmailVerified: true,
         };
 
         setUser(userData);
         console.log("✅ Login exitoso:", userData);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("❌ Error en login:", err);
-        setError(err.response?.data || "Error de login");
         throw err;
     } finally {
         setLoading(false);
     }
 };
+
 
 
     const logout = () => {

@@ -9,6 +9,7 @@ import ProductDetail from "./pages/productDetail";
 import Cart from "./pages/cart";
 import Login from "./pages/login";
 import Register from "./pages/register";
+import Perfil from "./pages/perfil"; // Ajusta la ruta
 
 // Componente wrapper para manejar el CartProvider condicionalmente
 function AppContent() {
@@ -28,6 +29,7 @@ function AppContent() {
                             path="/producto/:productId"
                             element={<ProductDetail />}
                         />
+                        <Route path="/perfil" element={<Perfil />} />
                         <Route path="/carrito" element={<Cart />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/registro" element={<Register />} />
