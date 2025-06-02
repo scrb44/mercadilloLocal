@@ -15,16 +15,18 @@ public class Admin {
     private String usuario;
     private String password;
     private String email;
+    private String imagen;
 
     public Admin() {
     }
 
-    public Admin(Long id, String nombre, String usuario, String password, String email) {
+    public Admin(Long id, String nombre, String usuario, String password, String email, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.usuario = usuario;
         this.password = password;
         this.email = email;
+        this.imagen = imagen;
     }
 
     public Long getId() {
@@ -65,5 +67,13 @@ public class Admin {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

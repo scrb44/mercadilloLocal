@@ -40,41 +40,59 @@ public class AuthController {
         String correo = loginRequest.getEmail();
         String contraseña = loginRequest.getPassword();
 
+        String imagenPorDefecto = "https://media.istockphoto.com/id/1495088043/es/vector/icono-de-perfil-de-usuario-avatar-o-icono-de-persona-foto-de-perfil-s%C3%ADmbolo-de-retrato.jpg?s=612x612&w=0&k=20&c=mY3gnj2lU7khgLhV6dQBNqomEGj3ayWH-xtpYuCXrzk=";
+
         Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
+            String imagen = admin.getImagen();
+            if (imagen == null || imagen.isEmpty()) {
+                imagen = imagenPorDefecto;
+            }
             return ResponseEntity.ok(new LoginResponse(
                     admin.getId(),
                     "ADMIN",
                     admin.getUsuario(),
                     admin.getNombre(),
-                    admin.getEmail()
+                    admin.getEmail(),
+                    imagen
             ));
         }
 
         Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
+            String imagen = comprador.getImagen();
+            if (imagen == null || imagen.isEmpty()) {
+                imagen = imagenPorDefecto;
+            }
             return ResponseEntity.ok(new LoginResponse(
                     comprador.getId(),
                     "COMPRADOR",
                     comprador.getUsuario(),
                     comprador.getNombre(),
-                    comprador.getEmail()
+                    comprador.getEmail(),
+                    imagen
             ));
         }
 
         Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
+            String imagen = vendedor.getImagen();
+            if (imagen == null || imagen.isEmpty()) {
+                imagen = imagenPorDefecto;
+            }
             return ResponseEntity.ok(new LoginResponse(
                     vendedor.getId(),
                     "VENDEDOR",
                     vendedor.getUsuario(),
                     vendedor.getNombre(),
-                    vendedor.getEmail()
+                    vendedor.getEmail(),
+                    imagen
             ));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
     }
+
 
     /*
     // Opcional, si quieres usarlo para verificar sesión
