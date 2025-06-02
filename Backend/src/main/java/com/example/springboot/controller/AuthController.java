@@ -127,16 +127,16 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest dto) {
         try {
+            System.out.println("Registrando usuario: " + dto.getUsuario() + ", email: " + dto.getEmail() + ", rol: " + dto.getRole());
+
             if (dto.getRole().equalsIgnoreCase("comprador")) {
                 Comprador comprador = new Comprador();
                 comprador.setUsuario(dto.getUsuario());
                 comprador.setNombre(dto.getNombre());
                 comprador.setEmail(dto.getEmail());
-                comprador.setPassword(dto.getPassword());
                 comprador.setPassword(passwordEncoder.encode(dto.getPassword()));
                 comprador.setTelf(dto.getTelf());
                 compradorRepository.save(comprador);
-                System.out.println("DTO recibido: " + dto.getUsuario() + ", " + dto.getNombre());
             } else if (dto.getRole().equalsIgnoreCase("vendedor")) {
                 Vendedor vendedor = new Vendedor();
                 vendedor.setUsuario(dto.getUsuario());
@@ -152,8 +152,10 @@ public class AuthController {
             return ResponseEntity.ok("Usuario creado correctamente");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el usuario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al guardar el usuario: " + e.getMessage());
         }
     }
+
 
 }

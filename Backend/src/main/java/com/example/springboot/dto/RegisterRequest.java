@@ -9,6 +9,10 @@ public class RegisterRequest {
     private String telf;
     private String role;
 
+    public RegisterRequest() {
+        // constructor vacío requerido para que Spring pueda instanciar la clase
+    }
+
 
     public RegisterRequest(String usuario, String nombre, String email, String password, String telf, String role) {
         this.usuario = usuario;
