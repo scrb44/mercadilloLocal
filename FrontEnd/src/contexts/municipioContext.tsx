@@ -22,7 +22,7 @@ interface MunicipioContextType {
     setMunicipio: (municipio: MunicipioInterface) => void;
     clearMunicipio: () => void;
     hasMunicipio: boolean;
-    isReady: boolean; // NUEVO: indica si ya terminó la carga inicial
+    isReady: boolean;
 }
 
 // ============ DATOS DE MUNICIPIOS DE MÁLAGA ============
