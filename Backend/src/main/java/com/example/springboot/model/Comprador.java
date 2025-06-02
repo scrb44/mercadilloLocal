@@ -15,6 +15,7 @@ public class Comprador {
     private String password;
     private String email;
     private String telf;
+    private String imagen;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -26,13 +27,14 @@ public class Comprador {
 
     public Comprador(){}
 
-    public Comprador(Long id, String usuario, String nombre, String password, String email, String telf, List<Producto> productos) {
+    public Comprador(Long id, String usuario, String nombre, String password, String email, String telf, String imagen, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
         this.password = password;
         this.email = email;
         this.telf = telf;
+        this.imagen = imagen;
         this.productos = productos;
     }
 
@@ -90,5 +92,13 @@ public class Comprador {
 
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

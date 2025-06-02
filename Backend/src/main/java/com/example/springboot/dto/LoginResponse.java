@@ -6,16 +6,18 @@ public class LoginResponse {
     private String usuario;
     private String nombre;
     private String email;
+    private String imagen;
 
     public LoginResponse() {
     }
 
-    public LoginResponse(Long id, String rol, String usuario, String nombre, String email) {
+    public LoginResponse(Long id, String rol, String usuario, String nombre, String email, String imagen) {
         this.id = id;
         this.rol = rol;
         this.usuario = usuario;
         this.nombre = nombre;
         this.email = email;
+        this.imagen = imagen;
     }
 
     public Long getId() {
@@ -56,5 +58,13 @@ public class LoginResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }
