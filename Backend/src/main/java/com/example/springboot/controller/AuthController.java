@@ -42,22 +42,42 @@ public class AuthController {
 
         Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
-            return ResponseEntity.ok(new LoginResponse("ADMIN", admin.getNombre(), admin.getEmail()));
+            return ResponseEntity.ok(new LoginResponse(
+                    admin.getId(),
+                    "ADMIN",
+                    admin.getUsuario(),
+                    admin.getNombre(),
+                    admin.getEmail()
+            ));
         }
 
         Comprador comprador = compradorService.login(correo, contraseña);
         if (comprador != null) {
-            return ResponseEntity.ok(new LoginResponse("COMPRADOR", comprador.getUsuario(), comprador.getEmail()));
+            return ResponseEntity.ok(new LoginResponse(
+                    comprador.getId(),
+                    "COMPRADOR",
+                    comprador.getUsuario(),
+                    comprador.getNombre(),
+                    comprador.getEmail()
+            ));
         }
 
         Vendedor vendedor = vendedorService.login(correo, contraseña);
         if (vendedor != null) {
-            return ResponseEntity.ok(new LoginResponse("VENDEDOR", vendedor.getUsuario(), vendedor.getEmail()));
+            return ResponseEntity.ok(new LoginResponse(
+                    vendedor.getId(),
+                    "VENDEDOR",
+                    vendedor.getUsuario(),
+                    vendedor.getNombre(),
+                    vendedor.getEmail()
+            ));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
     }
 
+    /*
+    // Opcional, si quieres usarlo para verificar sesión
     @GetMapping("/status")
     public ResponseEntity<?> verificarSesion(@RequestParam String usuario, @RequestParam String password) {
         if (adminService.login(usuario, password) != null) {
@@ -74,6 +94,7 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No hay sesión activa");
     }
+    */
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest dto) {
@@ -105,6 +126,5 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el usuario: " + e.getMessage());
         }
     }
-
 
 }
