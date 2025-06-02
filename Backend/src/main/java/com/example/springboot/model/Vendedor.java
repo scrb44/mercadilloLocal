@@ -16,6 +16,7 @@ public class Vendedor {
     private String email;
     private String telf;
     private Boolean verificado;
+    private String imagen;
 
     @ManyToOne
     private Provincia provincia;  // Relación muchos a uno con Provincia
@@ -25,14 +26,16 @@ public class Vendedor {
 
     public Vendedor(){}
 
-    public Vendedor(Long id, String usuario, String password, String nombre, String email, String telf, Boolean verificado, List<Producto> productos) {
+    public Vendedor(Long id, String usuario, String nombre, String password, String email, String telf, Boolean verificado, String imagen, Provincia provincia, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
-        this.password = password;
         this.nombre = nombre;
+        this.password = password;
         this.email = email;
         this.telf = telf;
         this.verificado = verificado;
+        this.imagen = imagen;
+        this.provincia = provincia;
         this.productos = productos;
     }
 
@@ -106,5 +109,13 @@ public class Vendedor {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

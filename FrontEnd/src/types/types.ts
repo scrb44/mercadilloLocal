@@ -73,6 +73,7 @@ export interface UserInterface {
   password?: string;
   telf?: string;
   verificado?: boolean;
+  imagen?: string;
 }
 
 export interface LoginCredentials {
