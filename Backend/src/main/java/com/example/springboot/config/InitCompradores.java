@@ -20,7 +20,7 @@ public class InitCompradores {
                 Comprador ana = new Comprador();
                 ana.setNombre("Ana Torres");
                 ana.setUsuario("ana123");
-                ana.setEmail("ana@mail.com");
+                ana.setEmail("ana@gmail.com");
                 ana.setPassword("123456");
                 ana.setTelf("111222333");
 
@@ -40,7 +40,7 @@ public class InitCompradores {
                 Comprador lucas = new Comprador();
                 lucas.setNombre("Lucas Díaz");
                 lucas.setUsuario("lucas456");
-                lucas.setEmail("lucas@mail.com");
+                lucas.setEmail("lucas@gmail.com");
                 lucas.setPassword("123456");
                 lucas.setTelf("444555666");
 
