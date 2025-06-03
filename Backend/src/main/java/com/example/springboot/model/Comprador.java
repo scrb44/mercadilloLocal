@@ -2,6 +2,7 @@ package com.example.springboot.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +24,8 @@ public class Comprador {
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
-    private List<Producto> productos;  // Relación muchos a muchos con Producto
+    private List<Producto> productos = new ArrayList<>();
+
 
     public Comprador(){}
 

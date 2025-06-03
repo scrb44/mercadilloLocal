@@ -21,7 +21,6 @@ public class Producto {
     private String nombre;
     private String imagen;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "productos")
     private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
 

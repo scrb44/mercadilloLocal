@@ -51,7 +51,7 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtenerComprador(@PathVariable Long id) {
+    public ResponseEntity<Producto> obtenerProducto(@PathVariable Long id) {
         Producto producto = productoService.getProducto(id);
 
         if (producto != null) {

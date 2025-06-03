@@ -21,6 +21,7 @@ public class Categoria {
 
     private String imagen;
     private String nombre;
+
     public Categoria(){}
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
