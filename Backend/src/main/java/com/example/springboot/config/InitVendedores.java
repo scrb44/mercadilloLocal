@@ -37,7 +37,7 @@ public class InitVendedores {
                 juan = new Vendedor();
                 juan.setNombre("Juan Pérez");
                 juan.setUsuario("juan123");
-                juan.setEmail("juan@mail.com");
+                juan.setEmail("juan@gmail.com");
                 juan.setPassword("123456");
                 juan.setTelf("123456789");
                 juan.setVerificado(true);
@@ -51,7 +51,7 @@ public class InitVendedores {
                 maria = new Vendedor();
                 maria.setNombre("María López");
                 maria.setUsuario("maria456");
-                maria.setEmail("maria@mail.com");
+                maria.setEmail("maria@gmail.com");
                 maria.setPassword("123456");
                 maria.setTelf("987654321");
                 maria.setVerificado(false);
@@ -65,7 +65,7 @@ public class InitVendedores {
                 carlos = new Vendedor();
                 carlos.setNombre("Carlos García");
                 carlos.setUsuario("carlos789");
-                carlos.setEmail("carlos@mail.com");
+                carlos.setEmail("carlos@gmail.com");
                 carlos.setPassword("123456");
                 carlos.setTelf("555123456");
                 carlos.setVerificado(true);
