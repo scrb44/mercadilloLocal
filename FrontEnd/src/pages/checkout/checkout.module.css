@@ -1,0 +1,331 @@
+/* src/pages/checkout/checkout.module.css */
+
+.checkout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: 100px;
+}
+
+.container {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Estados de carga y error */
+.loginPrompt,
+.loadingState {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    margin: 40px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Banner de error */
+.errorBanner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(220, 38, 38, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.1);
+}
+
+.errorIcon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.errorText {
+    color: #dc2626;
+    font-weight: 500;
+    flex: 1;
+}
+
+.dismissError {
+    background: none;
+    border: none;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.dismissError:hover {
+    background: rgba(220, 38, 38, 0.1);
+}
+
+/* Layout principal */
+.checkoutContent {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.mainContent {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    align-self: start;
+    position: sticky;
+    top: 120px;
+}
+
+.orderSummary {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.summaryTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 20px 0;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Grupos de vendedores */
+.vendorGroup {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vendorGroup:last-of-type {
+    border-bottom: none;
+    margin-bottom: 16px;
+}
+
+.vendorName {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.9rem;
+}
+
+.itemName {
+    color: #4b5563;
+    font-weight: 500;
+    flex: 1;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.itemPrice {
+    color: #1f2937;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.vendorSubtotal,
+.platformFee {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 0.85rem;
+    margin-top: 8px;
+}
+
+.vendorSubtotal {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.platformFee {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Totales */
+.summaryTotals {
+    margin-top: 16px;
+}
+
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: #374151;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.summaryDivider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 12px 0;
+}
+
+.totalRow {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    padding: 12px 0;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    margin-top: 8px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .checkoutContent {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .sidebar {
+        position: static;
+        top: auto;
+    }
+
+    .orderSummary {
+        order: -1; /* Mostrar resumen arriba en móvil */
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout {
+        padding-top: 120px;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    .checkoutContent {
+        gap: 20px;
+    }
+
+    .mainContent {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .orderSummary {
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .summaryTitle {
+        font-size: 1.1rem;
+    }
+
+    .vendorName {
+        font-size: 0.95rem;
+    }
+
+    .errorBanner {
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .checkout {
+        padding-top: 140px;
+    }
+
+    .mainContent {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .orderSummary {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .summaryTitle {
+        font-size: 1rem;
+    }
+
+    .summaryItem,
+    .summaryRow {
+        font-size: 0.85rem;
+        padding: 6px 0;
+    }
+
+    .totalRow {
+        font-size: 1rem;
+    }
+
+    .vendorName {
+        font-size: 0.9rem;
+    }
+
+    .errorBanner {
+        padding: 10px 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .dismissError {
+        align-self: flex-end;
+    }
+}
