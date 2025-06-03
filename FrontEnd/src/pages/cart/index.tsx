@@ -1,4 +1,5 @@
-// src/pages/cart/index.tsx - MODULARIZADO CON CARTITEM
+// src/pages/cart/index.tsx - ACTUALIZADO CON BOTÓN DE CHECKOUT
+
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import { SimpleBreadcrumb, CartItem, Footer, Header } from "../../componentes";
@@ -46,9 +47,16 @@ function Cart() {
         }
     };
 
+    // NUEVO: Handler para ir al checkout
     const handleCheckout = () => {
-        // Por ahora, solo mostramos un alert
-        alert("Funcionalidad de pago en desarrollo");
+        if (!isAuthenticated) {
+            navigate("/login?redirect=/checkout");
+            return;
+        }
+
+        if (cart && cart.items.length > 0) {
+            navigate("/checkout");
+        }
     };
 
     const handleContinueShopping = () => {
@@ -61,7 +69,6 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
-                    {/* Breadcrumb para usuarios no autenticados */}
                     <SimpleBreadcrumb pageName="Carrito" />
 
                     <div className={classes.unauthenticatedState}>
@@ -123,10 +130,8 @@ function Cart() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb del carrito */}
                 <SimpleBreadcrumb pageName="Mi Carrito" />
 
-                {/* Header del carrito */}
                 <div className={classes.cartHeader}>
                     <h1 className={classes.title}>Tu Carrito</h1>
                     <div className={classes.cartSummary}>
@@ -148,7 +153,6 @@ function Cart() {
                 )}
 
                 {cart.items.length === 0 ? (
-                    /* Carrito vacío */
                     <div className={classes.emptyCart}>
                         <span className={classes.emptyIcon}>🛒</span>
                         <h2 className={classes.emptyTitle}>
@@ -166,9 +170,7 @@ function Cart() {
                         </button>
                     </div>
                 ) : (
-                    /* Carrito con productos */
                     <div className={classes.cartContent}>
-                        {/* Lista de productos */}
                         <div className={classes.cartItems}>
                             {cart.items.map((item) => (
                                 <CartItem
@@ -181,7 +183,6 @@ function Cart() {
                             ))}
                         </div>
 
-                        {/* Resumen del carrito */}
                         <div className={classes.cartSidebar}>
                             <div className={classes.cartSummaryCard}>
                                 <h3 className={classes.summaryTitle}>
@@ -208,12 +209,16 @@ function Cart() {
                                 </div>
 
                                 <div className={classes.checkoutActions}>
+                                    {/* ACTUALIZADO: Botón de checkout */}
                                     <button
                                         onClick={handleCheckout}
                                         className={classes.checkoutButton}
-                                        disabled={cart.loading}
+                                        disabled={
+                                            cart.loading ||
+                                            cart.items.length === 0
+                                        }
                                     >
-                                        Proceder al pago
+                                        🚀 Proceder al pago
                                     </button>
 
                                     <button

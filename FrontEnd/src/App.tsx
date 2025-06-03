@@ -1,15 +1,17 @@
-// src/App.tsx - CORREGIDO: Sin Routes anidados
+// src/App.tsx - ACTUALIZADO CON RUTAS DE PAGO
+
 import { useEffect } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider, CartProvider, useUser } from "./contexts";
 import { MunicipioProvider } from "./contexts/municipioContext";
+import { PaymentProvider } from "./contexts/paymentContext";
 
 // Guards y Error Handling
 import MunicipioGuard from "./componentes/municipioGuard";
 import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 
-// Páginas
+// Páginas existentes
 import Home from "./pages/home";
 import CategoryProducts from "./pages/categoryProducts";
 import ProductDetail from "./pages/productDetail";
@@ -18,6 +20,9 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import Perfil from "./pages/perfil";
 import MunicipioSelector from "./pages/municipioSelector";
+
+// Nueva página de checkout
+import Checkout from "./pages/checkout";
 
 function AppContent() {
     const { user, isAuthenticated } = useUser();
@@ -42,49 +47,69 @@ function AppContent() {
 
                 {/* Todas las demás rutas protegidas por MunicipioGuard */}
                 {isAuthenticated && user ? (
-                    // Usuario autenticado - con carrito
+                    // Usuario autenticado - con carrito y pagos
                     <Route
                         path="/*"
                         element={
                             <MunicipioGuard>
                                 <CartProvider userId={user.id}>
-                                    <Routes>
-                                        <Route path="/" element={<Home />} />
-                                        <Route
-                                            path="/categoria/:categoryId"
-                                            element={<CategoryProducts />}
-                                        />
-                                        <Route
-                                            path="/producto/:productId"
-                                            element={<ProductDetail />}
-                                        />
-                                        <Route
-                                            path="/perfil"
-                                            element={<Perfil />}
-                                        />
-                                        <Route
-                                            path="/carrito"
-                                            element={<Cart />}
-                                        />
-                                        <Route
-                                            path="/login"
-                                            element={<Login />}
-                                        />
-                                        <Route
-                                            path="/registro"
-                                            element={<Register />}
-                                        />
-                                        <Route
-                                            path="*"
-                                            element={<NotFoundPage />}
-                                        />
-                                    </Routes>
+                                    <PaymentProvider>
+                                        <Routes>
+                                            <Route
+                                                path="/"
+                                                element={<Home />}
+                                            />
+                                            <Route
+                                                path="/categoria/:categoryId"
+                                                element={<CategoryProducts />}
+                                            />
+                                            <Route
+                                                path="/producto/:productId"
+                                                element={<ProductDetail />}
+                                            />
+                                            <Route
+                                                path="/perfil"
+                                                element={<Perfil />}
+                                            />
+                                            <Route
+                                                path="/carrito"
+                                                element={<Cart />}
+                                            />
+
+                                            {/* NUEVAS RUTAS DE PAGO */}
+                                            <Route
+                                                path="/checkout"
+                                                element={<Checkout />}
+                                            />
+                                            <Route
+                                                path="/pago"
+                                                element={<Checkout />}
+                                            />
+                                            <Route
+                                                path="/pago/confirmacion"
+                                                element={<Checkout />}
+                                            />
+
+                                            <Route
+                                                path="/login"
+                                                element={<Login />}
+                                            />
+                                            <Route
+                                                path="/registro"
+                                                element={<Register />}
+                                            />
+                                            <Route
+                                                path="*"
+                                                element={<NotFoundPage />}
+                                            />
+                                        </Routes>
+                                    </PaymentProvider>
                                 </CartProvider>
                             </MunicipioGuard>
                         }
                     />
                 ) : (
-                    // Usuario no autenticado - sin carrito
+                    // Usuario no autenticado - sin carrito ni pagos
                     <>
                         <Route
                             path="/"
@@ -118,6 +143,25 @@ function AppContent() {
                                 </MunicipioGuard>
                             }
                         />
+
+                        {/* Redirigir checkout a login si no está autenticado */}
+                        <Route
+                            path="/checkout"
+                            element={
+                                <MunicipioGuard>
+                                    <Login />
+                                </MunicipioGuard>
+                            }
+                        />
+                        <Route
+                            path="/pago"
+                            element={
+                                <MunicipioGuard>
+                                    <Login />
+                                </MunicipioGuard>
+                            }
+                        />
+
                         <Route
                             path="/login"
                             element={
