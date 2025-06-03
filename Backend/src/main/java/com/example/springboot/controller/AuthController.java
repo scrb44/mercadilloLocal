@@ -55,6 +55,7 @@ public class AuthController {
 
         Admin admin = adminService.login(correo, contraseña);
         if (admin != null) {
+            String token = jwtUtil.generateToken(admin.getEmail(), "ADMIN");
             String imagen = (admin.getImagen() == null || admin.getImagen().isEmpty()) ? imagenPorDefecto : admin.getImagen();
             return ResponseEntity.ok(new LoginResponse(
                     admin.getId(),
@@ -63,7 +64,7 @@ public class AuthController {
                     admin.getNombre(),
                     admin.getEmail(),
                     imagen,
-                    "" // o null si prefieres
+                   token
             ));
         }
 
@@ -99,30 +100,7 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap("mensaje", "Credenciales inválidas"));
-
     }
-
-
-
-    /*
-    // Opcional, si quieres usarlo para verificar sesión
-    @GetMapping("/status")
-    public ResponseEntity<?> verificarSesion(@RequestParam String usuario, @RequestParam String password) {
-        if (adminService.login(usuario, password) != null) {
-            return ResponseEntity.ok("Sesión iniciada como ADMIN");
-        }
-
-        if (compradorService.login(usuario, password) != null) {
-            return ResponseEntity.ok("Sesión iniciada como COMPRADOR");
-        }
-
-        if (vendedorService.login(usuario, password) != null) {
-            return ResponseEntity.ok("Sesión iniciada como VENDEDOR");
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No hay sesión activa");
-    }
-    */
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest dto) {
