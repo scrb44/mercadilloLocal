@@ -1,9 +1,12 @@
-// src/contexts/municipioContext.tsx
+// src/contexts/municipioContext.tsx - OPTIMIZADO PARA EVITAR RE-RENDERS
+
 import React, {
     createContext,
     useContext,
     useState,
     useEffect,
+    useCallback,
+    useMemo,
     type ReactNode,
 } from "react";
 
@@ -25,7 +28,7 @@ interface MunicipioContextType {
     isReady: boolean;
 }
 
-// ============ DATOS DE MUNICIPIOS DE MÁLAGA ============
+// ============ DATOS DE MUNICIPIOS DE MÁLAGA (MEMO) ============
 const MUNICIPIOS_MALAGA: MunicipioInterface[] = [
     { id: 1, nombre: "Málaga", provincia: "Málaga" },
     { id: 2, nombre: "Marbella", provincia: "Málaga" },
@@ -49,7 +52,7 @@ const MUNICIPIOS_MALAGA: MunicipioInterface[] = [
     { id: 20, nombre: "Istán", provincia: "Málaga" },
 ];
 
-// ============ CACHE ============
+// ============ CACHE OPTIMIZADO ============
 const CACHE_KEY = "mercadillo-municipio-selected";
 
 function getMunicipioFromCache(): MunicipioInterface | null {
@@ -57,14 +60,12 @@ function getMunicipioFromCache(): MunicipioInterface | null {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
             const parsed = JSON.parse(cached);
-            // Verificar que el municipio cached sea válido
             if (parsed && parsed.id && parsed.nombre && parsed.provincia) {
                 return parsed;
             }
         }
     } catch (error) {
         console.warn("Error leyendo municipio del cache:", error);
-        // Limpiar cache corrupto
         try {
             localStorage.removeItem(CACHE_KEY);
         } catch (e) {
@@ -95,7 +96,7 @@ const MunicipioContext = createContext<MunicipioContextType | undefined>(
     undefined
 );
 
-// ============ PROVIDER ============
+// ============ PROVIDER OPTIMIZADO ============
 interface MunicipioProviderProps {
     children: ReactNode;
 }
@@ -104,59 +105,54 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
     children,
 }) => {
     const [municipio, setMunicipioState] = useState<MunicipioInterface | null>(
-        null
+        () => {
+            // Inicialización inmediata desde cache
+            return getMunicipioFromCache();
+        }
     );
-    const [loading, setLoading] = useState(true);
-    const [isReady, setIsReady] = useState(false);
+
+    const [loading, setLoading] = useState(false); // Cambiado: sin loading inicial
+    const [isReady, setIsReady] = useState(true); // Cambiado: inmediatamente listo
     const [error, setError] = useState<string | null>(null);
 
-    // Cargar municipio del cache INMEDIATAMENTE (síncrono)
-    useEffect(() => {
-        const cachedMunicipio = getMunicipioFromCache();
-        if (cachedMunicipio) {
-            // Verificar que el municipio cached todavía existe en nuestra lista
-            const exists = MUNICIPIOS_MALAGA.find(
-                (m) => m.id === cachedMunicipio.id
-            );
-            if (exists) {
-                setMunicipioState(cachedMunicipio);
-            } else {
-                // Si el municipio ya no existe, limpiar cache
-                clearMunicipioFromCache();
-            }
-        }
-
-        // Marcar como listo INMEDIATAMENTE
-        setLoading(false);
-        setIsReady(true);
-    }, []); // Solo ejecutar una vez al montar
-
-    // ============ FUNCIONES ============
-    const setMunicipio = (newMunicipio: MunicipioInterface) => {
+    // ============ FUNCIONES MEMORIZADAS ============
+    const setMunicipio = useCallback((newMunicipio: MunicipioInterface) => {
         setMunicipioState(newMunicipio);
         saveMunicipioToCache(newMunicipio);
         setError(null);
-    };
+    }, []);
 
-    const clearMunicipio = () => {
+    const clearMunicipio = useCallback(() => {
         setMunicipioState(null);
         clearMunicipioFromCache();
         setError(null);
-    };
+    }, []);
 
-    const hasMunicipio = municipio !== null;
+    // ============ VALORES COMPUTADOS MEMOIZADOS ============
+    const hasMunicipio = useMemo(() => municipio !== null, [municipio]);
 
-    // ============ VALOR DEL CONTEXT ============
-    const contextValue: MunicipioContextType = {
-        municipio,
-        municipios: MUNICIPIOS_MALAGA,
-        loading,
-        error,
-        setMunicipio,
-        clearMunicipio,
-        hasMunicipio,
-        isReady, // NUEVO
-    };
+    // ============ VALOR DEL CONTEXT MEMOIZADO ============
+    const contextValue = useMemo<MunicipioContextType>(
+        () => ({
+            municipio,
+            municipios: MUNICIPIOS_MALAGA, // Lista estática, no necesita estado
+            loading,
+            error,
+            setMunicipio,
+            clearMunicipio,
+            hasMunicipio,
+            isReady,
+        }),
+        [
+            municipio,
+            loading,
+            error,
+            setMunicipio,
+            clearMunicipio,
+            hasMunicipio,
+            isReady,
+        ]
+    );
 
     return (
         <MunicipioContext.Provider value={contextValue}>
@@ -165,7 +161,7 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
     );
 };
 
-// ============ HOOK ============
+// ============ HOOK OPTIMIZADO ============
 export const useMunicipio = (): MunicipioContextType => {
     const context = useContext(MunicipioContext);
     if (context === undefined) {
