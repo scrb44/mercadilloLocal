@@ -1,8 +1,10 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Admin;
+import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +14,9 @@ public class AdminService {
 
     @Autowired
     private AdminRepository adminRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Admin> listarAdmins() {
         return adminRepository.findAll();
@@ -33,13 +38,14 @@ public class AdminService {
         return adminRepository.existsByUsuario(usuario);
     }
 
-    public Admin login(String email, String password) {
+    public Admin login(String email, String rawPassword) {
         Admin admin = adminRepository.findByEmail(email);
-        if (admin != null && admin.getPassword().equals(password)) {
+        if (admin != null && passwordEncoder.matches(rawPassword, admin.getPassword())) {
             return admin;
         }
         return null;
     }
+
 
 
 
