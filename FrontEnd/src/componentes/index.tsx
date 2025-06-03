@@ -1,4 +1,4 @@
-// src/componentes/index.ts - ACTUALIZADO CON MUNICIPIO
+// src/componentes/index.tsx - ACTUALIZADO CON COMPONENTES DE CHECKOUT
 
 // Componentes básicos existentes
 export { default as Header } from "./header";
@@ -32,3 +32,10 @@ export {
     ProductBreadcrumb,
     SimpleBreadcrumb,
 } from "./breadcrumb";
+
+// NUEVOS: Componentes de checkout
+export { default as CheckoutSteps } from "./checkout/checkoutSteps";
+export { default as CartSummary } from "./checkout/cartSummary";
+export { default as ShippingForm } from "./checkout/shippingForm";
+export { default as PaymentForm } from "./checkout/paymentForm";
+export { default as ConfirmationPage } from "./checkout/confirmationPage";
