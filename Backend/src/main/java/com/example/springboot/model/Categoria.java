@@ -2,17 +2,16 @@ package com.example.springboot.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.*;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Categoria {
 
     @Id
@@ -21,13 +20,16 @@ public class Categoria {
 
     private String imagen;
     private String nombre;
+
     public Categoria(){}
+
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
     private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
 
-    @OneToMany(mappedBy = "categoria")
-    private List<Producto> productos;  // Relación uno a muchos con Producto
+    @ManyToMany(mappedBy = "categorias")
+    @JsonIgnore
+    private List<Producto> productos;
 
     @OneToMany(mappedBy = "categoriaPadre")
     private List<Categoria> subcategorias;  // Subcategorías
