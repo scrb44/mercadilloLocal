@@ -41,7 +41,7 @@ public class InitVendedores {
                 juan.setPassword("123456");
                 juan.setTelf("123456789");
                 juan.setVerificado(true);
-                juan.setProvincia(malaga);
+                juan.setLocalidad(malaga);
                 vendedorRepository.save(juan);
             }
 
@@ -55,7 +55,7 @@ public class InitVendedores {
                 maria.setPassword("123456");
                 maria.setTelf("987654321");
                 maria.setVerificado(false);
-                maria.setProvincia(malaga);
+                maria.setLocalidad(malaga);
                 vendedorRepository.save(maria);
             }
 
@@ -69,7 +69,7 @@ public class InitVendedores {
                 carlos.setPassword("123456");
                 carlos.setTelf("555123456");
                 carlos.setVerificado(true);
-                carlos.setProvincia(malaga);
+                carlos.setLocalidad(malaga);
                 vendedorRepository.save(carlos);
             }
 

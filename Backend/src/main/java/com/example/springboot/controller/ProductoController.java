@@ -1,7 +1,5 @@
 package com.example.springboot.controller;
 
-import com.example.springboot.model.Categoria;
-import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Producto;
 import com.example.springboot.service.ProductoService;
 
@@ -28,23 +26,23 @@ public class ProductoController {
             @RequestParam(required = false) String localidad,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Long vendorId,
-            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long vendedor,
+            @RequestParam(required = false) Long categoria,
             @RequestParam(required = false) String q
     ) {
         return productoService.obtenerTodos().stream()
                 // Filtro por localidad
-                .filter(p -> localidad == null || p.getVendedor().getProvincia().getNombre().equalsIgnoreCase(localidad))
+                .filter(p -> localidad == null || p.getVendedor().getLocalidad().getNombre().equalsIgnoreCase(localidad))
                 // Filtro por precio mínimo
                 .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
                 // Filtro por precio máximo
                 .filter(p -> maxPrice == null || p.getPrecio().compareTo(maxPrice) <= 0)
                 // Filtro por vendedor
-                .filter(p -> vendorId == null ||
-                        (p.getVendedor() != null && p.getVendedor().getId().equals(vendorId)))
+                .filter(p -> vendedor == null ||
+                        (p.getVendedor() != null && p.getVendedor().getId().equals(vendedor)))
                 // Filtro por categoría
-                .filter(p -> categoryId == null ||
-                        (p.getCategoria() != null && p.getCategoria().getId().equals(categoryId)))
+                .filter(p -> categoria == null ||
+                        (p.getCategoria() != null && p.getCategoria().getId().equals(categoria)))
                 // Filtro por búsqueda de texto
                 .filter(p -> q == null || q.trim().isEmpty() ||
                         p.getNombre().toLowerCase().contains(q.toLowerCase()) ||

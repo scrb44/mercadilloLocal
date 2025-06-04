@@ -103,11 +103,11 @@ public class Vendedor {
         this.productos = productos;
     }
 
-    public Localidad getProvincia() {
+    public Localidad getLocalidad() {
         return localidad;
     }
 
-    public void setProvincia(Localidad localidad) {
+    public void setLocalidad(Localidad localidad) {
         this.localidad = localidad;
     }
 
