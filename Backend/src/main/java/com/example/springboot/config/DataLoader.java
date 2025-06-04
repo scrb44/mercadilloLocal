@@ -1,6 +1,7 @@
 package com.example.springboot.config;
 
 import com.example.springboot.model.Categoria;
+import com.example.springboot.model.Localidad;
 import com.example.springboot.model.Producto;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CategoriaRepository;
@@ -54,6 +55,32 @@ public class DataLoader {
             cat5.setNombre("Carpinteria");
             categoriaRepo.save(cat5);
             categorias.put(cat5.getNombre(), cat5);
+
+// Crear localidad (si aún no existe)
+            Localidad malaga = localidadRepo.findByNombre("Málaga");
+            if (malaga == null) {
+                malaga = new Localidad();
+                malaga.setNombre("Málaga");
+                malaga = localidadRepo.save(malaga);
+            }
+
+
+            // Crear o recuperar vendedor
+            Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
+            if (vendedorTasca == null) {
+                vendedorTasca = new Vendedor();
+                vendedorTasca.setNombre("Tasca Malagueña");
+                vendedorTasca.setUsuario("TascaMalaquena");
+                vendedorTasca.setEmail("tascamalaga@gmail.com");
+                vendedorTasca.setTelf("644545467");
+                vendedorTasca.setVerificado(true);
+                vendedorTasca.setPassword("123456"); // Usa encoder si es necesario
+                vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
+                vendedorTasca.setLocalidad(malaga);
+                vendedorTasca = vendedorRepo.save(vendedorTasca);
+            }
+
+
             // Producto 1: Auriculares (Electrónica)
     // ============ PRODUCTOS MÁS VENDIDOS (primeros en el array) ========
         
@@ -64,6 +91,7 @@ public class DataLoader {
             "");
         prod1.setPrecio(new BigDecimal("1"));
         prod1.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod1.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
         productoRepo.save(prod1);
         
@@ -74,6 +102,7 @@ public class DataLoader {
             "");
         prod2.setPrecio(new BigDecimal("1"));
         prod2.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod2.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
         productoRepo.save(prod2);
         
@@ -84,6 +113,7 @@ public class DataLoader {
             "");
         prod3.setPrecio(new BigDecimal("1"));
         prod3.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod3.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
         productoRepo.save(prod3);
         
@@ -94,6 +124,7 @@ public class DataLoader {
             "");
         prod4.setPrecio(new BigDecimal("1"));
         prod4.setCategorias(List.of(categorias.get("Ultramarinos")));
+        prod4.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
         productoRepo.save(prod4);
         
@@ -104,6 +135,7 @@ public class DataLoader {
             "");
         prod5.setPrecio(new BigDecimal("1"));
         prod5.setCategorias(List.of(categorias.get("Ultramarinos")));
+        prod5.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
         productoRepo.save(prod5);
         
@@ -114,6 +146,7 @@ public class DataLoader {
             "");
         prod6.setPrecio(new BigDecimal("1"));
         prod6.setCategorias(List.of(categorias.get("Ultramarinos")));
+        prod6.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
         productoRepo.save(prod6);
         
@@ -124,6 +157,7 @@ public class DataLoader {
             "");
         prod7.setPrecio(new BigDecimal("1"));
         prod7.setCategorias(List.of(categorias.get("Ultramarinos")));
+        prod7.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
         productoRepo.save(prod7);
     
@@ -134,6 +168,7 @@ public class DataLoader {
             "");
         prod8.setPrecio(new BigDecimal("1"));
         prod8.setCategorias(List.of(categorias.get("Ultramarinos")));
+        prod8.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
         productoRepo.save(prod8);
         
@@ -144,6 +179,7 @@ public class DataLoader {
             "");
         prod9.setPrecio(new BigDecimal("1"));
         prod9.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod9.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
             //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
         productoRepo.save(prod9);
         
@@ -154,6 +190,7 @@ public class DataLoader {
             ""  );
         prod10.setPrecio(new BigDecimal("1"));
         prod10.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod10.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
         productoRepo.save(prod10);
         
@@ -164,6 +201,7 @@ public class DataLoader {
             ""  );
         prod11.setPrecio(new BigDecimal("1"));
         prod11.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod11.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
         productoRepo.save(prod11);
         
@@ -174,6 +212,7 @@ public class DataLoader {
             ""  );
         prod12.setPrecio(new BigDecimal("1"));
         prod12.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod12.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
         productoRepo.save(prod12);
         
@@ -184,6 +223,7 @@ public class DataLoader {
             ""  );
         prod13.setPrecio(new BigDecimal("1"));
         prod13.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod13.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
         productoRepo.save(prod13);
         
@@ -194,6 +234,7 @@ public class DataLoader {
             ""  );
         prod14.setPrecio(new BigDecimal("1"));
         prod14.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod14.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
         productoRepo.save(prod14);
         
@@ -204,6 +245,7 @@ public class DataLoader {
             ""  );
         prod15.setPrecio(new BigDecimal("1"));
         prod15.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod15.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
         productoRepo.save(prod15);
         
@@ -214,6 +256,7 @@ public class DataLoader {
             ""  );
         prod16.setPrecio(new BigDecimal("1"));
         prod16.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod16.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
         productoRepo.save(prod16);
         
@@ -224,6 +267,7 @@ public class DataLoader {
             ""  );
         prod17.setPrecio(new BigDecimal("1"));
         prod17.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod17.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
         productoRepo.save(prod17);
         
@@ -234,6 +278,7 @@ public class DataLoader {
             ""  );
         prod18.setPrecio(new BigDecimal("1"));
         prod18.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod18.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
         productoRepo.save(prod18);
         
@@ -244,6 +289,7 @@ public class DataLoader {
             ""  );
         prod19.setPrecio(new BigDecimal("1"));
         prod19.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod19.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
         productoRepo.save(prod19);
         
@@ -254,6 +300,7 @@ public class DataLoader {
             ""  );
         prod20.setPrecio(new BigDecimal("1"));
         prod20.setCategorias(List.of(categorias.get("Papelerías")));
+        prod20.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
                 //{   id:17,    name:"Cartulinas",  img:"", fatherId:2},
         productoRepo.save(prod20);
        
