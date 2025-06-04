@@ -16,17 +16,19 @@ public class Comprador {
     private String nombre;
     @JsonIgnore // 👈 Esto oculta la contraseña del JSON
     private String password;
+    @Column(unique = true)  // <-- aquí la restricción única
     private String email;
     private String telf;
     private String imagen;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany
     @JoinTable(
-            name = "carrito_comprador",  // Tabla intermedia
+            name = "comprador_producto",
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
-    private List<Producto> productos = new ArrayList<>();
+    private List<Producto> productos;
 
 
     public Comprador(){}
