@@ -2,7 +2,7 @@ package com.example.springboot.config;
 
 import com.example.springboot.model.Localidad;
 import com.example.springboot.model.Vendedor;
-import com.example.springboot.repository.ProvinciaRepository;
+import com.example.springboot.repository.LocalidadRepository;
 import com.example.springboot.repository.VendedorRepository;
 import com.example.springboot.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -18,7 +18,7 @@ public class InitVendedores {
     CommandLineRunner initVendedoresRunner(
             VendedorRepository vendedorRepository,
 
-            ProvinciaRepository provinciaRepository,
+            LocalidadRepository provinciaRepository,
             PasswordEncoder passwordEncoder) {
 
         return args -> {

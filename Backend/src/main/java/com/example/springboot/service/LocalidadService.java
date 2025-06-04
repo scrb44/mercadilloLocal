@@ -1,40 +1,40 @@
 package com.example.springboot.service;
 
 import com.example.springboot.model.Localidad;
-import com.example.springboot.repository.ProvinciaRepository;
+import com.example.springboot.repository.LocalidadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ProvinciaService {
+public class LocalidadService {
 
-    private final ProvinciaRepository provinciaRepository;
+    private final LocalidadRepository localidadRepository;
 
     @Autowired
-    public ProvinciaService(ProvinciaRepository provinciaRepository) {
-        this.provinciaRepository = provinciaRepository;
+    public LocalidadService(LocalidadRepository localidadRepository) {
+        this.localidadRepository = localidadRepository;
     }
 
     public List<Localidad> getAllProvincias() {
-        return provinciaRepository.findAll();
+        return localidadRepository.findAll();
     }
 
     public Localidad getProvinciaById(Long id) {
-        return provinciaRepository.findById(id).orElse(null);
+        return localidadRepository.findById(id).orElse(null);
     }
 
     public Localidad saveProvincia(Localidad localidad) {
-        return provinciaRepository.save(localidad);
+        return localidadRepository.save(localidad);
     }
 
     public void deleteProvincia(Long id) {
-        provinciaRepository.deleteById(id);
+        localidadRepository.deleteById(id);
     }
 
     public Localidad getProvinciaByNombre(String nombre) {
-        return provinciaRepository.findByNombre(nombre);
+        return localidadRepository.findByNombre(nombre);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Localidad;
-import com.example.springboot.service.ProvinciaService;
+import com.example.springboot.service.LocalidadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/provincias")
 @CrossOrigin(origins = "*")
-public class ProvinciaController {
+public class LocalidadController {
 
-    private final ProvinciaService provinciaService;
+    private final LocalidadService provinciaService;
 
     @Autowired
-    public ProvinciaController(ProvinciaService provinciaService) {
+    public LocalidadController(LocalidadService provinciaService) {
         this.provinciaService = provinciaService;
     }
 

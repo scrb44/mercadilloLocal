@@ -6,6 +6,7 @@ import com.example.springboot.model.Provincia;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CategoriaRepository;
 import com.example.springboot.repository.ProductoRepository;
+import com.example.springboot.repository.ProvinciaRepository;
 import com.example.springboot.repository.VendedorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,18 +16,15 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Configuration
 public class DataLoader {
 
     @Bean
-
     CommandLineRunner initDatabase(ProductoRepository productoRepo,
                                    CategoriaRepository categoriaRepo,
                                    VendedorRepository vendedorRepo,
                                   LocalidadRepository provinciaRepo) {
-
         return args -> {
             Map<String, Categoria> categorias = new HashMap<>();
 
@@ -261,8 +259,4 @@ public class DataLoader {
         System.out.println("Todos los Yroductos y categorías fueron cargados en la base de datos.");
         };
     }
-
 }
-
-}
-
