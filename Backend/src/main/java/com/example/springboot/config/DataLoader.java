@@ -4,7 +4,6 @@ import com.example.springboot.model.Categoria;
 import com.example.springboot.model.Producto;
 import com.example.springboot.repository.CategoriaRepository;
 import com.example.springboot.repository.ProductoRepository;
-import com.example.springboot.repository.ProvinciaRepository;
 import com.example.springboot.repository.VendedorRepository;
 
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 public class DataLoader {
@@ -23,7 +23,7 @@ public class DataLoader {
             ProductoRepository productoRepo,
             CategoriaRepository categoriaRepo,
             VendedorRepository vendedorRepo,
-            ProvinciaRepository provinciaRepo) {
+           LocalidadRepository provinciaRepo) {
         return args -> {
             // Crear categorías y guardarlas en un mapa para usar luego
             Map<String, Categoria> categorias = new HashMap<>();
@@ -1138,4 +1138,5 @@ public class DataLoader {
             System.out.println("Todos los Yroductos y categorías fueron cargados en la base de datos.");
         };
     }
+
 }

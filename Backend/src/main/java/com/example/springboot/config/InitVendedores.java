@@ -1,6 +1,5 @@
 package com.example.springboot.config;
 
-import com.example.springboot.model.Producto;
 import com.example.springboot.model.Localidad;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.ProvinciaRepository;
@@ -9,9 +8,8 @@ import com.example.springboot.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
 
 @Configuration
 public class InitVendedores {
@@ -19,69 +17,29 @@ public class InitVendedores {
     @Bean
     CommandLineRunner initVendedoresRunner(
             VendedorRepository vendedorRepository,
-            ProductoRepository productoRepository,
-            ProvinciaRepository provinciaRepository) {
+
+            ProvinciaRepository provinciaRepository,
+            PasswordEncoder passwordEncoder) {
 
         return args -> {
-            // Crear o buscar la provincia Málaga
-            Localidad malaga = provinciaRepository.findByNombre("Málaga");
-            if (malaga == null) {
-                malaga = new Localidad();
-                malaga.setNombre("Málaga");
-                provinciaRepository.save(malaga);
-            }
+            // Crear provincia
+           Localidad malaga = new Localidad();
+            malaga.setNombre("Málaga");
+            malaga = provinciaRepository.save(malaga);
 
-            // Vendedor Juan
-            Vendedor juan = vendedorRepository.findByEmail("juan@mail.com");
-            if (juan == null) {
-                juan = new Vendedor();
-                juan.setNombre("Juan Pérez");
-                juan.setUsuario("juan123");
-                juan.setEmail("juan@gmail.com");
-                juan.setPassword("123456");
-                juan.setTelf("123456789");
-                juan.setVerificado(true);
-                juan.setLocalidad(malaga);
-                vendedorRepository.save(juan);
-            }
-
-            // Vendedora María
-            Vendedor maria = vendedorRepository.findByEmail("maria@mail.com");
-            if (maria == null) {
-                maria = new Vendedor();
-                maria.setNombre("María López");
-                maria.setUsuario("maria456");
-                maria.setEmail("maria@gmail.com");
-                maria.setPassword("123456");
-                maria.setTelf("987654321");
-                maria.setVerificado(false);
-                maria.setLocalidad(malaga);
-                vendedorRepository.save(maria);
-            }
-
-            // Vendedor Carlos
-            Vendedor carlos = vendedorRepository.findByEmail("carlos@mail.com");
-            if (carlos == null) {
-                carlos = new Vendedor();
-                carlos.setNombre("Carlos García");
-                carlos.setUsuario("carlos789");
-                carlos.setEmail("carlos@gmail.com");
-                carlos.setPassword("123456");
-                carlos.setTelf("555123456");
-                carlos.setVerificado(true);
-                carlos.setLocalidad(malaga);
-                vendedorRepository.save(carlos);
-            }
-
-            // Añadir productos si no hay ninguno
-            if (productoRepository.count() == 0) {
-                Producto prod1 = new Producto(null, "Camiseta blanca", "Camiseta", null, juan, null, "camiseta.jpg", new BigDecimal("15.99"));
-                Producto prod2 = new Producto(null, "Gorra deportiva", "Gorra", null, juan, null, "gorra.jpg", new BigDecimal("9.99"));
-                Producto prod3 = new Producto(null, "Bolso elegante", "Bolso", null, maria, null, "bolso.jpg", new BigDecimal("79.99"));
-                Producto prod4 = new Producto(null, "Reloj clásico", "Reloj", null, carlos, null, "reloj.jpg", new BigDecimal("129.99"));
-
-                productoRepository.saveAll(Arrays.asList(prod1, prod2, prod3, prod4));
-            }
+            // Crear vendedor
+            Vendedor vendedorTasca = new Vendedor();
+            vendedorTasca.setNombre("Tasca Malagueña");
+            vendedorTasca.setUsuario("TascaMalaquena");
+            vendedorTasca.setEmail("tascamalaga@gmail.com");
+            vendedorTasca.setTelf("644545467");
+            vendedorTasca.setVerificado(true);
+            vendedorTasca.setPassword(passwordEncoder.encode("123456"));
+            vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
+            vendedorTasca.setLocalidad(malaga);
+            vendedorRepository.save(vendedorTasca);
+            System.out.println("✔️ Vendedores iniciales cargados.");
         };
     }
 }
+
