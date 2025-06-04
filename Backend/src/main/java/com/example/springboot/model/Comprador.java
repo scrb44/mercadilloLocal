@@ -1,9 +1,7 @@
 package com.example.springboot.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +12,6 @@ public class Comprador {
     private Long id;
     private String usuario;
     private String nombre;
-    @JsonIgnore // 👈 Esto oculta la contraseña del JSON
     private String password;
     private String email;
     private String telf;
@@ -26,8 +23,7 @@ public class Comprador {
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
-    private List<Producto> productos = new ArrayList<>();
-
+    private List<Producto> productos;  // Relación muchos a muchos con Producto
 
     public Comprador(){}
 

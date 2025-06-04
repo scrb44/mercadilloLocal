@@ -89,7 +89,6 @@ public class CompradorService {
         }
 
         comprador.setProductos(carrito);
-        System.out.println("Productos en carrito antes de guardar: " + carrito.size());
 
         return compradorRepository.save(comprador);
     }

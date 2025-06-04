@@ -1,6 +1,5 @@
 package com.example.springboot.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +13,6 @@ public class Admin {
     private Long id;
     private String nombre;
     private String usuario;
-    @JsonIgnore // 👈 Esto oculta la contraseña del JSON
     private String password;
     private String email;
     private String imagen;

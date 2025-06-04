@@ -1,7 +1,6 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Comprador;
-import com.example.springboot.model.Producto;
 import com.example.springboot.service.CompradorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +48,4 @@ public class CompradorController {
         Comprador compradorActualizado = compradorService.agregarProductoAlCarrito(email, productoId);
         return ResponseEntity.ok(compradorActualizado);
     }
-
-    @GetMapping("/{email}/carrito")
-    public ResponseEntity<List<Producto>> obtenerCarrito(@PathVariable String email) {
-        Comprador comprador = compradorService.findByEmail(email);
-        if (comprador != null) {
-            return ResponseEntity.ok(comprador.getProductos());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 }
