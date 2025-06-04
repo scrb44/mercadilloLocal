@@ -56,7 +56,7 @@ public class DataLoader {
             categoriaRepo.save(cat5);
             categorias.put(cat5.getNombre(), cat5);
 
-// Crear localidad (si aún no existe)
+            // Localidad Málaga (crear solo si no existe)
             Localidad malaga = localidadRepo.findByNombre("Málaga");
             if (malaga == null) {
                 malaga = new Localidad();
@@ -64,47 +64,30 @@ public class DataLoader {
                 malaga = localidadRepo.save(malaga);
             }
 
-
-            // Crear o recuperar vendedor
+            // Obtener vendedor existente, no crear ni guardar uno nuevo
             Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
             if (vendedorTasca == null) {
-                vendedorTasca = new Vendedor();
-                vendedorTasca.setNombre("Tasca Malagueña");
-                vendedorTasca.setUsuario("TascaMalaquena");
-                vendedorTasca.setEmail("tascamalaga@gmail.com");
-                vendedorTasca.setTelf("644545467");
-                vendedorTasca.setVerificado(true);
-                vendedorTasca.setPassword("123456"); // Usa encoder si es necesario
-                vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
-                vendedorTasca.setLocalidad(malaga);
-                vendedorTasca = vendedorRepo.save(vendedorTasca);
+                return; // Salir para no crear productos sin vendedor
             }
 
+            // Crear productos y asignar el vendedor existente
+            Producto prod1 = new Producto();
+            prod1.setNombre("Tomate frito casero en tarro de vidrio");
+            prod1.setDescripcion("");
+            prod1.setImagen("");
+            prod1.setPrecio(new BigDecimal("1"));
+            prod1.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod1.setVendedor(vendedorTasca);
+            productoRepo.save(prod1);
 
-            // Producto 1: Auriculares (Electrónica)
-    // ============ PRODUCTOS MÁS VENDIDOS (primeros en el array) ========
-        
-        Producto prod1 = new Producto();
-        prod1.setNombre("Tomate frito casero en tarro de vidrio");
-        prod1.setDescripcion("");
-        prod1.setImagen(
-            "");
-        prod1.setPrecio(new BigDecimal("1"));
-        prod1.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod1.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
-        productoRepo.save(prod1);
-        
-        Producto prod2 = new Producto();
-        prod2.setNombre("Mermelada de frutos del bosque artesanal");
-        prod2.setDescripcion("");   
-        prod2.setImagen(
-            "");
-        prod2.setPrecio(new BigDecimal("1"));
-        prod2.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod2.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
-        productoRepo.save(prod2);
+            Producto prod2 = new Producto();
+            prod2.setNombre("Mermelada de frutos del bosque artesanal");
+            prod2.setDescripcion("");
+            prod2.setImagen("");
+            prod2.setPrecio(new BigDecimal("1"));
+            prod2.setCategorias(List.of(categorias.get("Ultramarinos")));
+            prod2.setVendedor(vendedorTasca);
+            productoRepo.save(prod2);
         
         Producto prod3 = new Producto();
         prod3.setNombre("Pimientos del piquillo confitados");

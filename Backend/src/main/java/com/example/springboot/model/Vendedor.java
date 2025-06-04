@@ -22,6 +22,7 @@ public class Vendedor {
     private String nombre;
     @JsonIgnore // 👈 Esto oculta la contraseña del JSON
     private String password;
+    @Column(unique = true)
     private String email;
     private String telf;
     private Boolean verificado;
