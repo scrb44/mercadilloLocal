@@ -4,12 +4,10 @@ import com.example.springboot.model.Localidad;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.LocalidadRepository;
 import com.example.springboot.repository.VendedorRepository;
-import com.example.springboot.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 @Configuration
 public class InitVendedores {
