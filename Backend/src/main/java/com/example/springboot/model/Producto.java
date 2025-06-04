@@ -12,6 +12,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
@@ -25,9 +26,9 @@ public class Producto {
     private String nombre;
     private String imagen;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "productos")
-    private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
+    @JsonIgnore
+    private List<Comprador> compradores;
 
     @ManyToMany
     @JoinTable(
