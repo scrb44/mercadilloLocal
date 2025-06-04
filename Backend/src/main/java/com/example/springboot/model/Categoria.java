@@ -30,7 +30,7 @@ public class Categoria {
     @ManyToMany(mappedBy = "categorias")
     @JsonIgnore
     private List<Producto> productos;
-
+    
     @OneToMany(mappedBy = "categoriaPadre")
     private List<Categoria> subcategorias;  // Subcategorías
 
