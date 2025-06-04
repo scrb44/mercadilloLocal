@@ -1,0 +1,351 @@
+/* src/componentes/checkout/confirmationPage.module.css */
+
+.confirmationPage {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.successHeader {
+    margin-bottom: 40px;
+}
+
+.successIcon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    display: block;
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.successTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #16a34a;
+    margin: 0 0 16px 0;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.successSubtitle {
+    font-size: 1.2rem;
+    color: #374151;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.orderInfo {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.orderNumber {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.1rem;
+}
+
+.orderLabel {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.orderValue {
+    color: #1f2937;
+    font-weight: 700;
+    font-family: "Courier New", monospace;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
+.orderSummary,
+.deliveryInfo {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    text-align: left;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 20px 0;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.vendorGroup {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vendorGroup:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.vendorName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.orderItem {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
+.itemImage {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.itemDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.itemName {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.95rem;
+}
+
+.itemQuantity {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.itemPrice {
+    font-weight: 700;
+    color: #2563eb;
+    text-align: right;
+}
+
+.totalSection {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.totalAmount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.deliveryDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.deliveryRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.deliveryLabel {
+    font-weight: 600;
+    color: #374151;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.deliveryValue {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.deliveryAddress {
+    color: #6b7280;
+    line-height: 1.4;
+}
+
+.nextSteps {
+    background: rgba(59, 130, 246, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.stepsList {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stepsList li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1rem;
+    color: #374151;
+    padding: 8px 0;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.primaryButton {
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.primaryButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .successTitle {
+        font-size: 2rem;
+    }
+
+    .successIcon {
+        font-size: 4rem;
+    }
+
+    .orderSummary,
+    .deliveryInfo,
+    .nextSteps {
+        padding: 20px;
+    }
+
+    .orderItem {
+        grid-template-columns: 50px 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .itemPrice {
+        grid-column: 1 / 3;
+        text-align: center;
+        margin-top: 8px;
+    }
+
+    .deliveryRow {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .deliveryLabel {
+        min-width: unset;
+    }
+    .checkoutSteps {
+        padding: 16px;
+        margin: 20px 0 30px 0;
+    }
+
+    .stepIcon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .stepLabel {
+        font-size: 0.8rem;
+    }
+
+    .stepConnector {
+        top: 20px;
+        left: 60px;
+        right: -60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .step {
+        max-width: 100px;
+    }
+
+    .stepIcon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .stepLabel {
+        font-size: 0.75rem;
+    }
+
+    .stepConnector {
+        top: 17px;
+        left: 50px;
+        right: -50px;
+    }
+}

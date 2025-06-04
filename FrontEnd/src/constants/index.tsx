@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     CART: "/api/carrito",
     AUTH: "/api/auth",
     USER: "/api/usuario",
+    PAYMENTS: "/api/payments", // NUEVO: Endpoints de pago
 } as const;
 
 // Rutas de la aplicación
@@ -22,6 +23,9 @@ export const ROUTES = {
     PRODUCT: "/producto",
     PROFILE: "/perfil",
     ORDERS: "/pedidos",
+    CHECKOUT: "/checkout", // NUEVO
+    PAYMENT: "/pago", // NUEVO
+    PAYMENT_CONFIRMATION: "/pago/confirmacion", // NUEVO
 } as const;
 
 // Configuración de cache

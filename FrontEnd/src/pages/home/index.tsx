@@ -1,5 +1,6 @@
-// src/pages/home/index.tsx - ACTUALIZADO CON MUNICIPIO
-import { useEffect, useState, useCallback } from "react";
+// src/pages/home/index.tsx - SIN FLASH/REPINTADO
+
+import { useEffect, useState, useCallback, useRef } from "react";
 import mercadilloService from "../../services";
 import {
     type CategoryInterface,
@@ -20,58 +21,67 @@ function Home() {
         ProductInterface[]
     >([]);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
-    const [productsLoading, setProductsLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(false);
     const [categoriesError, setCategoriesError] = useState<string | null>(null);
     const [productsError, setProductsError] = useState<string | null>(null);
 
-    // ============ CARGAR DATOS ============
+    // Estados para evitar flash
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    const [showProducts, setShowProducts] = useState(false);
+    const hasInitialized = useRef(false);
+
+    // ============ CARGA INICIAL SIN FLASH ============
     useEffect(() => {
-        const loadData = async () => {
-            // Cargar categorías y productos en paralelo
-            const loadCategories = async () => {
-                try {
-                    setCategoriesLoading(true);
-                    setCategoriesError(null);
-                    const allCategories =
-                        await mercadilloService.getCategories();
+        // Evitar doble ejecución en modo desarrollo
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
 
-                    // Filtrar solo las categorías principales (sin fatherId)
-                    const mainCategories = allCategories.filter(
-                        (cat) => !cat.fatherId
-                    );
-                    setCategoriasPrincipales(mainCategories);
-                } catch (err: any) {
-                    setCategoriesError(
-                        err.message || "Error al cargar categorías"
-                    );
-                } finally {
-                    setCategoriesLoading(false);
-                }
-            };
+        const loadInitialData = async () => {
+            try {
+                setCategoriesLoading(true);
+                setCategoriesError(null);
 
-            const loadPopularProducts = async () => {
-                try {
-                    setProductsLoading(true);
-                    setProductsError(null);
-                    // Obtenemos todos los productos y tomamos los primeros 6 como "más vendidos"
-                    const allProducts = await mercadilloService.getProducts();
-                    // Los primeros 6 productos del mockData son los "más vendidos"
-                    const popularProducts = allProducts.slice(0, 6);
-                    setProductosPopulares(popularProducts);
-                } catch (err: any) {
-                    setProductsError(
-                        err.message || "Error al cargar productos populares"
-                    );
-                } finally {
-                    setProductsLoading(false);
-                }
-            };
+                // Cargar categorías principales
+                const allCategories = await mercadilloService.getCategories();
+                const mainCategories = allCategories.filter(
+                    (cat) => !cat.fatherId
+                );
 
-            // Ejecutar ambas cargas en paralelo
-            await Promise.all([loadCategories(), loadPopularProducts()]);
+                // Actualizar estado de una vez para evitar re-renders
+                setCategoriasPrincipales(mainCategories);
+                setCategoriesLoading(false);
+                setInitialLoadComplete(true);
+
+                // Pequeño delay antes de mostrar productos para suavizar la transición
+                setTimeout(() => {
+                    setShowProducts(true);
+                    loadPopularProducts();
+                }, 200);
+            } catch (err: any) {
+                setCategoriesError(err.message || "Error al cargar categorías");
+                setCategoriesLoading(false);
+                setInitialLoadComplete(true);
+            }
         };
 
-        loadData();
+        loadInitialData();
+    }, []); // Sin dependencias para evitar re-ejecuciones
+
+    const loadPopularProducts = useCallback(async () => {
+        try {
+            setProductsLoading(true);
+            setProductsError(null);
+
+            const allProducts = await mercadilloService.getProducts();
+            const popularProducts = allProducts.slice(0, 6);
+            setProductosPopulares(popularProducts);
+        } catch (err: any) {
+            setProductsError(
+                err.message || "Error al cargar productos populares"
+            );
+        } finally {
+            setProductsLoading(false);
+        }
     }, []);
 
     // ============ HANDLERS ============
@@ -82,7 +92,6 @@ function Home() {
         mercadilloService
             .getCategories()
             .then((allCategories) => {
-                // Filtrar solo categorías principales
                 const mainCategories = allCategories.filter(
                     (cat) => !cat.fatherId
                 );
@@ -95,36 +104,24 @@ function Home() {
     }, []);
 
     const handleProductsRetry = useCallback(() => {
-        setProductsError(null);
-        setProductsLoading(true);
-
-        mercadilloService
-            .getProducts()
-            .then((allProducts) => {
-                const popularProducts = allProducts.slice(0, 6);
-                setProductosPopulares(popularProducts);
-            })
-            .catch((err) =>
-                setProductsError(
-                    err.message || "Error al cargar productos populares"
-                )
-            )
-            .finally(() => setProductsLoading(false));
-    }, []);
+        loadPopularProducts();
+    }, [loadPopularProducts]);
 
     const handleAddToCart = useCallback((product: ProductInterface) => {
         console.log("Producto añadido desde Home:", product.name);
     }, []);
 
-    // ============ RENDER ============
+    // ============ RENDER CON FADE-IN PROGRESIVO ============
     return (
         <div className={classes.home}>
             <Header />
 
             <div className={classes.container}>
                 <main className={classes.main}>
-                    {/* Sección de bienvenida con indicador de municipio */}
-                    <div className={classes.welcomeSection}>
+                    {/* Sección de bienvenida - siempre visible */}
+                    <div
+                        className={`${classes.welcomeSection} ${classes.fadeInInitial}`}
+                    >
                         <h1 className={classes.welcomeTitle}>
                             Bienvenido a Mercadillo Local
                         </h1>
@@ -140,8 +137,14 @@ function Home() {
                         />
                     </div>
 
-                    {/* Sección de categorías principales */}
-                    <section className={classes.categoriesSection}>
+                    {/* Sección de categorías - fade in cuando esté lista */}
+                    <section
+                        className={`${classes.categoriesSection} ${
+                            initialLoadComplete
+                                ? classes.fadeInCategories
+                                : classes.hidden
+                        }`}
+                    >
                         <div className={classes.sectionHeader}>
                             <h2 className={classes.sectionTitle}>
                                 Categorías Principales
@@ -156,12 +159,18 @@ function Home() {
                             loading={categoriesLoading}
                             error={categoriesError}
                             onRetry={handleCategoriesRetry}
-                            showSubcategories={false} // Explícitamente NO mostrar subcategorías
+                            showSubcategories={false}
                         />
                     </section>
 
-                    {/* Sección de productos más vendidos */}
-                    <section className={classes.popularProductsSection}>
+                    {/* Sección de productos - fade in progresivo */}
+                    <section
+                        className={`${classes.popularProductsSection} ${
+                            showProducts
+                                ? classes.fadeInProducts
+                                : classes.hidden
+                        }`}
+                    >
                         <div className={classes.sectionHeader}>
                             <h2 className={classes.sectionTitle}>
                                 Productos Más Vendidos
@@ -171,13 +180,45 @@ function Home() {
                             </p>
                         </div>
 
-                        <ProductList
-                            products={productosPopulares}
-                            loading={productsLoading}
-                            error={productsError}
-                            onAddToCart={handleAddToCart}
-                            onRetry={handleProductsRetry}
-                        />
+                        {/* Mostrar placeholder solo si no hay productos y no hay error */}
+                        {!productsLoading &&
+                        productosPopulares.length === 0 &&
+                        !productsError ? (
+                            <div className={classes.productsPlaceholder}>
+                                <div className={classes.placeholderGrid}>
+                                    {[...Array(6)].map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className={classes.placeholderCard}
+                                        >
+                                            <div
+                                                className={
+                                                    classes.placeholderImage
+                                                }
+                                            ></div>
+                                            <div
+                                                className={
+                                                    classes.placeholderText
+                                                }
+                                            ></div>
+                                            <div
+                                                className={
+                                                    classes.placeholderPrice
+                                                }
+                                            ></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <ProductList
+                                products={productosPopulares}
+                                loading={productsLoading}
+                                error={productsError}
+                                onAddToCart={handleAddToCart}
+                                onRetry={handleProductsRetry}
+                            />
+                        )}
                     </section>
                 </main>
             </div>
