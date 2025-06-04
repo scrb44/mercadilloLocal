@@ -11,6 +11,7 @@ import com.example.springboot.repository.VendedorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -24,7 +25,8 @@ public class DataLoader {
     CommandLineRunner initDatabase(ProductoRepository productoRepo,
                                    CategoriaRepository categoriaRepo,
                                    VendedorRepository vendedorRepo,
-                                   ProvinciaRepository provinciaRepo) {
+                                   ProvinciaRepository provinciaRepo, 
+                                   PasswordEncoder passwordEncoder) {
         return args -> {
             Map<String, Categoria> categorias = new HashMap<>();
 
@@ -53,7 +55,7 @@ public class DataLoader {
             vendedorTasca.setEmail("tascamalaga@gmail.com");
             vendedorTasca.setTelf("644545467");
             vendedorTasca.setVerificado(true);
-            vendedorTasca.setPassword("1234");
+            vendedorTasca.setPassword(passwordEncoder.encode("123456"));
             vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
             vendedorTasca.setProvincia(malaga); // ✅ Asignar provincia
             vendedorTasca = vendedorRepo.save(vendedorTasca);

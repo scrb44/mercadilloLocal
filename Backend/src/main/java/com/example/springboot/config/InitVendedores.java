@@ -18,8 +18,8 @@ import java.util.List;
 
 @Configuration
 public class InitVendedores {
-/*
-    @Bean
+
+ /*   @Bean
     CommandLineRunner initVendedoresRunner(
             VendedorRepository vendedorRepository,
             ProductoRepository productoRepository,
@@ -116,5 +116,5 @@ public class InitVendedores {
                 productoRepository.saveAll(Arrays.asList(prod1, prod2, prod3, prod4));
             }
         };
-    }*/
+    } */
 }
