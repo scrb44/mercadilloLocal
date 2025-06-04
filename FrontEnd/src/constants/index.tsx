@@ -175,3 +175,6 @@ export const buildRoute = (
     }
     return finalRoute;
 };
+
+// variable con la url del placeholder
+export const PlaceholderURL = "https://dn721900.ca.archive.org/0/items/placeholder-image_202006/placeholder-image.jpg";
