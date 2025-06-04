@@ -1,7 +1,7 @@
 package com.example.springboot.config;
 
 import com.example.springboot.model.Producto;
-import com.example.springboot.model.Provincia;
+import com.example.springboot.model.Localidad;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.ProvinciaRepository;
 import com.example.springboot.repository.VendedorRepository;
@@ -24,9 +24,9 @@ public class InitVendedores {
 
         return args -> {
             // Crear o buscar la provincia Málaga
-            Provincia malaga = provinciaRepository.findByNombre("Málaga");
+            Localidad malaga = provinciaRepository.findByNombre("Málaga");
             if (malaga == null) {
-                malaga = new Provincia();
+                malaga = new Localidad();
                 malaga.setNombre("Málaga");
                 provinciaRepository.save(malaga);
             }

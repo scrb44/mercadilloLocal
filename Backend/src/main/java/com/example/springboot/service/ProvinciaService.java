@@ -1,6 +1,6 @@
 package com.example.springboot.service;
 
-import com.example.springboot.model.Provincia;
+import com.example.springboot.model.Localidad;
 import com.example.springboot.repository.ProvinciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,23 +17,23 @@ public class ProvinciaService {
         this.provinciaRepository = provinciaRepository;
     }
 
-    public List<Provincia> getAllProvincias() {
+    public List<Localidad> getAllProvincias() {
         return provinciaRepository.findAll();
     }
 
-    public Provincia getProvinciaById(Long id) {
+    public Localidad getProvinciaById(Long id) {
         return provinciaRepository.findById(id).orElse(null);
     }
 
-    public Provincia saveProvincia(Provincia provincia) {
-        return provinciaRepository.save(provincia);
+    public Localidad saveProvincia(Localidad localidad) {
+        return provinciaRepository.save(localidad);
     }
 
     public void deleteProvincia(Long id) {
         provinciaRepository.deleteById(id);
     }
 
-    public Provincia getProvinciaByNombre(String nombre) {
+    public Localidad getProvinciaByNombre(String nombre) {
         return provinciaRepository.findByNombre(nombre);
     }
 

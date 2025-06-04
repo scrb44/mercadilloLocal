@@ -5,21 +5,23 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class Provincia {
+public class Localidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
+    private String provincia;
 
-    @OneToMany(mappedBy = "provincia")
+    @OneToMany(mappedBy = "localidad")
     private List<Vendedor> vendedores;
 
-    public Provincia(){}
+    public Localidad(){}
 
-    public Provincia(Long id, String nombre) {
+    public Localidad(Long id, String nombre, String provincia) {
         this.id = id;
         this.nombre = nombre;
+        this.provincia = provincia;
     }
 
     public Long getId() {
@@ -36,5 +38,13 @@ public class Provincia {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
     }
 }

@@ -1,9 +1,8 @@
 package com.example.springboot.repository;
 
-import com.example.springboot.model.Comprador;
-import com.example.springboot.model.Provincia;
+import com.example.springboot.model.Localidad;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProvinciaRepository extends JpaRepository<Provincia, Long>{
-    Provincia findByNombre(String nombre);
+public interface ProvinciaRepository extends JpaRepository<Localidad, Long>{
+    Localidad findByNombre(String nombre);
 }

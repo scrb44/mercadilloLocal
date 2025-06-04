@@ -19,14 +19,14 @@ public class Vendedor {
     private String imagen;
 
     @ManyToOne
-    private Provincia provincia;  // Relación muchos a uno con Provincia
+    private Localidad localidad;  // Relación muchos a uno con Provincia
 
     @OneToMany(mappedBy = "vendedor")
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
     public Vendedor(){}
 
-    public Vendedor(Long id, String usuario, String nombre, String password, String email, String telf, Boolean verificado, String imagen, Provincia provincia, List<Producto> productos) {
+    public Vendedor(Long id, String usuario, String nombre, String password, String email, String telf, Boolean verificado, String imagen, Localidad localidad, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
@@ -35,7 +35,7 @@ public class Vendedor {
         this.telf = telf;
         this.verificado = verificado;
         this.imagen = imagen;
-        this.provincia = provincia;
+        this.localidad = localidad;
         this.productos = productos;
     }
 
@@ -103,12 +103,12 @@ public class Vendedor {
         this.productos = productos;
     }
 
-    public Provincia getProvincia() {
-        return provincia;
+    public Localidad getProvincia() {
+        return localidad;
     }
 
-    public void setProvincia(Provincia provincia) {
-        this.provincia = provincia;
+    public void setProvincia(Localidad localidad) {
+        this.localidad = localidad;
     }
 
     public String getImagen() {
