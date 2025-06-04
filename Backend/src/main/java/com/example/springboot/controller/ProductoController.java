@@ -1,10 +1,7 @@
 package com.example.springboot.controller;
 
-import com.example.springboot.model.Categoria;
-import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Producto;
 import com.example.springboot.service.ProductoService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,46 +24,41 @@ public class ProductoController {
     public List<Producto> obtenerProductos(
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Long vendorId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String q
+            @RequestParam(required = false) Long vendedor,
+            @RequestParam(required = false) Long categoria,
+            @RequestParam(required = false) String busqueda
     ) {
         return productoService.obtenerTodos().stream()
-                // Filtro por precio mínimo
                 .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
-                // Filtro por precio máximo
                 .filter(p -> maxPrice == null || p.getPrecio().compareTo(maxPrice) <= 0)
-                // Filtro por vendedor
-                .filter(p -> vendorId == null ||
-                        (p.getVendedor() != null && p.getVendedor().getId().equals(vendorId)))
-                // Filtro por categoría
-                .filter(p -> categoryId == null ||
-                        (p.getCategoria() != null && p.getCategoria().getId().equals(categoryId)))
-                // Filtro por búsqueda de texto
-                .filter(p -> q == null || q.trim().isEmpty() ||
-                        p.getNombre().toLowerCase().contains(q.toLowerCase()) ||
-                        p.getDescripcion().toLowerCase().contains(q.toLowerCase()))
-
+                .filter(p -> vendedor == null || (p.getVendedor() != null && p.getVendedor().getId().equals(vendedor)))
+                .filter(p -> categoria == null ||
+                        (p.getCategorias() != null && p.getCategorias().stream().anyMatch(c -> c.getId().equals(categoria))))
+                .filter(p -> busqueda == null || busqueda.trim().isEmpty() ||
+                        p.getNombre().toLowerCase().contains(busqueda.toLowerCase()) ||
+                        p.getDescripcion().toLowerCase().contains(busqueda.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtenerComprador(@PathVariable Long id) {
+    public ResponseEntity<Producto> obtenerProducto(@PathVariable Long id) {
         Producto producto = productoService.getProducto(id);
-
         if (producto != null) {
             return ResponseEntity.ok(producto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PostMapping
-    public Producto agregarProducto(@RequestBody Producto producto) {
-        return productoService.agregarProducto(producto);
+    public ResponseEntity<Producto> agregarProducto(@RequestBody Producto producto) {
+        Producto nuevoProducto = productoService.agregarProducto(producto);
+        return ResponseEntity.ok(nuevoProducto);
     }
 
-    @GetMapping("/Producto/{id}")
-    public void eliminarProducto(Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         productoService.eliminarProducto(id);
+        return ResponseEntity.noContent().build();
     }
 }

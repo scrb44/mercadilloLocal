@@ -1,4 +1,4 @@
-/* src/pages/home/home.module.css - CORREGIDO COMPLETO */
+/* src/pages/home/home.module.css - SIN FLASH CON TRANSICIONES SUAVES */
 
 .home {
     min-height: 100vh;
@@ -27,6 +27,43 @@
     min-height: 20px;
 }
 
+/* ============ CLASES PARA EVITAR FLASH ============ */
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+}
+
+.fadeInInitial {
+    opacity: 1;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.fadeInCategories {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.fadeInProducts {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Sección de bienvenida con efecto cristal */
 .welcomeSection {
     text-align: center;
@@ -38,6 +75,9 @@
     padding: 40px 20px;
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    /* Iniciamos con opacidad 1 para evitar flash */
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .welcomeTitle {
@@ -68,6 +108,15 @@
     padding: 40px 30px;
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* Estados iniciales para evitar flash */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out,
+        visibility 0.6s ease-out;
+}
+
+.popularProductsSection {
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    margin-top: 80px;
 }
 
 .sectionHeader {
@@ -92,22 +141,133 @@
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
-/* Estilos específicos para la sección de categorías */
-.categoriesSection .sectionTitle {
-    text-align: center;
-    margin-bottom: 30px;
+/* ============ PLACEHOLDERS MEJORADOS (SIN FLASH) ============ */
+.productsPlaceholder {
+    opacity: 1;
+    animation: fadeInSoft 0.5s ease-out;
 }
 
-/* Separación entre secciones */
+@keyframes fadeInSoft {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.placeholderGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.placeholderCard {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    animation: pulseSmooth 2s infinite ease-in-out;
+}
+
+@keyframes pulseSmooth {
+    0%,
+    100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: scale(1.005); /* Más sutil */
+    }
+}
+
+.placeholderImage {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 200px 100%;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    animation: shimmerSmooth 2.5s infinite ease-in-out;
+}
+
+@keyframes shimmerSmooth {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.placeholderText {
+    height: 20px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 200px 100%;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    animation: shimmerSmooth 2.5s infinite ease-in-out;
+    animation-delay: 0.2s;
+}
+
+.placeholderPrice {
+    height: 24px;
+    width: 60%;
+    background: linear-gradient(
+        90deg,
+        rgba(37, 99, 235, 0.1) 0%,
+        rgba(37, 99, 235, 0.25) 50%,
+        rgba(37, 99, 235, 0.1) 100%
+    );
+    background-size: 200px 100%;
+    border-radius: 4px;
+    animation: shimmerSmooth 2.5s infinite ease-in-out;
+    animation-delay: 0.4s;
+}
+
+/* ============ OPTIMIZACIONES PARA EVITAR REFLOWS ============ */
+
+/* Evitar cambios de layout durante las transiciones */
+.categoriesSection,
 .popularProductsSection {
-    border-top: 2px solid rgba(255, 255, 255, 0.2);
-    margin-top: 80px;
+    /* Reservar espacio mínimo para evitar saltos */
+    min-height: 200px;
+}
+
+/* Optimización de transforms para mejor rendimiento */
+.fadeInCategories,
+.fadeInProducts,
+.fadeInInitial {
+    will-change: transform, opacity;
+}
+
+/* Cuando la animación termina, quitar will-change */
+.fadeInCategories,
+.fadeInProducts,
+.fadeInInitial {
+    animation-fill-mode: forwards;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .home {
-        padding-top: 120px; /* Más espacio en móvil porque el header es más alto */
+        padding-top: 120px;
     }
 
     .container {
@@ -137,6 +297,7 @@
         margin: 40px 0;
         padding: 30px 20px;
         border-radius: 16px;
+        min-height: 150px; /* Reducir en móvil */
     }
 
     .sectionTitle {
@@ -150,11 +311,20 @@
     .popularProductsSection {
         margin-top: 60px;
     }
+
+    .placeholderGrid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .placeholderImage {
+        height: 150px;
+    }
 }
 
 @media (max-width: 480px) {
     .home {
-        padding-top: 140px; /* Aún más espacio en móviles pequeños */
+        padding-top: 140px;
     }
 
     .welcomeSection {
@@ -175,6 +345,7 @@
         padding: 20px 16px;
         margin: 30px 0;
         border-radius: 12px;
+        min-height: 120px; /* Aún más reducido */
     }
 
     .sectionTitle {
@@ -188,4 +359,36 @@
     .sectionHeader {
         margin-bottom: 30px;
     }
+
+    .placeholderGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .placeholderImage {
+        height: 120px;
+    }
+}
+
+/* ============ PREVENIR FLASH EN CARGA INICIAL ============ */
+
+/* Asegurar que los elementos tengan contenido reservado */
+.categoriesSection:empty::before,
+.popularProductsSection:empty::before {
+    content: "";
+    display: block;
+    height: 200px;
+    background: transparent;
+}
+
+/* Estabilizar el layout durante las transiciones */
+* {
+    box-sizing: border-box;
+}
+
+/* Evitar saltos en las imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }

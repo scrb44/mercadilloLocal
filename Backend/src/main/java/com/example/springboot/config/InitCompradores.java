@@ -7,6 +7,7 @@ import com.example.springboot.repository.ProductoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 
@@ -14,15 +15,16 @@ import java.util.Arrays;
 public class InitCompradores {
 
     @Bean
-    CommandLineRunner initCompradoresRunner(CompradorRepository compradorRepository, ProductoRepository productoRepository) {
+    CommandLineRunner initCompradoresRunner(CompradorRepository compradorRepository, 
+    ProductoRepository productoRepository,  PasswordEncoder passwordEncoder) {
         return args -> {
             if (compradorRepository.findByEmail("ana@mail.com") == null) {
                 Comprador ana = new Comprador();
                 ana.setNombre("Ana Torres");
                 ana.setUsuario("ana123");
                 ana.setEmail("ana@gmail.com");
-                ana.setPassword("123456");
-                ana.setTelf("111222333");
+                ana.setPassword(passwordEncoder.encode("123456"));
+                ana.setTelf("611222333");
 
                 // Buscar productos para agregar al carrito
                 Producto prod1 = productoRepository.findByNombre("Camiseta Verde");
@@ -41,7 +43,7 @@ public class InitCompradores {
                 lucas.setNombre("Lucas Díaz");
                 lucas.setUsuario("lucas456");
                 lucas.setEmail("lucas@gmail.com");
-                lucas.setPassword("123456");
+                lucas.setPassword(passwordEncoder.encode("123456"));
                 lucas.setTelf("444555666");
 
                 Producto prod3 = productoRepository.findByNombre("Gorra Negra");

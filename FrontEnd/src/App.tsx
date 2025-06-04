@@ -1,5 +1,6 @@
-// src/App.tsx - CORREGIDO: Sin Routes anidados
-import { useEffect } from "react";
+// src/App.tsx - OPTIMIZADO PARA CARGA INICIAL RÁPIDA
+
+import { useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider, CartProvider, useUser } from "./contexts";
@@ -9,15 +10,60 @@ import { MunicipioProvider } from "./contexts/municipioContext";
 import MunicipioGuard from "./componentes/municipioGuard";
 import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 
-// Páginas
+// Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
-import CategoryProducts from "./pages/categoryProducts";
-import ProductDetail from "./pages/productDetail";
-import Cart from "./pages/cart";
-import Login from "./pages/login";
-import Register from "./pages/register";
-import Perfil from "./pages/perfil";
 import MunicipioSelector from "./pages/municipioSelector";
+
+// Lazy loading para páginas no críticas
+const CategoryProducts = lazy(() => import("./pages/categoryProducts"));
+const ProductDetail = lazy(() => import("./pages/productDetail"));
+const Cart = lazy(() => import("./pages/cart"));
+const Login = lazy(() => import("./pages/login"));
+const Register = lazy(() => import("./pages/register"));
+const Perfil = lazy(() => import("./pages/perfil"));
+const Checkout = lazy(() => import("./pages/checkout"));
+
+// Componente de loading optimizado
+const PageSuspense = ({ children }: { children: React.ReactNode }) => (
+    <Suspense
+        fallback={
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "50vh",
+                    background: "rgba(255, 255, 255, 0.1)",
+                    backdropFilter: "blur(10px)",
+                    borderRadius: "16px",
+                    margin: "20px",
+                }}
+            >
+                <div
+                    style={{
+                        width: "40px",
+                        height: "40px",
+                        border: "4px solid rgba(37, 99, 235, 0.3)",
+                        borderTop: "4px solid #2563eb",
+                        borderRadius: "50%",
+                        animation: "spin 1s linear infinite",
+                    }}
+                ></div>
+            </div>
+        }
+    >
+        {children}
+    </Suspense>
+);
+
+// Lazy loading para PaymentProvider solo cuando se necesite
+const LazyPaymentProvider = lazy(() =>
+    import("./contexts/paymentContext").then((module) => ({
+        default: ({ children }: { children: React.ReactNode }) => (
+            <module.PaymentProvider>{children}</module.PaymentProvider>
+        ),
+    }))
+);
 
 function AppContent() {
     const { user, isAuthenticated } = useUser();
@@ -42,7 +88,7 @@ function AppContent() {
 
                 {/* Todas las demás rutas protegidas por MunicipioGuard */}
                 {isAuthenticated && user ? (
-                    // Usuario autenticado - con carrito
+                    // Usuario autenticado - con carrito y pagos lazy
                     <Route
                         path="/*"
                         element={
@@ -52,27 +98,111 @@ function AppContent() {
                                         <Route path="/" element={<Home />} />
                                         <Route
                                             path="/categoria/:categoryId"
-                                            element={<CategoryProducts />}
+                                            element={
+                                                <PageSuspense>
+                                                    <CategoryProducts />
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
                                             path="/producto/:productId"
-                                            element={<ProductDetail />}
+                                            element={
+                                                <PageSuspense>
+                                                    <ProductDetail />
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
                                             path="/perfil"
-                                            element={<Perfil />}
+                                            element={
+                                                <PageSuspense>
+                                                    <Perfil />
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
                                             path="/carrito"
-                                            element={<Cart />}
+                                            element={
+                                                <PageSuspense>
+                                                    <Cart />
+                                                </PageSuspense>
+                                            }
+                                        />
+
+                                        {/* RUTAS DE PAGO CON LAZY LOADING */}
+                                        <Route
+                                            path="/checkout"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando sistema
+                                                                de pagos...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
+                                            path="/pago"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando sistema
+                                                                de pagos...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/pago/confirmacion"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando
+                                                                confirmación...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
+                                        />
+
+                                        <Route
                                             path="/login"
-                                            element={<Login />}
+                                            element={
+                                                <PageSuspense>
+                                                    <Login />
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
                                             path="/registro"
-                                            element={<Register />}
+                                            element={
+                                                <PageSuspense>
+                                                    <Register />
+                                                </PageSuspense>
+                                            }
                                         />
                                         <Route
                                             path="*"
@@ -84,7 +214,7 @@ function AppContent() {
                         }
                     />
                 ) : (
-                    // Usuario no autenticado - sin carrito
+                    // Usuario no autenticado - sin carrito ni pagos
                     <>
                         <Route
                             path="/"
@@ -98,7 +228,9 @@ function AppContent() {
                             path="/categoria/:categoryId"
                             element={
                                 <MunicipioGuard>
-                                    <CategoryProducts />
+                                    <PageSuspense>
+                                        <CategoryProducts />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />
@@ -106,7 +238,9 @@ function AppContent() {
                             path="/producto/:productId"
                             element={
                                 <MunicipioGuard>
-                                    <ProductDetail />
+                                    <PageSuspense>
+                                        <ProductDetail />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />
@@ -114,15 +248,42 @@ function AppContent() {
                             path="/carrito"
                             element={
                                 <MunicipioGuard>
-                                    <Cart />
+                                    <PageSuspense>
+                                        <Cart />
+                                    </PageSuspense>
+                                </MunicipioGuard>
+                            }
+                        />
+
+                        {/* Redirigir checkout a login si no está autenticado */}
+                        <Route
+                            path="/checkout"
+                            element={
+                                <MunicipioGuard>
+                                    <PageSuspense>
+                                        <Login />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />
                         <Route
+                            path="/pago"
+                            element={
+                                <MunicipioGuard>
+                                    <PageSuspense>
+                                        <Login />
+                                    </PageSuspense>
+                                </MunicipioGuard>
+                            }
+                        />
+
+                        <Route
                             path="/login"
                             element={
                                 <MunicipioGuard>
-                                    <Login />
+                                    <PageSuspense>
+                                        <Login />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />
@@ -130,7 +291,9 @@ function AppContent() {
                             path="/registro"
                             element={
                                 <MunicipioGuard>
-                                    <Register />
+                                    <PageSuspense>
+                                        <Register />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />

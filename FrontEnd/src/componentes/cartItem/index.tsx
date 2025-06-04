@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { type CartItemInterface } from "../../types/types";
 import classes from "./cartItem.module.css";
-
+import { PlaceholderURL } from "../../constants";
 interface CartItemProps {
     item: CartItemInterface;
     loading?: boolean;
@@ -31,10 +31,10 @@ function CartItem({
             {/* Imagen del producto */}
             <div className={classes.itemImage}>
                 <img
-                    src={item.product.img[0] || "/placeholder-image.jpg"}
+                    src={item.product.img[0] || PlaceholderURL}
                     alt={item.product.name}
                     onError={(e) => {
-                        e.currentTarget.src = "/placeholder-image.jpg";
+                        e.currentTarget.src = PlaceholderURL;
                     }}
                 />
             </div>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import { type ProductInterface } from "../../types/types";
 import classes from "./ProductCard.module.css";
+import { PlaceholderURL } from "../../constants";
 
 interface ProductCardProps {
     product: ProductInterface;
@@ -47,11 +48,11 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
             <div className={classes.productCard}>
                 <div className={classes.imageContainer}>
                     <img
-                        src={product.img?.[0] || "/placeholder-image.jpg"}
+                        src={product.img?.[0] || PlaceholderURL}
                         alt={product.name}
                         className={classes.productImage}
                         onError={(e) => {
-                            e.currentTarget.src = "/placeholder-image.jpg";
+                            e.currentTarget.src = PlaceholderURL;
                         }}
                     />
                 </div>

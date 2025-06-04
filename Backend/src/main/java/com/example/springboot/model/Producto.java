@@ -1,7 +1,9 @@
 package com.example.springboot.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -10,7 +12,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Producto {
 
     @Id
@@ -25,27 +29,30 @@ public class Producto {
     @ManyToMany(mappedBy = "productos")
     private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;  // Relación muchos a uno con Categoria
+    @ManyToMany
+    @JoinTable(
+            name = "producto_categoria",
+            joinColumns = @JoinColumn(name = "producto_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private List<Categoria> categorias;
 
-    @JsonIgnore
+
     @ManyToOne
     @JoinColumn(name = "vendedor_id")
     private Vendedor vendedor;  // Relación muchos a uno con Vendedor
 
     public Producto(){}
 
-    public Producto(Long id, String descripcion, String nombre, Categoria categoria, Vendedor vendedor, List<Comprador> compradores, String imagen, BigDecimal precio) {
+    public Producto(Long id, String descripcion, BigDecimal precio, String nombre, String imagen, List<Comprador> compradores, List<Categoria> categorias, Vendedor vendedor) {
         this.id = id;
         this.descripcion = descripcion;
-        this.nombre = nombre;
-        this.categoria = categoria;
-        this.vendedor = vendedor;
-        this.compradores = compradores;
-        this.imagen = imagen;
         this.precio = precio;
+        this.nombre = nombre;
+        this.imagen = imagen;
+        this.compradores = compradores;
+        this.categorias = categorias;
+        this.vendedor = vendedor;
     }
 
     public Long getId() {
@@ -72,12 +79,12 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
+    public List<Categoria> getCategorias() {
+        return categorias;
     }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
     }
 
     public Vendedor getVendedor() {

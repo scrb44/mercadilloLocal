@@ -6,7 +6,7 @@ import {
     type CategoryInterface,
 } from "../types/types";
 import { type ApiProduct } from "../types/apiTypes";
-
+import { PlaceholderURL } from "../constants";
 /**
  * Convierte un producto de la API al formato que usa el frontend
  */
@@ -18,7 +18,7 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
         price: apiProduct.precio,
         img: apiProduct.imagen
             ? [apiProduct.imagen]
-            : ["/placeholder-image.jpg"],
+            : [PlaceholderURL],
         video: [], // La API no devuelve videos por ahora
 
         // Valores por defecto para campos que la API no incluye aún

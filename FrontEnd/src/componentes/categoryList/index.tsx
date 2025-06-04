@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { type CategoryInterface } from "../../types/types";
 import classes from "./categoryList.module.css";
+import { PlaceholderURL } from "../../constants";
 
 interface CategoryListProps {
     categories: CategoryInterface[];
@@ -127,7 +128,7 @@ function CategoryList({
                                         className={classes.categoryImage}
                                         onError={(e) => {
                                             e.currentTarget.src =
-                                                "/placeholder-category.jpg";
+                                                PlaceholderURL;
                                         }}
                                     />
                                 ) : (

@@ -1,6 +1,7 @@
 // src/componentes/productGallery/index.tsx
 import { useState } from "react";
 import classes from "./productGallery.module.css";
+import { PlaceholderURL } from "../../constants";
 
 interface ProductGalleryProps {
     images: string[];
@@ -19,7 +20,7 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
             <div className={classes.imageSection}>
                 <div className={classes.mainImageContainer}>
                     <img
-                        src="/placeholder-image.jpg"
+                        src={PlaceholderURL}
                         alt={productName}
                         className={classes.mainImage}
                     />
@@ -36,12 +37,12 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
                     src={
                         images[selectedImageIndex] ||
                         images[0] ||
-                        "/placeholder-image.jpg"
+                        PlaceholderURL
                     }
                     alt={productName}
                     className={classes.mainImage}
                     onError={(e) => {
-                        e.currentTarget.src = "/placeholder-image.jpg";
+                        e.currentTarget.src = PlaceholderURL
                     }}
                 />
             </div>
@@ -61,7 +62,7 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
                             }`}
                             onClick={() => handleImageChange(index)}
                             onError={(e) => {
-                                e.currentTarget.src = "/placeholder-image.jpg";
+                                e.currentTarget.src = PlaceholderURL;
                             }}
                         />
                     ))}

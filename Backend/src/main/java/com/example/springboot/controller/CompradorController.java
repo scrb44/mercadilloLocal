@@ -48,4 +48,6 @@ public class CompradorController {
         Comprador compradorActualizado = compradorService.agregarProductoAlCarrito(email, productoId);
         return ResponseEntity.ok(compradorActualizado);
     }
+
+    
 }
