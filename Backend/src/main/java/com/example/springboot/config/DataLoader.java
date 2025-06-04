@@ -22,7 +22,7 @@ public class DataLoader {
 
     @Bean
     CommandLineRunner initDatabase(ProductoRepository productoRepo,
-                                   CategoriaRepository categoriaRepo
+                                   CategoriaRepository categoriaRepo,
                                    VendedorRepository vendedorRepo,
                                    ProvinciaRepository provinciaRepo) {
         return args -> {
