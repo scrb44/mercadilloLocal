@@ -2,7 +2,7 @@
 
 import { type CartInterface, type CartItemInterface } from "../types/types";
 import { type ApiCart, type ApiCartItem } from "../types/apiTypes";
-
+import { PlaceholderURL } from "../constants";
 /**
  * Convierte un carrito de la API al formato que usa el frontend
  */
@@ -31,7 +31,7 @@ export function adaptApiCartItems(
             name: "Cargando...", // Placeholder hasta cargar el producto completo
             description: "",
             price: 0,
-            img: ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
+            img: [PlaceholderURL],
             video: [],
             vendedor: { id: 0, name: "Cargando...", img: "" },
             categories: [],
