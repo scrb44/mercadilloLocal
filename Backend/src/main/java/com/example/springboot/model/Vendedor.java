@@ -1,10 +1,16 @@
 package com.example.springboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Vendedor {
 
     @Id
@@ -12,6 +18,7 @@ public class Vendedor {
     private Long id;
     private String usuario;
     private String nombre;
+    @JsonIgnore // 👈 Esto oculta la contraseña del JSON
     private String password;
     private String email;
     private String telf;
@@ -19,14 +26,15 @@ public class Vendedor {
     private String imagen;
 
     @ManyToOne
-    private Localidad localidad;  // Relación muchos a uno con Provincia
+    private Localidad localidad;
 
     @OneToMany(mappedBy = "vendedor")
+    @JsonIgnore
     private List<Producto> productos;  // Relación uno a muchos con Producto
 
     public Vendedor(){}
 
-    public Vendedor(Long id, String usuario, String nombre, String password, String email, String telf, Boolean verificado, String imagen, Localidad localidad, List<Producto> productos) {
+    public Vendedor(Long id, String usuario, String nombre, String password, String email, String telf, Boolean verificado, String imagen,Localidad localidad, List<Producto> productos) {
         this.id = id;
         this.usuario = usuario;
         this.nombre = nombre;
