@@ -16,7 +16,7 @@ import java.util.Map;
 public class DataLoader {
 
     @Bean
-    CommandLineRunner initDatabase(ProductoRepository productoRepo,
+    CommandLineRunner initDatabase(ProductoRepository ProductoRepo,
                                    CategoriaRepository categoriaRepo) {
         return args -> {
             // Crear categorías y guardarlas en un mapa para usar luego
@@ -35,112 +35,1114 @@ public class DataLoader {
                 categorias.put(nombreCat, cat);
             }
             Categoria cat1= new Categoria();
-            cat1.setImagen("https://www.google.com/imgres?q=juguetes%20categoria&imgurl=https%3A%2F%2Fencuentraproveedores.com%2Fwp-content%2Fuploads%2F2022%2F05%2FCATEGORIAS-juguetes-varios-4.jpg&imgrefurl=https%3A%2F%2Fencuentraproveedores.com%2Fmayoristas%2Fkilumio%2F&docid=OF-hjaJCykLw0M&tbnid=16CsIkJqV5tvcM&vet=12ahUKEwjc7sOD9MCNAxVBVKQEHTWoB1cQM3oECGQQAA..i&w=1280&h=710&hcb=2&ved=2ahUKEwjc7sOD9MCNAxVBVKQEHTWoB1cQM3oECGQQAA");
-            cat1.setNombre("juguete");
+            cat1.setNombre("Ultramarinos");
+
+            Categoria cat2= new Categoria();
+            cat2.setNombre("Papelerías");
+
+            Categoria cat3= new Categoria();
+            cat3.setNombre("Discos");
+
+            Categoria cat4= new Categoria();
+            cat4.setNombre("Ropa");
+
+            Categoria cat5= new Categoria();
+            cat5.setNombre("Carpinteria");
+
             // Producto 1: Auriculares (Electrónica)
-            Producto prod1 = new Producto();
-            prod1.setNombre("Auriculares");
-            prod1.setDescripcion("Auriculares inalámbricos");
-            prod1.setPrecio(new BigDecimal("59.99"));
-            prod1.setImagen(
-                    "https://sony.scene7.com/is/image/sonyglobalsolutions/WH-CH520_Product_intro_Pink_01_M?$productIntroPlatemobile$&fmt=png-alpha");
-            prod1.setCategoria(categorias.get("Electrónica"));
-            productoRepo.save(prod1);
-
-            // Producto 2: Vino Moscatel Dulce Natural – Cartojal (Bebidas)
-            Producto prod2 = new Producto();
-            prod2.setNombre("Vino Moscatel Dulce Natural – Cartojal");
-            prod2.setDescripcion(
-                    "Vino dulce elaborado con uva Moscatel de la Axarquía malagueña. Ideal para acompañar postres.");
-            prod2.setPrecio(new BigDecimal("14.59"));
-            prod2.setImagen("https://www.comprar-bebidas.com/media/catalog/product/c/a/cartojal.jpg");
-            prod2.setCategoria(categorias.get("Bebidas"));
-            productoRepo.save(prod2);
-
-            // Producto 3: Tortas de Aceite Artesanales – Carmen Lupiañez (Dulces y
-            // Pasteles)
-            Producto prod3 = new Producto();
-            prod3.setNombre("Tortas de Aceite Artesanales – Carmen Lupiañez");
-            prod3.setDescripcion(
-                    "Tradicional torta de aceite elaborada con aceite de oliva virgen extra de la variedad hojiblanca.");
-            prod3.setPrecio(new BigDecimal("4.25"));
-            prod3.setImagen(
-                    "https://sgfm.elcorteingles.es/SGFM/dctm/MEDIA03/202401/19/00120660909100____4__600x600.jpg");
-            prod3.setCategoria(categorias.get("Dulces y Pasteles"));
-            productoRepo.save(prod3);
-
-            // Producto 4: Paté Ibérico – Iberitos (Patés y Conservas)
-            Producto prod4 = new Producto();
-            prod4.setNombre("Paté Ibérico – Iberitos");
-            prod4.setDescripcion(
-                    "Paté artesanal elaborado con hígado de cerdo ibérico, carne y grasa de cerdo ibérico, cebolla y leche.");
-            prod4.setPrecio(new BigDecimal("4.30"));
-            prod4.setImagen("https://www.iberitos.com/www/wp-content/uploads/2018/08/pate-iberico.png");
-            prod4.setCategoria(categorias.get("Patés y Conservas"));
-            productoRepo.save(prod4);
-
-            // Producto 5: Miel de Caña de Azúcar – Frutitos (Mieles Andaluzas)
-            Producto prod5 = new Producto();
-            prod5.setNombre("Miel de Caña de Azúcar – Frutitos");
-            prod5.setDescripcion("Miel extraída del jugo de la caña de azúcar, típica de la región andaluza.");
-            prod5.setPrecio(new BigDecimal("6.97"));
-            prod5.setImagen("https://www.frutitos.com/9119-medium_default/miel-de-cana-de-azucar-920-gramos.jpg");
-            prod5.setCategoria(categorias.get("Mieles Andaluzas"));
-            productoRepo.save(prod5);
-
-            // Producto 6: Queso de Cabra Malagueño (Lácteos)
-            Producto prod6 = new Producto();
-            prod6.setNombre("Queso de Cabra Malagueño");
-            prod6.setDescripcion(
-                    "Queso artesanal elaborado con leche de cabra autóctona, reconocido por su sabor intenso y textura cremosa.");
-            prod6.setPrecio(new BigDecimal("20.00")); // Precio medio entre 15 y 25
-            prod6.setImagen("https://www.jamoneriajoseluisromero.com/wp-content/uploads/2021/02/queso-rey-cabra.jpg");
-            prod6.setCategoria(categorias.get("Lácteos"));
-            productoRepo.save(prod6);
-
-            // Producto 7: Aceituna Aloreña de Málaga (Conservas)
-            Producto prod7 = new Producto();
-            prod7.setNombre("Aceituna Aloreña de Málaga");
-            prod7.setDescripcion(
-                    "Aceituna autóctona con Denominación de Origen Protegida, curada con hierbas aromáticas como el hinojo y el tomillo.");
-            prod7.setPrecio(new BigDecimal("6.50")); // Precio medio entre 5 y 8
-            prod7.setImagen(
-                    "https://www.bonbouquet.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/7/0/70071701.png");
-            prod7.setCategoria(categorias.get("Conservas"));
-            productoRepo.save(prod7);
-
-            // Producto 8: Vino Dulce de Málaga (Bebidas alcohólicas)
-            Producto prod8 = new Producto();
-            prod8.setNombre("Vino Dulce de Málaga");
-            prod8.setDescripcion(
-                    "Vino tradicional elaborado con uvas moscatel, caracterizado por su sabor dulce y aroma floral.");
-            prod8.setPrecio(new BigDecimal("14.00")); // Precio medio entre 8 y 20
-            prod8.setImagen(
-                    "https://sgfm.elcorteingles.es/SGFM/dctm/MEDIA03/201907/15/00118720300724____1__600x600.jpg");
-            prod8.setCategoria(categorias.get("Bebidas alcohólicas"));
-            productoRepo.save(prod8);
-
-            // Producto 9: Pasas de Málaga (Frutos secos)
-            Producto prod9 = new Producto();
-            prod9.setNombre("Pasas de Málaga");
-            prod9.setDescripcion(
-                    "Uvas moscatel secadas al sol en paseros, con Denominación de Origen, reconocidas por su sabor dulce y textura jugosa.");
-            prod9.setPrecio(new BigDecimal("8.00")); // Precio medio entre 6 y 10
-            prod9.setImagen("https://www.anywaywinebar.com/wp-content/uploads/2021/03/PASAS-DE-MALAGA.jpg");
-            prod9.setCategoria(categorias.get("Frutos secos"));
-            productoRepo.save(prod9);
-
-            // Producto 10: Mango de la Axarquía (Frutas)
-            Producto prod10 = new Producto();
-            prod10.setNombre("Mango de la Axarquía");
-            prod10.setDescripcion("Fruta tropical de pulpa jugosa y dulce, cultivada en la comarca de la Axarquía.");
-            prod10.setPrecio(new BigDecimal("4.00")); // Precio medio entre 3 y 5
-            prod10.setImagen(
-                    "https://huertadepancha.com/wp-content/uploads/2020/10/Comprar-Mango-Irwin-a-domicilio-1.jpg");
-            prod10.setCategoria(categorias.get("Frutas"));
-            productoRepo.save(prod10);
-
-            System.out.println("Todos los productos y categorías fueron cargados en la base de datos.");
+    // ============ PRODUCTOS MÁS VENDIDOS (primeros en el array) ========
+        
+        Producto prod1 = new Producto();
+        prod1.setNombre("Tomate frito casero en tarro de vidrio");
+        prod1.setDescripcion("");
+        prod1.setImagen(
+            "");
+        prod1.setPrecio(new BigDecimal("1"));
+        prod1.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:11,	name:"Conservas ",	img:"",	fatherId:1}
+        ProductoRepo.save(prod1);
+        
+        Producto prod2 = new Producto();
+        prod2.setNombre("Mermelada de frutos del bosque artesanal");
+        prod2.setDescripcion("");	
+        prod2.setImagen(
+            "");
+        prod2.setPrecio(new BigDecimal("1"));
+        prod2.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:11,	name:"Conservas ",	img:"",	fatherId:1}
+        ProductoRepo.save(prod2);
+        
+        Producto prod3 = new Producto();
+        prod3.setNombre("Pimientos del piquillo confitados");
+        prod3.setDescripcion("");	
+        prod3.setImagen(
+            "");
+        prod3.setPrecio(new BigDecimal("1"));
+        prod3.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:11,	name:"Conservas ",	img:"",	fatherId:1}
+        ProductoRepo.save(prod3);
+        
+        Producto prod4 = new Producto();
+        prod4.setNombre("Lentejas pardinas a granel");
+        prod4.setDescripcion("");	
+        prod4.setImagen(
+            "");
+        prod4.setPrecio(new BigDecimal("1"));
+        prod4.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:12,	name:"Legumbres",	img:"",	fatherId:1}
+        ProductoRepo.save(prod4);
+        
+        Producto prod5 = new Producto();
+        prod5.setNombre("Garbanzos ecológicos en saco de tela");
+        prod5.setDescripcion("");	
+        prod5.setImagen(
+            "");
+        prod5.setPrecio(new BigDecimal("1"));
+        prod5.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:12,	name:"Legumbres",	img:"",	fatherId:1}
+        ProductoRepo.save(prod5);
+        
+        Producto prod6 = new Producto();
+        prod6.setNombre("Alubias blancas seleccionadas");
+        prod6.setDescripcion("");	
+        prod6.setImagen(
+            "");
+        prod6.setPrecio(new BigDecimal("1"));
+        prod6.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:12,	name:"Legumbres",	img:"",	fatherId:1}
+        ProductoRepo.save(prod6);
+        
+        Producto prod7 = new Producto();
+        prod7.setNombre("Chorizo curado de elaboración propia");
+        prod7.setDescripcion("");	
+        prod7.setImagen(
+            "");
+        prod7.setPrecio(new BigDecimal("1"));
+        prod7.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:13,	name:"Embutidos",	img:"",	fatherId:1}
+        ProductoRepo.save(prod7);
+    
+    Producto prod8 = new Producto();
+        prod8.setNombre("Salchichón ibérico artesanal");
+        prod8.setDescripcion("");
+        prod8.setImagen(
+            "");
+        prod8.setPrecio(new BigDecimal("1"));
+        prod8.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:13,	name:"Embutidos",	img:"",	fatherId:1}
+        ProductoRepo.save(prod8);
+        
+        Producto prod9 = new Producto();
+        prod9.setNombre("Morcilla de cebolla local");
+        prod9.setDescripcion("");	
+        prod9.setImagen(
+            "");
+        prod9.setPrecio(new BigDecimal("1"));
+        prod9.setCategoria(categorias.get("Ultramarinos"));
+            //{   id:13,	name:"Embutidos",	img:"",	fatherId:1}
+        ProductoRepo.save(prod9);
+        
+        Producto prod10 = new Producto();
+        prod10.setNombre("Cervesa");
+        prod10.setDescripcion("");
+        prod10.setImagen(
+            ""	);
+        prod10.setPrecio(new BigDecimal("1"));
+        prod10.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:14,	name:"Vinos y licores",	img:"",	fatherId:1},
+        ProductoRepo.save(prod10);
+        
+        Producto prod11 = new Producto();
+        prod11.setNombre("Licor de hierbas ");
+        prod11.setDescripcion("");
+        prod11.setImagen(
+            ""	);
+        prod11.setPrecio(new BigDecimal("1"));
+        prod11.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:14,	name:"Vinos y licores",	img:"",	fatherId:1},
+        ProductoRepo.save(prod11);
+        
+        Producto prod12 = new Producto();
+        prod12.setNombre("Vino dulce");
+        prod12.setDescripcion("");
+        prod12.setImagen(
+            ""	);
+        prod12.setPrecio(new BigDecimal("1"));
+        prod12.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:14,	name:"Vinos y licores",	img:"",	fatherId:1},
+        ProductoRepo.save(prod12);
+        
+        Producto prod13 = new Producto();
+        prod13.setNombre("Aceite de oliva virgen extra prensado en frío");
+        prod13.setDescripcion("");
+        prod13.setImagen(
+            ""	);
+        prod13.setPrecio(new BigDecimal("1"));
+        prod13.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:15,	name:"Aceites y vinagres",	img:"",	fatherId:1},
+        ProductoRepo.save(prod13);
+        
+        Producto prod14 = new Producto();
+        prod14.setNombre("Vinagre de manzana fermentado natural");
+        prod14.setDescripcion("");
+        prod14.setImagen(
+            ""	);
+        prod14.setPrecio(new BigDecimal("1"));
+        prod14.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:15,	name:"Aceites y vinagres",	img:"",	fatherId:1},
+        ProductoRepo.save(prod14);
+        
+        Producto prod15 = new Producto();
+        prod15.setNombre("Aceite infusionado con romero y ajo");
+        prod15.setDescripcion("");
+        prod15.setImagen(
+            ""	);
+        prod15.setPrecio(new BigDecimal("1"));
+        prod15.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:15,	name:"Aceites y vinagres",	img:"",	fatherId:1},
+        ProductoRepo.save(prod15);
+        
+        Producto prod16 = new Producto();
+        prod16.setNombre("Hogaza de masa madre");
+        prod16.setDescripcion("");
+        prod16.setImagen(
+            ""	);
+        prod16.setPrecio(new BigDecimal("1"));
+        prod16.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:16,	name:"Pan / bollería",	img:"",	fatherId:1},
+        ProductoRepo.save(prod16);
+        
+        Producto prod17 = new Producto();
+        prod17.setNombre("Pan de higo");
+        prod17.setDescripcion("");
+        prod17.setImagen(
+            ""	);
+        prod17.setPrecio(new BigDecimal("1"));
+        prod17.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:16,	name:"Pan / bollería",	img:"",	fatherId:1},
+        ProductoRepo.save(prod17);
+        
+        Producto prod18 = new Producto();
+        prod18.setNombre("Polvorones hechos a mano");
+        prod18.setDescripcion("");
+        prod18.setImagen(
+            ""	);
+        prod18.setPrecio(new BigDecimal("1"));
+        prod18.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:16,	name:"Pan / bollería",	img:"",	fatherId:1},
+        ProductoRepo.save(prod18);
+        
+        Producto prod19 = new Producto();
+        prod19.setNombre("Turrón de almendra artesanal");
+        prod19.setDescripcion("");
+        prod19.setImagen(
+            ""	);
+        prod19.setPrecio(new BigDecimal("1"));
+        prod19.setCategoria(categorias.get("Ultramarinos"));
+                //{   id:16,	name:"Pan / bollería",	img:"",	fatherId:1},
+        ProductoRepo.save(prod19);
+        
+        Producto prod20 = new Producto();
+        prod20.setNombre("Cartulinas texturizadas hechas con papel reciclado");
+        prod20.setDescripcion("");
+        prod20.setImagen(
+            ""	);
+        prod20.setPrecio(new BigDecimal("1"));
+        prod20.setCategoria(categorias.get("Papelerías"));
+                //{   id:17,	name:"Cartulinas",	img:"",	fatherId:2},
+        ProductoRepo.save(prod20);
+        /*
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cartulina ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:17,	name:"Cartulinas",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Packs de cartulina de colores artesanales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:17,	name:"Cartulinas",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Estuche ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:18,	name:"Útiles escolares",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Regla ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:18,	name:"Útiles escolares",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Lapiz");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:18,	name:"Útiles escolares",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cuaderno cosido a mano con papel reciclado");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:19,	name:"Libretas / cuadernos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Libreta con cubierta de cuero reciclado");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:19,	name:"Libretas / cuadernos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Diario con tapa de madera grabada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:19,	name:"Libretas / cuadernos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Soporte para bolígrafos de cerámica");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:20,	name:"Material de oficina",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Organizadores de escritorio de madera");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:20,	name:"Material de oficina",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Clips de papel decorativos artesanales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:20,	name:"Material de oficina",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Carpeta de cartón reciclado encuadernada a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:21,	name:"Carpetas",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Carpeta de fieltro cosida artesanalmente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:21,	name:"Carpetas",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Carpeta con diseño pintado a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:21,	name:"Carpetas",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Pegamento madera");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:22,	name:"Adhesivos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Stickers ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:22,	name:"Adhesivos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Posits");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:22,	name:"Adhesivos",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Acuarelas ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:23,	name:"Artículos de arte ",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Pinceles con mango de bambú");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:23,	name:"Artículos de arte ",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Lápices de colores hechos con madera reciclada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:23,	name:"Artículos de arte ",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Tarjetas de cumpleaños pintadas a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:24,	name:"Regalos y felicitaciones",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Sobres ilustrados con tinta vegetal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:24,	name:"Regalos y felicitaciones",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Kit para hacer velas artesanales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:25,	name:"Manualidades",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Kit de bordado para principiantes");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:25,	name:"Manualidades",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Caja de cuentas de madera pintadas a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Papelerías"));
+                //{   id:25,	name:"Manualidades",	img:"",	fatherId:2},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Álbum de banda local prensado en vinilo");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:26,	name:"Vinilos",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Edición limitada de vinilo");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:26,	name:"Vinilos",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Vinilo recopilatorio de músicos independientes");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:26,	name:"Vinilos",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Álbum acústico de artista local");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:27,	name:"CD’s",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("CD promocional con arte impreso a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:27,	name:"CD’s",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Disco con grabaciones en vivo de conciertos pequeños");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:27,	name:"CD’s",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cassette edición limitada de música indie");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:28,	name:"Casetes",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cassette grabado y decorado artesanalmente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:28,	name:"Casetes",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Reedición casete de banda underground local");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:28,	name:"Casetes",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Documental de autor ");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:29,	name:"Películas",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("DVD de cine experimental independiente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:29,	name:"Películas",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camiseta serigrafiada por artistas locales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:30,	name:"Merch",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Tote bag con logo de banda local");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:30,	name:"Merch",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Láminas firmadas por músicos");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:30,	name:"Merch",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Álbum digital con descarga en tarjeta física");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:31,	name:"Música",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Canción personalizada grabada por artista local");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:31,	name:"Música",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("EP acústico de producción independiente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:31,	name:"Música",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Serie web recopilada en DVD artesanal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:32,	name:"Series",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Merch de series locales:pines, postales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:32,	name:"Series",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Banda sonora original en CD");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Discos"));
+                //{   id:32,	name:"Series",	img:"",	fatherId:3},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camisa marengo");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:33,	name:"Hombre",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Chaleco tejido artesanalmente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:33,	name:"Hombre",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cinturón de cuero trabajado a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:33,	name:"Hombre",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Falda bohemia cosida artesanalmente");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:34,	name:"Mujer",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Blusa de algodón orgánico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:34,	name:"Mujer",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Bufanda de lana hilada a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:34,	name:"Mujer",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camiseta de algodón organico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:35,	name:"Niños",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Conjunto de ropa de bebé hecho a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:35,	name:"Niños",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Gorro de lana para niño/a");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:35,	name:"Niños",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Pelele de tela ecológica");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:36,	name:"Infantes",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Manta tejida a crochet");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:36,	name:"Infantes",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Babero reversible artesanal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:36,	name:"Infantes",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camisa de lino bordada a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:37,	name:"Camisas",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camisa con estampado artesanal (block print)");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:37,	name:"Camisas",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Camisa reciclada upcycled");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:37,	name:"Camisas",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Pantalón ancho de algodón orgánico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:38,	name:"Pantalones",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Pantalón reciclado con parches");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:38,	name:"Pantalones",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Bombachos de lino artesanal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:38,	name:"Pantalones",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Alpargatas hechas a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:39,	name:"Zapatos",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Sandalias de cuero artesano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:39,	name:"Zapatos",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Zapatillas cosidas con tela reciclada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:39,	name:"Zapatos",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Ropa interior de algodón orgánico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:40,	name:"Interiores",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Bralette artesanal sin aros");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:40,	name:"Interiores",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Calzoncillos de tela natural");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:40,	name:"Interiores",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Cinturones de tela o cuero reciclado");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:41,	name:"Accesorios",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Gorro de lana hecho a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:41,	name:"Accesorios",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Bolsos tejidos con fibras naturales");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Ropa:"));
+                //{   id:41,	name:"Accesorios",	img:"",	fatherId:4},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Marco de fotos tallado a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:42,	name:"Marcos",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Marco con barniz ecológico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:42,	name:"Marcos",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Marco decorativo de madera reciclada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:42,	name:"Marcos",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Puerta de roble artesanal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:43,	name:"Puertas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Puerta rústica con herrajes forjados");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:43,	name:"Puertas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Puerta corrediza tipo granero");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:43,	name:"Puertas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Tabla de olivo");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:44,	name:"Maderas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Tablas de pino");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:44,	name:"Maderas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("madera maciza");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:44,	name:"Maderas",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Mesa de comedor hecha a mano");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:45,	name:"Mueblería",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Estantería modular artesanal");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:45,	name:"Mueblería",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Silla de diseño con madera local");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:45,	name:"Mueblería",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Lámpara colgante de madera torneada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:46,	name:"Decoración en madera",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Reloj de pared rústico");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:46,	name:"Decoración en madera",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Letras decorativas talladas");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:46,	name:"Decoración en madera",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Organizadores de escritorio de madera");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:46,	name:"Decoración en madera",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+        
+        Yroducto prod = new Yroducto();
+        prod.setNombre("Diario con tapa de madera grabada");
+        prod.setDescripcion("");
+        prod.setImagen(
+            ""	);
+        prod.setPrecio(new BigDecimal("1"));
+        prod.setCategoria(categorias.get(name:"Carpinteria:"));
+                //{   id:46,	name:"Decoración en madera",	img:"",	fatherId:5},
+        YroductoRepo.save(prod);
+*/
+        System.out.println("Todos los Yroductos y categorías fueron cargados en la base de datos.");
         };
     }
 }

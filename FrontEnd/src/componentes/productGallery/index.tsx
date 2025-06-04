@@ -19,7 +19,7 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
             <div className={classes.imageSection}>
                 <div className={classes.mainImageContainer}>
                     <img
-                        src="/placeholder-image.jpg"
+                        src="https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"
                         alt={productName}
                         className={classes.mainImage}
                     />
@@ -36,12 +36,12 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
                     src={
                         images[selectedImageIndex] ||
                         images[0] ||
-                        "/placeholder-image.jpg"
+                        "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"
                     }
                     alt={productName}
                     className={classes.mainImage}
                     onError={(e) => {
-                        e.currentTarget.src = "/placeholder-image.jpg";
+                        e.currentTarget.src = "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg";
                     }}
                 />
             </div>
@@ -61,7 +61,7 @@ function ProductGallery({ images, productName }: ProductGalleryProps) {
                             }`}
                             onClick={() => handleImageChange(index)}
                             onError={(e) => {
-                                e.currentTarget.src = "/placeholder-image.jpg";
+                                e.currentTarget.src = "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg";
                             }}
                         />
                     ))}

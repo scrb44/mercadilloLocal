@@ -18,7 +18,7 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
         price: apiProduct.precio,
         img: apiProduct.imagen
             ? [apiProduct.imagen]
-            : ["/placeholder-image.jpg"],
+            : ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
         video: [], // La API no devuelve videos por ahora
 
         // Valores por defecto para campos que la API no incluye aún
