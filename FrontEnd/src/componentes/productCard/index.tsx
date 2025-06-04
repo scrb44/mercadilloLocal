@@ -47,11 +47,11 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
             <div className={classes.productCard}>
                 <div className={classes.imageContainer}>
                     <img
-                        src={product.img?.[0] || "/placeholder-image.jpg"}
+                        src={product.img?.[0] || "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"}
                         alt={product.name}
                         className={classes.productImage}
                         onError={(e) => {
-                            e.currentTarget.src = "/placeholder-image.jpg";
+                            e.currentTarget.src = "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg";
                         }}
                     />
                 </div>

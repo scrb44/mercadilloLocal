@@ -31,7 +31,7 @@ export function adaptApiCartItems(
             name: "Cargando...", // Placeholder hasta cargar el producto completo
             description: "",
             price: 0,
-            img: ["/placeholder-image.jpg"],
+            img: ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
             video: [],
             vendedor: { id: 0, name: "Cargando...", img: "" },
             categories: [],
