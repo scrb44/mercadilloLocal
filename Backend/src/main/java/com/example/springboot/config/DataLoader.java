@@ -2,12 +2,11 @@ package com.example.springboot.config;
 
 import com.example.springboot.model.Categoria;
 import com.example.springboot.model.Producto;
-import com.example.springboot.model.Provincia;
 import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CategoriaRepository;
 import com.example.springboot.repository.ProductoRepository;
-import com.example.springboot.repository.ProvinciaRepository;
 import com.example.springboot.repository.VendedorRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.springboot.repository.LocalidadRepository;
+
 @Configuration
 public class DataLoader {
 
@@ -24,7 +25,7 @@ public class DataLoader {
     CommandLineRunner initDatabase(ProductoRepository productoRepo,
                                    CategoriaRepository categoriaRepo,
                                    VendedorRepository vendedorRepo,
-                                  LocalidadRepository provinciaRepo) {
+                                  LocalidadRepository localidadRepo) {
         return args -> {
             Map<String, Categoria> categorias = new HashMap<>();
 
