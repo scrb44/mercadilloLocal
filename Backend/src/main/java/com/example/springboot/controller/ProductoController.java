@@ -24,19 +24,19 @@ public class ProductoController {
     public List<Producto> obtenerProductos(
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Long vendorId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String q
+            @RequestParam(required = false) Long vendedor,
+            @RequestParam(required = false) Long categoria,
+            @RequestParam(required = false) String busqueda
     ) {
         return productoService.obtenerTodos().stream()
                 .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
                 .filter(p -> maxPrice == null || p.getPrecio().compareTo(maxPrice) <= 0)
-                .filter(p -> vendorId == null || (p.getVendedor() != null && p.getVendedor().getId().equals(vendorId)))
-                .filter(p -> categoryId == null ||
-                        (p.getCategorias() != null && p.getCategorias().stream().anyMatch(c -> c.getId().equals(categoryId))))
-                .filter(p -> q == null || q.trim().isEmpty() ||
-                        p.getNombre().toLowerCase().contains(q.toLowerCase()) ||
-                        p.getDescripcion().toLowerCase().contains(q.toLowerCase()))
+                .filter(p -> vendedor == null || (p.getVendedor() != null && p.getVendedor().getId().equals(vendedor)))
+                .filter(p -> categoria == null ||
+                        (p.getCategorias() != null && p.getCategorias().stream().anyMatch(c -> c.getId().equals(categoria))))
+                .filter(p -> busqueda == null || busqueda.trim().isEmpty() ||
+                        p.getNombre().toLowerCase().contains(busqueda.toLowerCase()) ||
+                        p.getDescripcion().toLowerCase().contains(busqueda.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

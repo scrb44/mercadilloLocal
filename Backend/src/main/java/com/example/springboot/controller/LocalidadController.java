@@ -11,30 +11,30 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class LocalidadController {
 
-    private final LocalidadService provinciaService;
+    private final LocalidadService localidadService;
 
     @Autowired
-    public LocalidadController(LocalidadService provinciaService) {
-        this.provinciaService = provinciaService;
+    public LocalidadController(LocalidadService localidadService) {
+        this.localidadService = localidadService;
     }
 
     @GetMapping
     public List<Localidad> getAll() {
-        return provinciaService.getAllProvincias();
+        return localidadService.getAllProvincias();
     }
 
     @GetMapping("/{id}")
     public Localidad getById(@PathVariable Long id) {
-        return provinciaService.getProvinciaById(id);
+        return localidadService.getProvinciaById(id);
     }
 
     @PostMapping
     public Localidad create(@RequestBody Localidad localidad) {
-        return provinciaService.saveProvincia(localidad);
+        return localidadService.saveProvincia(localidad);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        provinciaService.deleteProvincia(id);
+        localidadService.deleteProvincia(id);
     }
 }
