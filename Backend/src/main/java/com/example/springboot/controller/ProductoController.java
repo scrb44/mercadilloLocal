@@ -25,6 +25,7 @@ public class ProductoController {
 
     @GetMapping
     public List<Producto> obtenerProductos(
+            @RequestParam(required = false) String localidad,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Long vendorId,
@@ -32,6 +33,8 @@ public class ProductoController {
             @RequestParam(required = false) String q
     ) {
         return productoService.obtenerTodos().stream()
+                // Filtro por localidad
+                .filter(p -> localidad == null || p.getVendedor().getProvincia().getNombre().equalsIgnoreCase(localidad))
                 // Filtro por precio mínimo
                 .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
                 // Filtro por precio máximo
