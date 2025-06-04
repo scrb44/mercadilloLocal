@@ -31,10 +31,10 @@ function CartItem({
             {/* Imagen del producto */}
             <div className={classes.itemImage}>
                 <img
-                    src={item.product.img[0] || "/placeholder-image.jpg"}
+                    src={item.product.img[0] || "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"}
                     alt={item.product.name}
                     onError={(e) => {
-                        e.currentTarget.src = "/placeholder-image.jpg";
+                        e.currentTarget.src = "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg";
                     }}
                 />
             </div>

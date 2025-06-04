@@ -127,7 +127,7 @@ function CategoryList({
                                         className={classes.categoryImage}
                                         onError={(e) => {
                                             e.currentTarget.src =
-                                                "/placeholder-category.jpg";
+                                                "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg";
                                         }}
                                     />
                                 ) : (
