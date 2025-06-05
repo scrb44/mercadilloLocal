@@ -21,7 +21,7 @@ public class InitVendedores {
 
         return args -> {
             // Crear provincia
-           Localidad malaga = new Localidad();
+            Localidad malaga = new Localidad();
             malaga.setNombre("Málaga");
             malaga = provinciaRepository.save(malaga);
 
@@ -40,4 +40,3 @@ public class InitVendedores {
         };
     }
 }
-
