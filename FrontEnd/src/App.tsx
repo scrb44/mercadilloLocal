@@ -13,6 +13,7 @@ import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 // Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
 import MunicipioSelector from "./pages/municipioSelector";
+import WhoWeAre from "./pages/whoWeAre"; // Importa tu componente "Quiénes Somos"
 
 // Lazy loading para páginas no críticas
 const CategoryProducts = lazy(() => import("./pages/categoryProducts"));
@@ -96,6 +97,7 @@ function AppContent() {
                                 <CartProvider userId={user.id}>
                                     <Routes>
                                         <Route path="/" element={<Home />} />
+                                         <Route path="/quienes-somos" element={<WhoWeAre />} />
                                         <Route
                                             path="/categoria/:categoryId"
                                             element={
@@ -224,6 +226,14 @@ function AppContent() {
                                 </MunicipioGuard>
                             }
                         />
+                        <Route
+              path="/quienes-somos"
+              element={
+                <MunicipioGuard>
+                  <WhoWeAre />
+                </MunicipioGuard>
+              }
+            />
                         <Route
                             path="/categoria/:categoryId"
                             element={
