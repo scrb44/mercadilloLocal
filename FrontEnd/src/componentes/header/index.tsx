@@ -1,4 +1,4 @@
-// src/componentes/header/index.tsx - ACTUALIZADO CON MUNICIPIO
+// src/componentes/header/index.tsx - ACTUALIZADO CON ENLACE PARA VENDEDORES
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import MunicipioIndicator from "../municipioIndicator";
@@ -15,6 +15,9 @@ function Header() {
 
     // Solo usar cart si el usuario está autenticado
     const cart = isAuthenticated ? useCart() : null;
+
+    // Verificar si el usuario es vendedor
+    const isVendor = user?.role === "VENDEDOR";
 
     return (
         <header className={classes["page-header"]}>
@@ -53,10 +56,28 @@ function Header() {
                         </li>
                     )}
 
+                    {/* Enlace PARA VENDEDORES - solo si es vendedor */}
+                    {isAuthenticated && isVendor && (
+                        <li>
+                            <Link
+                                to="/mis-productos"
+                                className={classes["page-header__vendor-link"]}
+                                title="Gestiona tus productos"
+                            >
+                                📦 Mis Productos
+                            </Link>
+                        </li>
+                    )}
+
                     {isAuthenticated ? (
                         <>
                             <li className={classes["page-header__user"]}>
                                 Hola, {user?.usuario}
+                                {isVendor && (
+                                    <span className={classes["vendor-badge"]}>
+                                        • Vendedor
+                                    </span>
+                                )}
                             </li>
                             <li>
                                 <button
