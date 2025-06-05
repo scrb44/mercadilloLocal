@@ -37,6 +37,10 @@ public class CompradorService {
         return compradorRepository.findById(id).orElse(null);
     }
 
+    public Comprador buscarPorEmail(String email) {
+        return compradorRepository.findByEmail(email);
+    }
+
     public void eliminarComprador(Long id) {
         compradorRepository.deleteById(id);
     }
