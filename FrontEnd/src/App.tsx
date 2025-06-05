@@ -26,6 +26,8 @@ const Checkout = lazy(() => import("./pages/checkout"));
 
 // Lazy loading para páginas de vendedores
 const VendorProducts = lazy(() => import("./pages/vendorProducts"));
+const CreateProduct = lazy(() => import("./pages/createProduct"));
+const EditProduct = lazy(() => import("./pages/editProduct"));
 
 // Componente de loading optimizado
 const PageSuspense = ({ children }: { children: React.ReactNode }) => (
@@ -143,6 +145,22 @@ function AppContent() {
                                                 element={
                                                     <PageSuspense>
                                                         <VendorProducts />
+                                                    </PageSuspense>
+                                                }
+                                            />
+                                            <Route
+                                                path="/subir-producto"
+                                                element={
+                                                    <PageSuspense>
+                                                        <CreateProduct />
+                                                    </PageSuspense>
+                                                }
+                                            />
+                                            <Route
+                                                path="/editar-producto/:productId"
+                                                element={
+                                                    <PageSuspense>
+                                                        <EditProduct />
                                                     </PageSuspense>
                                                 }
                                             />
@@ -301,6 +319,26 @@ function AppContent() {
                         {/* Redirigir rutas de vendedor a login si no está autenticado */}
                         <Route
                             path="/mis-productos"
+                            element={
+                                <MunicipioGuard>
+                                    <PageSuspense>
+                                        <Login />
+                                    </PageSuspense>
+                                </MunicipioGuard>
+                            }
+                        />
+                        <Route
+                            path="/subir-producto"
+                            element={
+                                <MunicipioGuard>
+                                    <PageSuspense>
+                                        <Login />
+                                    </PageSuspense>
+                                </MunicipioGuard>
+                            }
+                        />
+                        <Route
+                            path="/editar-producto/:productId"
                             element={
                                 <MunicipioGuard>
                                     <PageSuspense>
