@@ -5,6 +5,8 @@ export interface VendedorInterface {
     id: number;
     img: string;
     name: string;
+    imagen: string;
+    nombre: string;
     email?: string;
     usuario?: string;
     verificado?: boolean;

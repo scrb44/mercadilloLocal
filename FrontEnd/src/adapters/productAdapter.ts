@@ -1,12 +1,11 @@
-// src/adapters/productAdapter.ts - ACTUALIZADO para nueva estructura
+// src/adapters/productAdapter.ts - Adaptador para productos
 
 import {
     type ProductInterface,
     type VendedorInterface,
     type CategoryInterface,
 } from "../types/types";
-import { type ApiProduct, type ApiProductRequest } from "../types/apiTypes";
-import { PlaceholderURL } from "../constants";
+import { type ApiProduct } from "../types/apiTypes";
 
 /**
  * Convierte un producto de la API al formato que usa el frontend
@@ -16,52 +15,74 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
         id: apiProduct.id,
         name: apiProduct.nombre,
         description: apiProduct.descripcion || "Sin descripción",
-        price: Number(apiProduct.precio),
-        img: apiProduct.imagen ? [apiProduct.imagen] : [PlaceholderURL],
+        price: apiProduct.precio,
+        img: apiProduct.imagen
+            ? [apiProduct.imagen]
+            : ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
         video: [], // La API no devuelve videos por ahora
-        vendedor: {
-            id: apiProduct.vendedor.id,
-            name: apiProduct.vendedor.nombre,
-            img: apiProduct.vendedor.imagen || "",
-        },
-        categories: apiProduct.categorias.map((cat) => ({
-            id: cat.id,
-            name: cat.nombre,
-            img: cat.imagen || "",
-            fatherId: cat.categoriaPadre?.id,
-        })),
+
+        // Aquí adaptamos el vendedor real que viene del backend
+        vendedor: adaptApiVendor(apiProduct.vendedor),
+
+        // Adaptamos categorías si existen o usamos default
+        categories: apiProduct.categorias
+            ? apiProduct.categorias.map(adaptApiCategory)
+            : createDefaultCategories(),
     };
 }
 
 /**
- * Adapta el vendedor de la API
+ * Adaptador para vendedor
  */
-function adaptApiVendedor(apiVendedor: any): VendedorInterface {
-    if (!apiVendedor) {
-        return createDefaultVendor();
-    }
+function adaptApiVendor(apiVendor: any): VendedorInterface {
+    if (!apiVendor) return createDefaultVendor();
 
     return {
-        id: apiVendedor.id,
-        name: apiVendedor.nombre || apiVendedor.usuario,
-        img: apiVendedor.imagen || "",
-        email: apiVendedor.email,
-        usuario: apiVendedor.usuario,
-        verificado: apiVendedor.verificado,
-        localidad: apiVendedor.localidad?.nombre,
+        id: apiVendor.id,
+        nombre: apiVendor.nombre,
+        imagen: apiVendor.imagen || "",
+        email: apiVendor.email,
+        usuario: apiVendor.usuario,
+        verificado: apiVendor.verificado,
+        localidad: apiVendor.localidad ? apiVendor.localidad.nombre : undefined,
+        telf: apiVendor.telf,
     };
 }
 
 /**
- * Adapta las categorías de la API
+ * Adaptador para categoría
  */
 function adaptApiCategory(apiCategory: any): CategoryInterface {
     return {
         id: apiCategory.id,
         name: apiCategory.nombre,
         img: apiCategory.imagen || "",
-        fatherId: apiCategory.categoriaPadre?.id,
+        fatherId: apiCategory.categoriaPadre ? apiCategory.categoriaPadre.id : undefined,
     };
+}
+
+/**
+ * Valores por defecto para vendedor (cuando no hay)
+ */
+function createDefaultVendor(): VendedorInterface {
+    return {
+        id: 0,
+        nombre: "Sin especificar!",
+        imagen: "",
+    };
+}
+
+/**
+ * Valores por defecto para categorías
+ */
+function createDefaultCategories(): CategoryInterface[] {
+    return [
+        {
+            id: 0,
+            name: "Sin categoría",
+            img: "",
+        },
+    ];
 }
 
 /**
@@ -77,42 +98,16 @@ export function adaptApiProducts(
  * Convierte un producto del frontend al formato de la API (para POST/PUT)
  */
 export function adaptProductToApi(
-    product: Partial<ProductInterface>
-): Partial<ApiProductRequest> {
+    product: ProductInterface
+): Partial<ApiProduct> {
     return {
         nombre: product.name,
         descripcion: product.description,
         precio: product.price,
-        imagen: product.img?.[0] || "",
-        categorias: product.categories?.map((cat) => cat.id),
-        vendedorId: product.vendedor?.id,
+        imagen: product.img[0] || "",
+        // Agregar otros campos según lo que acepte la API
     };
 }
-
-/**
- * Crea un producto vacío para formularios
- */
-export function createEmptyProduct(): Partial<ProductInterface> {
-    return {
-        name: "",
-        description: "",
-        price: 0,
-        img: [],
-        categories: [],
-    };
-}
-
-// ============ FUNCIONES AUXILIARES ============
-
-function createDefaultVendor(): VendedorInterface {
-    return {
-        id: 0,
-        name: "Sin especificar",
-        img: "",
-    };
-}
-
-// ============ FUNCIONES DE VALIDACIÓN ============
 
 /**
  * Valida que un producto de la API tenga los campos mínimos necesarios
@@ -122,8 +117,7 @@ export function validateApiProduct(apiProduct: any): apiProduct is ApiProduct {
         typeof apiProduct === "object" &&
         typeof apiProduct.id === "number" &&
         typeof apiProduct.nombre === "string" &&
-        (typeof apiProduct.precio === "number" ||
-            typeof apiProduct.precio === "object") // BigDecimal
+        typeof apiProduct.precio === "number"
     );
 }
 
