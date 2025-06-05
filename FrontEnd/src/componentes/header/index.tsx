@@ -35,11 +35,12 @@ function Header() {
                 </div>
 
                 <ul className={classes["page-header__list"]}>
-                    <li>
-                        <Link to="/" className={classes["page-header__link"]}>
-                            ¿Quiénes somos?
-                        </Link>
-                    </li>
+<li>
+  <Link to="/quienes-somos" className={classes["page-header__link"]}>
+    ¿Quiénes somos?
+  </Link>
+</li>
+
 
                     {/* Enlace PERFIL solo si está autenticado */}
                     {isAuthenticated && (
