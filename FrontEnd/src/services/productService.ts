@@ -1,4 +1,4 @@
-// src/services/productService.ts - PRIORIZA API REAL
+// src/services/productService.ts - PRIORIZA API REAL - CORREGIDO
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -137,6 +137,10 @@ export const productsService = {
         query: string,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
-        return this.getProducts({ query }, useCache);
+        // Corregido: usar productsService.getProducts en lugar de this.getProducts
+        return productsService.getProducts({ query }, useCache);
     },
 };
+
+// Exportar también como default para compatibilidad
+export default productsService;

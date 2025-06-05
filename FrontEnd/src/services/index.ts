@@ -8,6 +8,7 @@ import { createApiClient } from "./api";
 export const mercadilloService = {
     // Productos
     getProduct: productsService.getProduct,
+    getProductById: productsService.getProduct, // Alias para consistencia
     getProducts: productsService.getProducts,
     searchProducts: productsService.searchProducts,
 
