@@ -21,10 +21,68 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
             : ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
         video: [], // La API no devuelve videos por ahora
 
-        // Valores por defecto para campos que la API no incluye aún
-        vendedor: createDefaultVendor(),
-        categories: createDefaultCategories(),
+        // Aquí adaptamos el vendedor real que viene del backend
+        vendedor: adaptApiVendor(apiProduct.vendedor),
+
+        // Adaptamos categorías si existen o usamos default
+        categories: apiProduct.categorias
+            ? apiProduct.categorias.map(adaptApiCategory)
+            : createDefaultCategories(),
     };
+}
+
+/**
+ * Adaptador para vendedor
+ */
+function adaptApiVendor(apiVendor: any): VendedorInterface {
+    if (!apiVendor) return createDefaultVendor();
+
+    return {
+        id: apiVendor.id,
+        nombre: apiVendor.nombre,
+        imagen: apiVendor.imagen || "",
+        email: apiVendor.email,
+        usuario: apiVendor.usuario,
+        verificado: apiVendor.verificado,
+        localidad: apiVendor.localidad ? apiVendor.localidad.nombre : undefined,
+        telf: apiVendor.telf,
+    };
+}
+
+/**
+ * Adaptador para categoría
+ */
+function adaptApiCategory(apiCategory: any): CategoryInterface {
+    return {
+        id: apiCategory.id,
+        name: apiCategory.nombre,
+        img: apiCategory.imagen || "",
+        fatherId: apiCategory.categoriaPadre ? apiCategory.categoriaPadre.id : undefined,
+    };
+}
+
+/**
+ * Valores por defecto para vendedor (cuando no hay)
+ */
+function createDefaultVendor(): VendedorInterface {
+    return {
+        id: 0,
+        nombre: "Sin especificar!",
+        imagen: "",
+    };
+}
+
+/**
+ * Valores por defecto para categorías
+ */
+function createDefaultCategories(): CategoryInterface[] {
+    return [
+        {
+            id: 0,
+            name: "Sin categoría",
+            img: "",
+        },
+    ];
 }
 
 /**
@@ -50,28 +108,6 @@ export function adaptProductToApi(
         // Agregar otros campos según lo que acepte la API
     };
 }
-
-// ============ FUNCIONES AUXILIARES ============
-
-function createDefaultVendor(): VendedorInterface {
-    return {
-        id: 0,
-        name: "Sin especificar",
-        img: "",
-    };
-}
-
-function createDefaultCategories(): CategoryInterface[] {
-    return [
-        {
-            id: 0,
-            name: "Sin categoría",
-            img: "",
-        },
-    ];
-}
-
-// ============ FUNCIONES DE VALIDACIÓN ============
 
 /**
  * Valida que un producto de la API tenga los campos mínimos necesarios
