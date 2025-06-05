@@ -24,7 +24,6 @@ public class CompradorService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     public List<Comprador> listarCompradores() {
         return compradorRepository.findAll();
     }
@@ -45,7 +44,6 @@ public class CompradorService {
         compradorRepository.deleteById(id);
     }
 
-    // Ejemplo en CompradorService
     public Comprador login(String email, String rawPassword) {
         Comprador comprador = compradorRepository.findByEmail(email);
         if (comprador == null) {
@@ -62,8 +60,6 @@ public class CompradorService {
         return null;
     }
 
-
-
     public boolean existePorUsuario(String usuario) {
         return compradorRepository.existsByUsuario(usuario);
     }
@@ -72,29 +68,20 @@ public class CompradorService {
         return compradorRepository.findByEmail(email);
     }
 
-    public Comprador agregarProductoAlCarrito(String emailComprador, Long idProducto) {
-        Comprador comprador = compradorRepository.findByEmail(emailComprador);
+    public void agregarProductoAlCarrito(String usuario, Long idProducto) {
+        Comprador comprador = compradorRepository.findByUsuario(usuario);
         if (comprador == null) {
             throw new RuntimeException("Comprador no encontrado");
         }
 
-        Producto producto = productoRepository.findById(idProducto)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        List<Producto> carrito = comprador.getProductos();
-        if (carrito == null) {
-            carrito = new ArrayList<>();
-            comprador.setProductos(carrito);
+        Producto producto = productoRepository.findById(idProducto).orElse(null);
+        if (producto == null) {
+            throw new RuntimeException("Producto no encontrado");
         }
 
-        // Evitar duplicados si quieres
-        if (!carrito.contains(producto)) {
-            carrito.add(producto);
-        }
-
-        comprador.setProductos(carrito);
-
-        return compradorRepository.save(comprador);
+        comprador.getProductos().add(producto);
+        compradorRepository.save(comprador);
     }
+
 }
 

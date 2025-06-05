@@ -7,56 +7,55 @@ import com.example.springboot.model.Vendedor;
 import com.example.springboot.repository.CategoriaRepository;
 import com.example.springboot.repository.ProductoRepository;
 import com.example.springboot.repository.VendedorRepository;
+import com.example.springboot.repository.LocalidadRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.example.springboot.repository.LocalidadRepository;
-
+@Order(2)
 @Configuration
 public class DataLoader {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     CommandLineRunner initDatabase(ProductoRepository productoRepo,
                                    CategoriaRepository categoriaRepo,
                                    VendedorRepository vendedorRepo,
-                                  LocalidadRepository localidadRepo) {
+                                   LocalidadRepository localidadRepo) {
+
         return args -> {
+            System.out.println("📦 Iniciando carga de productos...");
+
+            // Crear y guardar categorías
             Map<String, Categoria> categorias = new HashMap<>();
+            for (String nombre : List.of("Ultramarinos", "Papelerías", "Discos", "Ropa", "Carpinteria")) {
+                Categoria cat = new Categoria();
+                cat.setNombre(nombre);
 
+                switch (nombre) {
+                    case "Ultramarinos" -> cat.setImagen("https://s1.ppllstatics.com/elcorreo/www/multimedia/202002/17/media/cortadas/ultramarinos20-kYXE-U10018206059290B-1248x770@El%20Correo.jpg");
+                    case "Papelerías" -> cat.setImagen("https://us.123rf.com/450wm/almaje/almaje1801/almaje180100908/94443196-volver-a-la-escuela-concepto-suministros-de-oficina-de-la-escuela.jpg?ver=6");
+                    case "Discos" -> cat.setImagen("https://www.lavanguardia.com/files/og_thumbnail/uploads/2018/02/19/5fa4312eb56bf.jpeg");
+                    case "Ropa" -> cat.setImagen("https://sopotey.com/blog/wp-content/uploads/2024/04/ropa-de-marca-original.jpg");
+                    case "Carpinteria" -> cat.setImagen("https://miroytengo.es/blog/wp-content/uploads/403-2.jpg");
+                }
 
-            Categoria cat1= new Categoria();
-            cat1.setNombre("Ultramarinos");
-            categoriaRepo.save(cat1);
-            categorias.put(cat1.getNombre(), cat1);
+                categoriaRepo.save(cat);
+                categorias.put(nombre, cat);
+            }
 
-            Categoria cat2= new Categoria();
-            cat2.setNombre("Papelerías");
-            categoriaRepo.save(cat2);
-            categorias.put(cat2.getNombre(), cat2);
-
-            Categoria cat3= new Categoria();
-            cat3.setNombre("Discos");
-            categoriaRepo.save(cat3);
-            categorias.put(cat3.getNombre(), cat3);
-
-            Categoria cat4= new Categoria();
-            cat4.setNombre("Ropa");
-            categoriaRepo.save(cat4);
-            categorias.put(cat4.getNombre(), cat4);
-
-            Categoria cat5= new Categoria();
-            cat5.setNombre("Carpinteria");
-            categoriaRepo.save(cat5);
-            categorias.put(cat5.getNombre(), cat5);
-
-// Crear localidad (si aún no existe)
+            // Localidad Málaga
             Localidad malaga = localidadRepo.findByNombre("Málaga");
             if (malaga == null) {
                 malaga = new Localidad();
@@ -64,8 +63,7 @@ public class DataLoader {
                 malaga = localidadRepo.save(malaga);
             }
 
-
-            // Crear o recuperar vendedor
+            // Vendedor Tasca Malagueña
             Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
             if (vendedorTasca == null) {
                 vendedorTasca = new Vendedor();
@@ -74,237 +72,100 @@ public class DataLoader {
                 vendedorTasca.setEmail("tascamalaga@gmail.com");
                 vendedorTasca.setTelf("644545467");
                 vendedorTasca.setVerificado(true);
-                vendedorTasca.setPassword("123456"); // Usa encoder si es necesario
+                vendedorTasca.setPassword(passwordEncoder.encode("123456")); // Usa PasswordEncoder en producción
                 vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTasca.setLocalidad(malaga);
                 vendedorTasca = vendedorRepo.save(vendedorTasca);
+                System.out.println("🛍️ Vendedor 'TascaMalaquena' creado.");
             }
 
+            // Lista de productos
+            List<Producto> productos = List.of(
+                    new Producto(null, "Tomate frito casero en tarro de vidrio", new BigDecimal("2.50"), "Tomate frito casero en tarro de vidrio",
+                            "https://assets.supermercadosmas.com/img/615x615/product/image/034147/034147.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
 
-            // Producto 1: Auriculares (Electrónica)
-    // ============ PRODUCTOS MÁS VENDIDOS (primeros en el array) ========
-        
-        Producto prod1 = new Producto();
-        prod1.setNombre("Tomate frito casero en tarro de vidrio");
-        prod1.setDescripcion("");
-        prod1.setImagen(
-            "");
-        prod1.setPrecio(new BigDecimal("1"));
-        prod1.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod1.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
-        productoRepo.save(prod1);
-        
-        Producto prod2 = new Producto();
-        prod2.setNombre("Mermelada de frutos del bosque artesanal");
-        prod2.setDescripcion("");   
-        prod2.setImagen(
-            "");
-        prod2.setPrecio(new BigDecimal("1"));
-        prod2.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod2.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
-        productoRepo.save(prod2);
-        
-        Producto prod3 = new Producto();
-        prod3.setNombre("Pimientos del piquillo confitados");
-        prod3.setDescripcion("");   
-        prod3.setImagen(
-            "");
-        prod3.setPrecio(new BigDecimal("1"));
-        prod3.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod3.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:11,    name:"Conservas ",  img:"", fatherId:1}
-        productoRepo.save(prod3);
-        
-        Producto prod4 = new Producto();
-        prod4.setNombre("Lentejas pardinas a granel");
-        prod4.setDescripcion("");   
-        prod4.setImagen(
-            "");
-        prod4.setPrecio(new BigDecimal("1"));
-        prod4.setCategorias(List.of(categorias.get("Ultramarinos")));
-        prod4.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
-        productoRepo.save(prod4);
-        
-        Producto prod5 = new Producto();
-        prod5.setNombre("Garbanzos ecológicos en saco de tela");
-        prod5.setDescripcion("");   
-        prod5.setImagen(
-            "");
-        prod5.setPrecio(new BigDecimal("1"));
-        prod5.setCategorias(List.of(categorias.get("Ultramarinos")));
-        prod5.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
-        productoRepo.save(prod5);
-        
-        Producto prod6 = new Producto();
-        prod6.setNombre("Alubias blancas seleccionadas");
-        prod6.setDescripcion("");   
-        prod6.setImagen(
-            "");
-        prod6.setPrecio(new BigDecimal("1"));
-        prod6.setCategorias(List.of(categorias.get("Ultramarinos")));
-        prod6.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:12,    name:"Legumbres",   img:"", fatherId:1}
-        productoRepo.save(prod6);
-        
-        Producto prod7 = new Producto();
-        prod7.setNombre("Chorizo curado de elaboración propia");
-        prod7.setDescripcion("");   
-        prod7.setImagen(
-            "");
-        prod7.setPrecio(new BigDecimal("1"));
-        prod7.setCategorias(List.of(categorias.get("Ultramarinos")));
-        prod7.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
-        productoRepo.save(prod7);
-    
-    Producto prod8 = new Producto();
-        prod8.setNombre("Salchichón ibérico artesanal");
-        prod8.setDescripcion("");
-        prod8.setImagen(
-            "");
-        prod8.setPrecio(new BigDecimal("1"));
-        prod8.setCategorias(List.of(categorias.get("Ultramarinos")));
-        prod8.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
-        productoRepo.save(prod8);
-        
-        Producto prod9 = new Producto();
-        prod9.setNombre("Morcilla de cebolla local");
-        prod9.setDescripcion("");   
-        prod9.setImagen(
-            "");
-        prod9.setPrecio(new BigDecimal("1"));
-        prod9.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod9.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-            //{   id:13,    name:"Embutidos",   img:"", fatherId:1}
-        productoRepo.save(prod9);
-        
-        Producto prod10 = new Producto();
-        prod10.setNombre("Cervesa");
-        prod10.setDescripcion("");
-        prod10.setImagen(
-            ""  );
-        prod10.setPrecio(new BigDecimal("1"));
-        prod10.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod10.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
-        productoRepo.save(prod10);
-        
-        Producto prod11 = new Producto();
-        prod11.setNombre("Licor de hierbas ");
-        prod11.setDescripcion("");
-        prod11.setImagen(
-            ""  );
-        prod11.setPrecio(new BigDecimal("1"));
-        prod11.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod11.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
-        productoRepo.save(prod11);
-        
-        Producto prod12 = new Producto();
-        prod12.setNombre("Vino dulce");
-        prod12.setDescripcion("");
-        prod12.setImagen(
-            ""  );
-        prod12.setPrecio(new BigDecimal("1"));
-        prod12.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod12.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:14,    name:"Vinos y licores", img:"", fatherId:1},
-        productoRepo.save(prod12);
-        
-        Producto prod13 = new Producto();
-        prod13.setNombre("Aceite de oliva virgen extra prensado en frío");
-        prod13.setDescripcion("");
-        prod13.setImagen(
-            ""  );
-        prod13.setPrecio(new BigDecimal("1"));
-        prod13.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod13.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
-        productoRepo.save(prod13);
-        
-        Producto prod14 = new Producto();
-        prod14.setNombre("Vinagre de manzana fermentado natural");
-        prod14.setDescripcion("");
-        prod14.setImagen(
-            ""  );
-        prod14.setPrecio(new BigDecimal("1"));
-        prod14.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod14.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
-        productoRepo.save(prod14);
-        
-        Producto prod15 = new Producto();
-        prod15.setNombre("Aceite infusionado con romero y ajo");
-        prod15.setDescripcion("");
-        prod15.setImagen(
-            ""  );
-        prod15.setPrecio(new BigDecimal("1"));
-        prod15.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod15.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:15,    name:"Aceites y vinagres",  img:"", fatherId:1},
-        productoRepo.save(prod15);
-        
-        Producto prod16 = new Producto();
-        prod16.setNombre("Hogaza de masa madre");
-        prod16.setDescripcion("");
-        prod16.setImagen(
-            ""  );
-        prod16.setPrecio(new BigDecimal("1"));
-        prod16.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod16.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
-        productoRepo.save(prod16);
-        
-        Producto prod17 = new Producto();
-        prod17.setNombre("Pan de higo");
-        prod17.setDescripcion("");
-        prod17.setImagen(
-            ""  );
-        prod17.setPrecio(new BigDecimal("1"));
-        prod17.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod17.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
-        productoRepo.save(prod17);
-        
-        Producto prod18 = new Producto();
-        prod18.setNombre("Polvorones hechos a mano");
-        prod18.setDescripcion("");
-        prod18.setImagen(
-            ""  );
-        prod18.setPrecio(new BigDecimal("1"));
-        prod18.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod18.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
-        productoRepo.save(prod18);
-        
-        Producto prod19 = new Producto();
-        prod19.setNombre("Turrón de almendra artesanal");
-        prod19.setDescripcion("");
-        prod19.setImagen(
-            ""  );
-        prod19.setPrecio(new BigDecimal("1"));
-        prod19.setCategorias(List.of(categorias.get("Ultramarinos")));
-            prod19.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:16,    name:"Pan / bollería",  img:"", fatherId:1},
-        productoRepo.save(prod19);
-        
-        Producto prod20 = new Producto();
-        prod20.setNombre("Cartulinas texturizadas hechas con papel reciclado");
-        prod20.setDescripcion("");
-        prod20.setImagen(
-            ""  );
-        prod20.setPrecio(new BigDecimal("1"));
-        prod20.setCategorias(List.of(categorias.get("Papelerías")));
-        prod20.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
-                //{   id:17,    name:"Cartulinas",  img:"", fatherId:2},
-        productoRepo.save(prod20);
-       
-        System.out.println("Todos los Yroductos y categorías fueron cargados en la base de datos.");
+                    new Producto(null, "Mermelada de frutos del bosque artesanal", new BigDecimal("3.75"), "Mermelada de frutos del bosque artesanal",
+                            "https://www.lartesana.com/627-large_default/mermelada-de-frutos-bosque.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Pimientos del piquillo confitados", new BigDecimal("4.00"), "Pimientos del piquillo confitados",
+                            "https://rosara.com/wp-content/uploads/2023/08/14510-Pimiento-piquillo-confitado-125-ml-e1690964319575.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Lentejas pardinas a granel", new BigDecimal("1.80"), "Lentejas pardinas a granel",
+                            "https://ecosdelatierra.es/wp-content/uploads/2021/01/Lenteja-Pardina-Bio-500gr-1024x1024.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Garbanzos ecológicos en saco de tela", new BigDecimal("2.20"), "Garbanzos ecológicos en saco de tela",
+                            "https://tienda.verdebioleta.com/img/media/products/216717/imggran.JPG?t=1531156996",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Alubias blancas seleccionadas", new BigDecimal("2.10"), "Alubias blancas seleccionadas",
+                            "https://pamplona.e-leclerc.es/documents/10180/10815/8435307400444_G.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Chorizo curado de elaboración propia", new BigDecimal("5.50"), "Chorizo curado de elaboración propia",
+                            "https://ejemplo.com/img/chorizo_curado.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Salchichón ibérico artesanal", new BigDecimal("5.00"), "Salchichón ibérico artesanal",
+                            "https://ejemplo.com/img/salchichon_iberico.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Morcilla de cebolla local", new BigDecimal("4.75"), "Morcilla de cebolla local",
+                            "https://ejemplo.com/img/morcilla_cebola.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Cerveza", new BigDecimal("1.50"), "Cerveza",
+                            "https://ejemplo.com/img/cerveza.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Licor de hierbas", new BigDecimal("6.00"), "Licor de hierbas",
+                            "https://ejemplo.com/img/licor_hierbas.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Vino dulce", new BigDecimal("4.50"), "Vino dulce",
+                            "https://ejemplo.com/img/vino_dulce.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Aceite de oliva virgen extra prensado en frío", new BigDecimal("7.00"), "Aceite de oliva virgen extra prensado en frío",
+                            "https://ejemplo.com/img/aceite_oliva_virgen.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Vinagre de manzana fermentado natural", new BigDecimal("3.00"), "Vinagre de manzana fermentado natural",
+                            "https://ejemplo.com/img/vinagre_manzana.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Aceite infusionado con romero y ajo", new BigDecimal("7.50"), "Aceite infusionado con romero y ajo",
+                            "https://ejemplo.com/img/aceite_romero_ajo.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Hogaza de masa madre", new BigDecimal("2.80"), "Hogaza de masa madre",
+                            "https://ejemplo.com/img/hogaza_masa_madre.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Pan de higo", new BigDecimal("3.20"), "Pan de higo",
+                            "https://ejemplo.com/img/pan_higo.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Polvorones hechos a mano", new BigDecimal("4.10"), "Polvorones hechos a mano",
+                            "https://ejemplo.com/img/polvorones_mano.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Turrón de almendra artesanal", new BigDecimal("5.25"), "Turrón de almendra artesanal",
+                            "https://ejemplo.com/img/turron_almendra.jpg",
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+
+                    new Producto(null, "Cartulinas texturizadas hechas con papel reciclado", new BigDecimal("1.80"), "Cartulinas texturizadas hechas con papel reciclado",
+                            "https://ejemplo.com/img/cartulinas_texturizadas.jpg",
+                            null, List.of(categorias.get("Papelerías")), vendedorTasca)
+            );
+
+            // Guardar productos en la base de datos
+            productoRepo.saveAll(productos);
+
+            System.out.println("✔️ Productos y categorías cargados correctamente.");
         };
     }
 }

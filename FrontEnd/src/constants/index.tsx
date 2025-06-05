@@ -16,6 +16,7 @@ export const ENDPOINTS = {
 // Rutas de la aplicación
 export const ROUTES = {
     HOME: "/",
+    WHO_WE_ARE: "/quienes-somos", 
     LOGIN: "/login",
     REGISTER: "/registro",
     CART: "/carrito",

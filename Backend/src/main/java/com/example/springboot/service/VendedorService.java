@@ -56,7 +56,7 @@ public class VendedorService {
         return vendedorRepository.findByEmail(email);
     }
 
-    public Vendedor findByUsuario(String usuario) {
+        public Vendedor findByUsuario(String usuario) {
         return vendedorRepository.findByUsuario(usuario);
     }
 

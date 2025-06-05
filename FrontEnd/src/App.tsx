@@ -5,7 +5,6 @@ import axios from "axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider, CartProvider, useUser } from "./contexts";
 import { MunicipioProvider } from "./contexts/municipioContext";
-import { VendorProductsProvider } from "./contexts/vendorProductsContext";
 
 // Guards y Error Handling
 import MunicipioGuard from "./componentes/municipioGuard";
@@ -14,6 +13,7 @@ import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 // Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
 import MunicipioSelector from "./pages/municipioSelector";
+import WhoWeAre from "./pages/whoWeAre"; // Importa tu componente "Quiénes Somos"
 
 // Lazy loading para páginas no críticas
 const CategoryProducts = lazy(() => import("./pages/categoryProducts"));
@@ -100,154 +100,150 @@ function AppContent() {
                         element={
                             <MunicipioGuard>
                                 <CartProvider userId={user.id}>
-                                    <VendorProductsProvider>
-                                        <Routes>
-                                            <Route
-                                                path="/"
-                                                element={<Home />}
-                                            />
-                                            <Route
-                                                path="/categoria/:categoryId"
-                                                element={
-                                                    <PageSuspense>
-                                                        <CategoryProducts />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/producto/:productId"
-                                                element={
-                                                    <PageSuspense>
-                                                        <ProductDetail />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/perfil"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Perfil />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/carrito"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Cart />
-                                                    </PageSuspense>
-                                                }
-                                            />
+                                    <Routes>
+                                        <Route path="/" element={<Home />} />
+                                        <Route
+                                            path="/quienes-somos"
+                                            element={<WhoWeAre />}
+                                        />
+                                        <Route
+                                            path="/categoria/:categoryId"
+                                            element={
+                                                <PageSuspense>
+                                                    <CategoryProducts />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/producto/:productId"
+                                            element={
+                                                <PageSuspense>
+                                                    <ProductDetail />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/perfil"
+                                            element={
+                                                <PageSuspense>
+                                                    <Perfil />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/carrito"
+                                            element={
+                                                <PageSuspense>
+                                                    <Cart />
+                                                </PageSuspense>
+                                            }
+                                        />
 
-                                            {/* RUTAS DE VENDEDORES */}
-                                            <Route
-                                                path="/mis-productos"
-                                                element={
-                                                    <PageSuspense>
-                                                        <VendorProducts />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/subir-producto"
-                                                element={
-                                                    <PageSuspense>
-                                                        <CreateProduct />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/editar-producto/:productId"
-                                                element={
-                                                    <PageSuspense>
-                                                        <EditProduct />
-                                                    </PageSuspense>
-                                                }
-                                            />
+                                        {/* RUTAS DE VENDEDORES */}
+                                        <Route
+                                            path="/mis-productos"
+                                            element={
+                                                <PageSuspense>
+                                                    <VendorProducts />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/subir-producto"
+                                            element={
+                                                <PageSuspense>
+                                                    <CreateProduct />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/editar-producto/:productId"
+                                            element={
+                                                <PageSuspense>
+                                                    <EditProduct />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        {/* RUTAS DE PAGO CON LAZY LOADING */}
+                                        <Route
+                                            path="/checkout"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando sistema
+                                                                de pagos...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/pago"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando sistema
+                                                                de pagos...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/pago/confirmacion"
+                                            element={
+                                                <PageSuspense>
+                                                    <Suspense
+                                                        fallback={
+                                                            <div>
+                                                                Cargando
+                                                                confirmación...
+                                                            </div>
+                                                        }
+                                                    >
+                                                        <LazyPaymentProvider>
+                                                            <Checkout />
+                                                        </LazyPaymentProvider>
+                                                    </Suspense>
+                                                </PageSuspense>
+                                            }
+                                        />
 
-                                            {/* RUTAS DE PAGO CON LAZY LOADING */}
-                                            <Route
-                                                path="/checkout"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Suspense
-                                                            fallback={
-                                                                <div>
-                                                                    Cargando
-                                                                    sistema de
-                                                                    pagos...
-                                                                </div>
-                                                            }
-                                                        >
-                                                            <LazyPaymentProvider>
-                                                                <Checkout />
-                                                            </LazyPaymentProvider>
-                                                        </Suspense>
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/pago"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Suspense
-                                                            fallback={
-                                                                <div>
-                                                                    Cargando
-                                                                    sistema de
-                                                                    pagos...
-                                                                </div>
-                                                            }
-                                                        >
-                                                            <LazyPaymentProvider>
-                                                                <Checkout />
-                                                            </LazyPaymentProvider>
-                                                        </Suspense>
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/pago/confirmacion"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Suspense
-                                                            fallback={
-                                                                <div>
-                                                                    Cargando
-                                                                    confirmación...
-                                                                </div>
-                                                            }
-                                                        >
-                                                            <LazyPaymentProvider>
-                                                                <Checkout />
-                                                            </LazyPaymentProvider>
-                                                        </Suspense>
-                                                    </PageSuspense>
-                                                }
-                                            />
-
-                                            <Route
-                                                path="/login"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Login />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="/registro"
-                                                element={
-                                                    <PageSuspense>
-                                                        <Register />
-                                                    </PageSuspense>
-                                                }
-                                            />
-                                            <Route
-                                                path="*"
-                                                element={<NotFoundPage />}
-                                            />
-                                        </Routes>
-                                    </VendorProductsProvider>
+                                        <Route
+                                            path="/login"
+                                            element={
+                                                <PageSuspense>
+                                                    <Login />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="/registro"
+                                            element={
+                                                <PageSuspense>
+                                                    <Register />
+                                                </PageSuspense>
+                                            }
+                                        />
+                                        <Route
+                                            path="*"
+                                            element={<NotFoundPage />}
+                                        />
+                                    </Routes>
                                 </CartProvider>
                             </MunicipioGuard>
                         }
@@ -260,6 +256,14 @@ function AppContent() {
                             element={
                                 <MunicipioGuard>
                                     <Home />
+                                </MunicipioGuard>
+                            }
+                        />
+                        <Route
+                            path="/quienes-somos"
+                            element={
+                                <MunicipioGuard>
+                                    <WhoWeAre />
                                 </MunicipioGuard>
                             }
                         />
