@@ -26,6 +26,7 @@ export const ROUTES = {
     CHECKOUT: "/checkout", // NUEVO
     PAYMENT: "/pago", // NUEVO
     PAYMENT_CONFIRMATION: "/pago/confirmacion", // NUEVO
+    VENDOR_PRODUCTS: "/mis-productos", // NUEVO: Ruta para gestión de productos de vendedores
 } as const;
 
 // Configuración de cache
@@ -54,6 +55,7 @@ export const ERROR_MESSAGES = {
     NOT_FOUND: "El recurso solicitado no fue encontrado",
     VALIDATION: "Los datos ingresados no son válidos",
     SERVER: "Error en el servidor. Intenta más tarde",
+    VENDOR_ONLY: "Solo los vendedores pueden acceder a esta página", // NUEVO
 } as const;
 
 // Mensajes de éxito
@@ -64,6 +66,9 @@ export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Sesión iniciada correctamente",
     REGISTER_SUCCESS: "Cuenta creada exitosamente",
     PROFILE_UPDATED: "Perfil actualizado correctamente",
+    PRODUCT_CREATED: "Producto creado exitosamente", // NUEVO
+    PRODUCT_UPDATED: "Producto actualizado correctamente", // NUEVO
+    PRODUCT_DELETED: "Producto eliminado correctamente", // NUEVO
 } as const;
 
 // Configuración de la aplicación
@@ -82,7 +87,7 @@ export const APP_CONFIG = {
 // Roles de usuario
 export const USER_ROLES = {
     USER: "user",
-    VENDOR: "vendor",
+    VENDOR: "VENDEDOR", // Actualizado para coincidir con el backend
     ADMIN: "admin",
 } as const;
 
@@ -125,6 +130,9 @@ export const PRODUCT_CONFIG = {
     MAX_IMAGES: 10,
     MAX_NAME_LENGTH: 100,
     MAX_DESCRIPTION_LENGTH: 1000,
+    MIN_NAME_LENGTH: 3, // NUEVO
+    MIN_DESCRIPTION_LENGTH: 10, // NUEVO
+    MAX_CATEGORIES: 5, // NUEVO
 } as const;
 
 // Patrones de validación
@@ -177,4 +185,39 @@ export const buildRoute = (
 };
 
 // variable con la url del placeholder
-export const PlaceholderURL = "https://dn721900.ca.archive.org/0/items/placeholder-image_202006/placeholder-image.jpg";
+export const PlaceholderURL =
+    "https://dn721900.ca.archive.org/0/items/placeholder-image_202006/placeholder-image.jpg";
+
+// Función helper para verificar si un usuario es vendedor
+export const isVendor = (userRole?: string): boolean => {
+    return userRole === USER_ROLES.VENDOR;
+};
+
+// Función helper para generar breadcrumbs dinámicos
+export const generateBreadcrumbs = (currentPath: string) => {
+    const pathSegments = currentPath.split("/").filter(Boolean);
+    const breadcrumbs = [{ name: "Inicio", path: "/" }];
+
+    let currentRoute = "";
+    pathSegments.forEach((segment, index) => {
+        currentRoute += `/${segment}`;
+
+        // Mapear segmentos a nombres legibles
+        const segmentNames: Record<string, string> = {
+            "mis-productos": "Mis Productos",
+            perfil: "Mi Perfil",
+            carrito: "Carrito",
+            categoria: "Categoría",
+            producto: "Producto",
+            checkout: "Finalizar Compra",
+            pago: "Pago",
+        };
+
+        const name =
+            segmentNames[segment] ||
+            segment.charAt(0).toUpperCase() + segment.slice(1);
+        breadcrumbs.push({ name, path: currentRoute });
+    });
+
+    return breadcrumbs;
+};
