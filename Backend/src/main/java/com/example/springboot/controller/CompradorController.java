@@ -41,13 +41,5 @@ public class CompradorController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{email}/carrito/{productoId}")
-    public ResponseEntity<Comprador> agregarProductoAlCarrito(
-            @PathVariable String email,
-            @PathVariable Long productoId) {
-        Comprador compradorActualizado = compradorService.agregarProductoAlCarrito(email, productoId);
-        return ResponseEntity.ok(compradorActualizado);
-    }
-
     
 }

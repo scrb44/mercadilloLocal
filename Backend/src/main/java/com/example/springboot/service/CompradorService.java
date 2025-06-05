@@ -4,11 +4,13 @@ import com.example.springboot.model.Comprador;
 import com.example.springboot.model.Producto;
 import com.example.springboot.repository.CompradorRepository;
 import com.example.springboot.repository.ProductoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -68,29 +70,36 @@ public class CompradorService {
         return compradorRepository.findByEmail(email);
     }
 
-    public Comprador agregarProductoAlCarrito(String emailComprador, Long idProducto) {
-        Comprador comprador = compradorRepository.findByEmail(emailComprador);
-        if (comprador == null) {
-            throw new RuntimeException("Comprador no encontrado");
-        }
-
-        Producto producto = productoRepository.findById(idProducto)
+    @Transactional
+    public void agregarProductoAlCarrito(Long compradorId, Long productoId) {
+        Comprador comprador = compradorRepository.findById(compradorId)
+                .orElseThrow(() -> new RuntimeException("Comprador no encontrado"));
+        Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        List<Producto> carrito = comprador.getProductos();
-        if (carrito == null) {
-            carrito = new ArrayList<>();
-            comprador.setProductos(carrito);
-        }
-
-        // Evitar duplicados si quieres
-        if (!carrito.contains(producto)) {
-            carrito.add(producto);
-        }
-
-        comprador.setProductos(carrito);
-
-        return compradorRepository.save(comprador);
+        comprador.getProductos().add(producto);
+        compradorRepository.save(comprador);
     }
+
+
+    public List<Producto> obtenerProductosDelCarritoPorEmail(String email) {
+        Comprador comprador = compradorRepository.findByEmail(email);
+        if (comprador != null) {
+            return comprador.getProductos();
+        }
+        return Collections.emptyList();
+    }
+
+    @Transactional
+    public void quitarProductoDelCarrito(Long compradorId, Long productoId) {
+        Comprador comprador = compradorRepository.findById(compradorId)
+                .orElseThrow(() -> new RuntimeException("Comprador no encontrado"));
+        Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        comprador.getProductos().remove(producto);
+        compradorRepository.save(comprador);
+    }
+
 }
 
