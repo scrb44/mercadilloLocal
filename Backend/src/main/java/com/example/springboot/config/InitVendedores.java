@@ -21,12 +21,12 @@ public class InitVendedores {
 
         return args -> {
             // Crear provincia
-           Localidad malaga = new Localidad();
+          /* Localidad malaga = new Localidad();
             malaga.setNombre("Málaga");
-            malaga = provinciaRepository.save(malaga);
+            malaga = provinciaRepository.save(malaga);*/
 
             // Crear vendedor
-            Vendedor vendedorTasca = new Vendedor();
+            /*Vendedor vendedorTasca = new Vendedor();
             vendedorTasca.setNombre("Tasca Malagueña");
             vendedorTasca.setUsuario("TascaMalaquena");
             vendedorTasca.setEmail("tascamalaga@gmail.com");
@@ -35,7 +35,7 @@ public class InitVendedores {
             vendedorTasca.setPassword(passwordEncoder.encode("123456"));
             vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
             vendedorTasca.setLocalidad(malaga);
-            vendedorRepository.save(vendedorTasca);
+            vendedorRepository.save(vendedorTasca);*/
             System.out.println("✔️ Vendedores iniciales cargados.");
         };
     }

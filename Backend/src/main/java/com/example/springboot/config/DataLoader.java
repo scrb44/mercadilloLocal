@@ -57,15 +57,25 @@ public class DataLoader {
             categorias.put(cat5.getNombre(), cat5);
 
 
-                Localidad   malaga = new Localidad();
-                malaga.setNombre("Málaga");
-                malaga = localidadRepo.save(malaga);
-                localidadRepo.save(malaga);
+            Localidad malaga = new Localidad();
+            malaga.setNombre("Málaga");
+            localidadRepo.save(malaga);
+
             Localidad fuengirola = new Localidad();
-                fuengirola.setNombre("fuengirola");
-                fuengirola = localidadRepo.save(fuengirola);
+            fuengirola.setNombre("fuengirola");
             localidadRepo.save(fuengirola);
 
+            Localidad ojen = new Localidad();
+            ojen.setNombre("ojen");
+            localidadRepo.save(ojen);
+
+            Localidad istan = new Localidad();
+            istan.setNombre("istan");
+            localidadRepo.save(istan);
+
+            Localidad coin = new Localidad();
+            coin.setNombre("coin");
+            localidadRepo.save(coin);
 
             // Crear o recuperar vendedor
             Vendedor vendedorTasca = new Vendedor();
@@ -77,7 +87,7 @@ public class DataLoader {
                 vendedorTasca.setPassword("123456"); // Usa encoder si es necesario
                 vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTasca.setLocalidad(malaga);
-                vendedorTasca = vendedorRepo.save(vendedorTasca);
+                vendedorRepo.save(vendedorTasca);
 
             Vendedor vendedorPaco = new Vendedor();
                 vendedorPaco.setNombre("Tasca Fuengirola");
@@ -88,7 +98,7 @@ public class DataLoader {
                 vendedorPaco.setPassword("123456"); // Usa encoder si es necesario
                 vendedorPaco.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorPaco.setLocalidad(fuengirola);
-                vendedorPaco = vendedorRepo.save(vendedorPaco);
+                vendedorRepo.save(vendedorPaco);
 
 
             // Producto 1: Auriculares (Electrónica)

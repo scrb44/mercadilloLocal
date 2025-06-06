@@ -21,21 +21,15 @@ private final CategoriaService categoriaService;
         this.categoriaService = categoriaService;
     }
 
+
     @GetMapping()
     public List<Categoria> obtenerCagorias(@RequestParam(required = false) Long localidadId) {
-//        return categoriaService.obtenerTodos().stream()
-//            .filter(p -> p.getProductos() != null)
-//            .collect(Collectors.toList());
-     //   return categoriaService.categoriasConProductos(localidadId);
-        return categoriaService.categoriasConProductos(localidadId);
+        if(localidadId == null)
+            return categoriaService.obtenerTodos();
+        else
+            return categoriaService.categoriasConProductos(localidadId);
     }
 
-/*
-    @GetMapping("/categorias")
-    public List<Categoria> obtener( @RequestParam(required = false) Long id) {
-        return categoriaService.unir();
-    }
-*/
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> obtenerComprador(@PathVariable Long id) {
         Categoria categoria = categoriaService.buscarPorId(id);
