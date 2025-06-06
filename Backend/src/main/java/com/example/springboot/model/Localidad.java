@@ -47,12 +47,4 @@ public class Localidad {
     public void setProvincia(String provincia) {
         this.provincia = provincia;
     }
-
-    public List<Vendedor> getVendedores() {
-        return vendedores;
-    }
-
-    public void setVendedores(List<Vendedor> vendedores) {
-        this.vendedores = vendedores;
-    }
 }

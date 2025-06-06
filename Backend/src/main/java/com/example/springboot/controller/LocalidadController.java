@@ -5,7 +5,6 @@ import com.example.springboot.service.LocalidadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/provincias")
@@ -22,13 +21,6 @@ public class LocalidadController {
     @GetMapping
     public List<Localidad> getAll() {
         return localidadService.getAllProvincias();
-    }
-
-    @GetMapping("/conVendedores")
-    public List<Localidad> getConVendedores(){
-        return localidadService.getAllProvincias().stream()
-            .filter(p -> (p.getVendedores() != null ))
-            .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
