@@ -31,6 +31,10 @@ public class VendedorService {
         return vendedorRepository.findById(id).orElse(null);
     }
 
+    public Vendedor buscarPorEmail(String email) {
+        return vendedorRepository.findByEmail(email);
+    }
+
     public void eliminarVendedor(Long id) {
         vendedorRepository.deleteById(id);
     }
