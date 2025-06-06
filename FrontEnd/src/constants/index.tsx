@@ -8,6 +8,8 @@ export const ENDPOINTS = {
     CATEGORIES: "/api/Categoria",
     VENDORS: "/api/vendedores",
     CART: "/api/carrito",
+    CART_ADD: "/api/carrito/agregar",      
+    CART_REMOVE: "/api/carrito/quitar",    
     AUTH: "/api/auth",
     USER: "/api/usuario",
     PAYMENTS: "/api/payments", // NUEVO: Endpoints de pago

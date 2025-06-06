@@ -11,23 +11,20 @@ export async function get<T = unknown>(
             url.startsWith("http") ? url : API_BASE_URL + url,
             {
                 signal,
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
             }
         );
 
         if (!response.ok) {
-            const error: ApiError = {
+            throw {
                 message: `HTTP error! status: ${response.status}`,
                 status: response.status,
-            };
-            throw error;
+            } as ApiError;
         }
 
         return await response.json();
     } catch (error) {
-        console.error("API request failed:", error);
+        console.error("GET request failed:", error);
         throw error;
     }
 }
@@ -43,63 +40,28 @@ export async function post<T = unknown>(
             {
                 method: "POST",
                 signal,
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             }
         );
 
         if (!response.ok) {
-            const error: ApiError = {
+            throw {
                 message: `HTTP error! status: ${response.status}`,
                 status: response.status,
-            };
-            throw error;
+            } as ApiError;
         }
 
         return await response.json();
     } catch (error) {
-        console.error("API request failed:", error);
-        throw error;
-    }
-}
-
-export async function put<T = unknown>(
-    url: string,
-    data: any,
-    signal?: AbortSignal
-): Promise<T> {
-    try {
-        const response = await fetch(
-            url.startsWith("http") ? url : API_BASE_URL + url,
-            {
-                method: "PUT",
-                signal,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            }
-        );
-
-        if (!response.ok) {
-            const error: ApiError = {
-                message: `HTTP error! status: ${response.status}`,
-                status: response.status,
-            };
-            throw error;
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error("API request failed:", error);
+        console.error("POST request failed:", error);
         throw error;
     }
 }
 
 export async function deleteRequest<T = unknown>(
     url: string,
+    data?: any,
     signal?: AbortSignal
 ): Promise<T> {
     try {
@@ -108,23 +70,21 @@ export async function deleteRequest<T = unknown>(
             {
                 method: "DELETE",
                 signal,
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
+                body: data ? JSON.stringify(data) : undefined,
             }
         );
 
         if (!response.ok) {
-            const error: ApiError = {
+            throw {
                 message: `HTTP error! status: ${response.status}`,
                 status: response.status,
-            };
-            throw error;
+            } as ApiError;
         }
 
         return await response.json();
     } catch (error) {
-        console.error("API request failed:", error);
+        console.error("DELETE request failed:", error);
         throw error;
     }
 }
@@ -134,11 +94,8 @@ export function createApiClient() {
 
     return {
         get: <T>(url: string) => get<T>(url, controller.signal),
-        post: <T>(url: string, data: any) =>
-            post<T>(url, data, controller.signal),
-        put: <T>(url: string, data: any) =>
-            put<T>(url, data, controller.signal),
-        delete: <T>(url: string) => deleteRequest<T>(url, controller.signal),
+        post: <T>(url: string, data: any) => post<T>(url, data, controller.signal),
+        delete: <T>(url: string, data?: any) => deleteRequest<T>(url, data, controller.signal),
         abort: () => controller.abort(),
     };
 }

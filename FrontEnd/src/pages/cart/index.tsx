@@ -1,14 +1,18 @@
-// src/pages/cart/index.tsx - ACTUALIZADO CON BOTÓN DE CHECKOUT
+// src/pages/cart/index.tsx
 
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
-import { SimpleBreadcrumb, CartItem, Footer, Header } from "../../componentes";
-
+import {
+    SimpleBreadcrumb,
+    CartItem,
+    Footer,
+    Header,
+} from "../../componentes";
 import classes from "./Cart.module.css";
 
 function Cart() {
-    const { isAuthenticated } = useUser();
-    const cart = isAuthenticated ? useCart() : null;
+    const { user, isAuthenticated } = useUser();
+    const cart = useCart(); // Ya estás dentro de un CartProvider, se asume que userId se pasó correctamente
     const navigate = useNavigate();
 
     // ============ HANDLERS ============
@@ -16,8 +20,6 @@ function Cart() {
         productId: number,
         newQuantity: number
     ) => {
-        if (!cart) return;
-
         try {
             await cart.updateQuantity(productId, newQuantity);
         } catch (error) {
@@ -26,8 +28,6 @@ function Cart() {
     };
 
     const handleRemoveItem = async (productId: number) => {
-        if (!cart) return;
-
         try {
             await cart.removeItem(productId);
         } catch (error) {
@@ -36,8 +36,6 @@ function Cart() {
     };
 
     const handleClearCart = async () => {
-        if (!cart) return;
-
         if (window.confirm("¿Estás seguro de que quieres vaciar el carrito?")) {
             try {
                 await cart.clearCart();
@@ -47,14 +45,13 @@ function Cart() {
         }
     };
 
-    // NUEVO: Handler para ir al checkout
     const handleCheckout = () => {
         if (!isAuthenticated) {
             navigate("/login?redirect=/checkout");
             return;
         }
 
-        if (cart && cart.items.length > 0) {
+        if (cart.items.length > 0) {
             navigate("/checkout");
         }
     };
@@ -64,7 +61,8 @@ function Cart() {
     };
 
     // ============ RENDER STATES ============
-    if (!isAuthenticated) {
+
+    if (!isAuthenticated || !user) {
         return (
             <div className={classes.cart}>
                 <Header />
@@ -81,25 +79,6 @@ function Cart() {
                                 ← Volver al inicio
                             </Link>
                         </div>
-                    </div>
-                </div>
-                <Footer />
-            </div>
-        );
-    }
-
-    if (!cart) {
-        return (
-            <div className={classes.cart}>
-                <Header />
-                <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Carrito" />
-
-                    <div className={classes.errorState}>
-                        <p>Error al cargar el carrito</p>
-                        <Link to="/" className={classes.backLink}>
-                            ← Volver al inicio
-                        </Link>
                     </div>
                 </div>
                 <Footer />
@@ -209,7 +188,6 @@ function Cart() {
                                 </div>
 
                                 <div className={classes.checkoutActions}>
-                                    {/* ACTUALIZADO: Botón de checkout */}
                                     <button
                                         onClick={handleCheckout}
                                         className={classes.checkoutButton}
