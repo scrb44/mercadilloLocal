@@ -56,19 +56,19 @@ public class DataLoader {
             categoriaRepo.save(cat5);
             categorias.put(cat5.getNombre(), cat5);
 
-// Crear localidad (si aún no existe)
-            Localidad malaga = localidadRepo.findByNombre("Málaga");
-            if (malaga == null) {
-                malaga = new Localidad();
+
+                Localidad   malaga = new Localidad();
                 malaga.setNombre("Málaga");
                 malaga = localidadRepo.save(malaga);
-            }
+                localidadRepo.save(malaga);
+            Localidad fuengirola = new Localidad();
+                fuengirola.setNombre("fuengirola");
+                fuengirola = localidadRepo.save(fuengirola);
+            localidadRepo.save(fuengirola);
 
 
             // Crear o recuperar vendedor
-            Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
-            if (vendedorTasca == null) {
-                vendedorTasca = new Vendedor();
+            Vendedor vendedorTasca = new Vendedor();
                 vendedorTasca.setNombre("Tasca Malagueña");
                 vendedorTasca.setUsuario("TascaMalaquena");
                 vendedorTasca.setEmail("tascamalaga@gmail.com");
@@ -78,7 +78,17 @@ public class DataLoader {
                 vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTasca.setLocalidad(malaga);
                 vendedorTasca = vendedorRepo.save(vendedorTasca);
-            }
+
+            Vendedor vendedorPaco = new Vendedor();
+                vendedorPaco.setNombre("Tasca Fuengirola");
+                vendedorPaco.setUsuario("TascaMalaquena");
+                vendedorPaco.setEmail("tascamalaga@gmail.com");
+                vendedorPaco.setTelf("644545467");
+                vendedorPaco.setVerificado(true);
+                vendedorPaco.setPassword("123456"); // Usa encoder si es necesario
+                vendedorPaco.setImagen("https://ejemplo.com/tasca.jpg");
+                vendedorPaco.setLocalidad(fuengirola);
+                vendedorPaco = vendedorRepo.save(vendedorPaco);
 
 
             // Producto 1: Auriculares (Electrónica)
@@ -300,7 +310,7 @@ public class DataLoader {
             ""  );
         prod20.setPrecio(new BigDecimal("1"));
         prod20.setCategorias(List.of(categorias.get("Papelerías")));
-        prod20.setVendedor(vendedorTasca);  // ✅ Asignar vendedor aquí
+        prod20.setVendedor(vendedorPaco);  // ✅ Asignar vendedor aquí
                 //{   id:17,    name:"Cartulinas",  img:"", fatherId:2},
         productoRepo.save(prod20);
        

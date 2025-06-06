@@ -33,4 +33,8 @@ public class CategoriaService {
     public void eliminarCategoria(Long id) {
         categoriaRepo.deleteById(id);
     }
+    public List<Categoria> unir(){return categoriaRepo.joincategoriasproductos();}
+    public List<Categoria> categoriasConProductos(long localidadId) {
+        return categoriaRepo.categoriasConProductosEnLocalidad(localidadId);
+    }
 }
