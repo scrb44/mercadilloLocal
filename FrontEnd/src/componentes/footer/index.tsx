@@ -4,13 +4,10 @@ function Footer() {
     return (
         <footer className={classes["page-footer"]}>
             <div className={classes["page-footer__container"]}>
-                <h2>Footer</h2>
+                <h2>Mercadillo Local</h2>
                 <ul className={classes["page-footer__list"]}>
-                    <li>Elemento 1</li>
-                    <li>Elemento 2</li>
-                    <li>Elemento 3</li>
-                    <li>Elemento 4</li>
-                    <li>Elemento 5</li>
+                    <li>Todos los derechos reservados.</li>
+                    <li>Todas las marcas son propiedad de sus respectivos fabricantes.</li>
                 </ul>
             </div>
         </footer>
