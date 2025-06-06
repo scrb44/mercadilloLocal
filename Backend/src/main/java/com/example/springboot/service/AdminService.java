@@ -30,6 +30,10 @@ public class AdminService {
         return adminRepository.findById(id).orElse(null);
     }
 
+    public Admin buscarPorEmail(String email) {
+        return adminRepository.findByEmail(email);
+    }
+
     public void eliminarAdmin(Long id) {
         adminRepository.deleteById(id);
     }

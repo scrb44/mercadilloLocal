@@ -21,6 +21,12 @@ export interface CategoryInterface {
     fatherId?: number;
 }
 
+export interface Localidad {
+    id: number;
+    nombre: string;
+    provincia: string | null;
+}
+
 export interface ProductInterface {
     id: number;
     name: string;
@@ -30,6 +36,7 @@ export interface ProductInterface {
     price: number;
     categories: CategoryInterface[];
     vendedor: VendedorInterface;
+    municipality: Localidad;
 }
 
 // ============ NUEVOS: INTERFACES PARA CRUD DE PRODUCTOS ============

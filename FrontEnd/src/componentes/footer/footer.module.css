@@ -16,7 +16,7 @@
     display: flex;
     flex-flow: row;
     list-style: none;
-    width: 40%;
+    width: 70%;
     gap: 10px;
     justify-content: space-between;
 }

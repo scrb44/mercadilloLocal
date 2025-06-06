@@ -46,23 +46,5 @@ public class CompradorController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{usuario}/carrito")
-    public String agregarProductoAlCarrito(
-            @PathVariable String usuario,
-            @RequestBody Long idProducto) { // Recibimos ID producto en body
-        compradorService.agregarProductoAlCarrito(usuario, idProducto);
-        return "Producto agregado al carrito correctamente";
-    }
-
-    @GetMapping("/{usuario}/carrito")
-    public List<Producto> obtenerProductosDelCarrito(@PathVariable String usuario) {
-        Comprador comprador = compradorRepository.findByUsuario(usuario);
-        if (comprador == null) {
-            throw new RuntimeException("Comprador no encontrado");
-        }
-        return comprador.getProductos();
-    }
-
-
     
 }
