@@ -15,10 +15,11 @@ import java.util.Arrays;
 public class InitCompradores {
 
     @Bean
-    CommandLineRunner initCompradoresRunner(CompradorRepository compradorRepository, 
-    ProductoRepository productoRepository,  PasswordEncoder passwordEncoder) {
+    CommandLineRunner initCompradoresRunner(CompradorRepository compradorRepository,
+                                            ProductoRepository productoRepository,
+                                            PasswordEncoder passwordEncoder) {
         return args -> {
-            if (compradorRepository.findByEmail("ana@mail.com") == null) {
+            if (compradorRepository.findByEmail("ana@gmail.com") == null) {
                 Comprador ana = new Comprador();
                 ana.setNombre("Ana Torres");
                 ana.setUsuario("ana123");
@@ -26,19 +27,17 @@ public class InitCompradores {
                 ana.setPassword(passwordEncoder.encode("123456"));
                 ana.setTelf("611222333");
 
-                // Buscar productos para agregar al carrito
                 Producto prod1 = productoRepository.findByNombre("Camiseta Verde");
                 Producto prod2 = productoRepository.findByNombre("Pantalón Azul");
 
                 if (prod1 != null && prod2 != null) {
-                    // Agregar productos al carrito del comprador
                     ana.setProductos(Arrays.asList(prod1, prod2));
                 }
 
                 compradorRepository.save(ana);
             }
 
-            if (compradorRepository.findByEmail("lucas@mail.com") == null) {
+            if (compradorRepository.findByEmail("lucas@gmail.com") == null) {
                 Comprador lucas = new Comprador();
                 lucas.setNombre("Lucas Díaz");
                 lucas.setUsuario("lucas456");
@@ -56,4 +55,5 @@ public class InitCompradores {
             }
         };
     }
+
 }

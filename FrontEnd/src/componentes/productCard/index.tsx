@@ -39,7 +39,6 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
             alert("Error al añadir producto al carrito");
         }
     };
-
     return (
         <Link
             to={`/producto/${product.id}`}
@@ -64,10 +63,11 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
                     </p>
                     <p className={classes.productPrice}>€{product.price}</p>
                     <p className={classes.productVendor}>
-                        Vendedor: {product.vendedor.name}
+                        Vendedor:{" "}
+                        {product.vendedor?.nombre ||
+                            "Sin especificar prodcut card"}
                     </p>
                 </div>
-
                 <div className={classes.productActions}>
                     {isAuthenticated ? (
                         <button

@@ -39,3 +39,17 @@ export { default as CartSummary } from "./checkout/cartSummary";
 export { default as ShippingForm } from "./checkout/shippingForm";
 export { default as PaymentForm } from "./checkout/paymentForm";
 export { default as ConfirmationPage } from "./checkout/confirmationPage";
+
+// Crud vendedor
+
+export {
+    CrudPageHeader,
+    CrudControlsSection,
+    CrudErrorBanner,
+    CrudMainContent,
+    CrudProductCard,
+    CrudEmptyState,
+    CrudLoadingState,
+    CrudPageFooter,
+    CrudAccessDenied,
+} from "./crudVendedor";

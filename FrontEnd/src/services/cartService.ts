@@ -2,7 +2,7 @@
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import { type CartInterface } from "../types/types";
-import { productsService } from "./productService";
+import productsService from "./productService"; // Ahora funciona como default import
 
 const apiClient = createApiClient();
 let localCartCache: { [userId: string]: CartInterface } = {};
@@ -37,7 +37,7 @@ export const cartService = {
         quantity: number = 1
     ): Promise<CartInterface> {
         const cart = await this.getCart(userId);
-        const product = await productsService.getProduct(productId);
+        const product = await productsService.getProduct(productId); // Ahora funciona correctamente
 
         const existingItemIndex = cart.products.findIndex(
             (item) => item.product.id === productId

@@ -12,6 +12,7 @@ import com.example.springboot.security.JwtUtil;
 import com.example.springboot.service.AdminService;
 import com.example.springboot.service.CompradorService;
 import com.example.springboot.service.VendedorService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -135,5 +136,59 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/perfil")
+    public ResponseEntity<?> obtenerPerfil(HttpServletRequest request) {
+        try {
+            System.out.println("🔧 DEBUG - Endpoint /perfil llamado");
+
+            // Obtener el token del header
+            String authHeader = request.getHeader("Authorization");
+            System.out.println("🔧 DEBUG - Authorization header: " + authHeader);
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                System.out.println("❌ DEBUG - No hay token o formato incorrecto");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("mensaje", "Token no encontrado"));
+            }
+
+            String token = authHeader.substring(7);
+            System.out.println("🔧 DEBUG - Token extraído: " + token.substring(0, 20) + "...");
+
+            String email = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);
+
+            System.out.println("🔧 DEBUG - Email: " + email + ", Role: " + role);
+
+            // SIMPLIFICADO: Solo manejar vendedores por ahora
+            if ("VENDEDOR".equals(role)) {
+                Vendedor vendedor = vendedorService.buscarPorEmail(email);
+                if (vendedor != null) {
+                    System.out.println("✅ DEBUG - Vendedor encontrado: " + vendedor.getId());
+
+                    return ResponseEntity.ok(new LoginResponse(
+                            vendedor.getId(),
+                            "VENDEDOR",
+                            vendedor.getUsuario(),
+                            vendedor.getNombre(),
+                            vendedor.getEmail(),
+                            vendedor.getImagen() != null ? vendedor.getImagen() : "",
+                            token
+                    ));
+                } else {
+                    System.out.println("❌ DEBUG - Vendedor no encontrado para email: " + email);
+                }
+            }
+
+            System.out.println("❌ DEBUG - Usuario no encontrado o rol incorrecto");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("mensaje", "Usuario no encontrado"));
+
+        } catch (Exception e) {
+            System.out.println("❌ DEBUG - Error en /perfil: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Collections.singletonMap("mensaje", "Token inválido: " + e.getMessage()));
+        }
+    }
 
 }

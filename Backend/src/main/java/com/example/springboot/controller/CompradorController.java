@@ -1,6 +1,8 @@
 package com.example.springboot.controller;
 
 import com.example.springboot.model.Comprador;
+import com.example.springboot.model.Producto;
+import com.example.springboot.repository.CompradorRepository;
 import com.example.springboot.service.CompradorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ public class CompradorController {
 
     @Autowired
     private CompradorService compradorService;
+
+    @Autowired
+    private CompradorRepository compradorRepository;
 
     @GetMapping
     public List<Comprador> listarCompradores() {
@@ -39,14 +44,6 @@ public class CompradorController {
     public ResponseEntity<Void> eliminarComprador(@PathVariable Long id) {
         compradorService.eliminarComprador(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{email}/carrito/{productoId}")
-    public ResponseEntity<Comprador> agregarProductoAlCarrito(
-            @PathVariable String email,
-            @PathVariable Long productoId) {
-        Comprador compradorActualizado = compradorService.agregarProductoAlCarrito(email, productoId);
-        return ResponseEntity.ok(compradorActualizado);
     }
 
     

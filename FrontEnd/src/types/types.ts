@@ -1,10 +1,17 @@
-// src/types/types.ts - CENTRALIZADO COMPLETO
+// src/types/types.ts - ACTUALIZADO con campos de vendedor
 
 // ============ INTERFACES DE DOMINIO ============
 export interface VendedorInterface {
     id: number;
     img: string;
     name: string;
+    imagen: string;
+    nombre: string;
+    email?: string;
+    usuario?: string;
+    verificado?: boolean;
+    localidad?: string;
+    telf?: string;
 }
 
 export interface CategoryInterface {
@@ -12,6 +19,12 @@ export interface CategoryInterface {
     name: string;
     img: string;
     fatherId?: number;
+}
+
+export interface Localidad {
+    id: number;
+    nombre: string;
+    provincia: string | null;
 }
 
 export interface ProductInterface {
@@ -23,9 +36,78 @@ export interface ProductInterface {
     price: number;
     categories: CategoryInterface[];
     vendedor: VendedorInterface;
+    municipality: Localidad;
 }
 
-// ============ INTERFACES DE CARRITO ============
+// ============ NUEVOS: INTERFACES PARA CRUD DE PRODUCTOS ============
+
+export interface ProductFormData {
+    name: string;
+    description: string;
+    price: number;
+    imagen: string;
+    categoryIds: number[];
+}
+
+export interface ProductCreateRequest {
+    nombre: string;
+    descripcion: string;
+    precio: number;
+    imagen: string;
+    categoriaIds: number[];
+}
+
+export interface ProductUpdateRequest extends ProductCreateRequest {
+    id: number;
+}
+
+// Estados para el manejo de productos del vendedor
+export interface VendorProductsState {
+    products: ProductInterface[];
+    loading: boolean;
+    error: string | null;
+    creating: boolean;
+    updating: boolean;
+    deleting: boolean;
+}
+
+// Contexto para gestión de productos del vendedor
+export interface VendorProductsContextType {
+    state: VendorProductsState;
+
+    // CRUD Operations
+    loadProducts: () => Promise<void>;
+    createProduct: (productData: ProductFormData) => Promise<void>;
+    updateProduct: (id: number, productData: ProductFormData) => Promise<void>;
+    deleteProduct: (id: number) => Promise<void>;
+
+    // Utilities
+    reset: () => void;
+    setError: (error: string | null) => void;
+}
+
+// ============ INTERFACES DE USUARIO ACTUALIZADAS ============
+export interface UserInterface {
+    id: number;
+    role: "COMPRADOR" | "ADMIN" | "VENDEDOR";
+    usuario: string;
+    nombre: string;
+    email: string;
+    password?: string;
+    telf?: string;
+    verificado?: boolean;
+    imagen?: string;
+    token?: string;
+    localidad?: {
+        id: number;
+        nombre: string;
+        provincia: string;
+    };
+}
+
+// ============ REST OF EXISTING INTERFACES ============
+// (Mantenemos todas las interfaces existentes sin cambios)
+
 export interface CartItemInterface {
     product: ProductInterface;
     quantity: number;
@@ -38,7 +120,6 @@ export interface CartInterface {
     updatedAt?: string;
 }
 
-// Estado del carrito en el Context
 export interface CartStateInterface {
     items: CartItemInterface[];
     totalItems: number;
@@ -48,7 +129,6 @@ export interface CartStateInterface {
     syncing: boolean;
 }
 
-// Tipo del Context de carrito
 export interface CartContextType {
     items: CartItemInterface[];
     totalItems: number;
@@ -61,20 +141,6 @@ export interface CartContextType {
     clearCart: () => Promise<void>;
     getItemQuantity: (productId: number) => number;
     isInCart: (productId: number) => boolean;
-}
-
-// ============ INTERFACES DE USUARIO ============
-export interface UserInterface {
-  id: number;
-  role: "COMPRADOR" | "ADMIN" | "VENDEDOR";
-  usuario: string;
-  nombre: string;
-  email: string;
-  password?: string;
-  telf?: string;
-  verificado?: boolean;
-  imagen?: string;
-  token?: string;
 }
 
 export interface LoginCredentials {
@@ -95,7 +161,6 @@ export interface UserStateInterface {
     error: string | null;
 }
 
-// Tipo del Context de usuario
 export interface UserContextType {
     user: UserInterface | null;
     isAuthenticated: boolean;
@@ -105,7 +170,6 @@ export interface UserContextType {
     logout: () => void;
 }
 
-// ============ INTERFACES DE BÚSQUEDA/FILTROS ============
 export interface SearchFiltersInterface {
     category?: number;
     vendor?: number;
@@ -114,105 +178,13 @@ export interface SearchFiltersInterface {
     query?: string;
 }
 
-// ============ INTERFACES DE COMPONENTES ============
-
-// Breadcrumb
-export interface BreadcrumbItem {
-    label: string;
-    path?: string;
-    isActive?: boolean;
-}
-
-export interface BreadcrumbProps {
-    items: BreadcrumbItem[];
-}
-
-export interface CategoryBreadcrumbProps {
-    currentCategory: CategoryInterface | null;
-    parentCategory?: CategoryInterface | null;
-}
-
-export interface ProductBreadcrumbProps {
-    product: ProductInterface;
-}
-
-export interface SimpleBreadcrumbProps {
-    pageName: string;
-    parentPath?: string;
-    parentName?: string;
-}
-
-// CategoryList
-export interface CategoryListProps {
-    categories: CategoryInterface[];
-    loading: boolean;
-    error: string | null;
-    onRetry?: () => void;
-    showSubcategories?: boolean;
-    parentCategory?: CategoryInterface | null;
-}
-
-// ProductList
-export interface ProductListProps {
-    products: ProductInterface[];
-    loading: boolean;
-    error: string | null;
-    onAddToCart?: (product: ProductInterface) => void;
-    onRetry?: () => void;
-}
-
-// ProductCard
-export interface ProductCardProps {
-    product: ProductInterface;
-    onAddToCart?: (product: ProductInterface) => void;
-}
-
-// CartItem
-export interface CartItemProps {
-    item: CartItemInterface;
-    loading?: boolean;
-    onUpdateQuantity: (productId: number, quantity: number) => void;
-    onRemove: (productId: number) => void;
-}
-
-// CategoryHeader
-export interface CategoryHeaderProps {
-    categoria: CategoryInterface;
-    categoriaPadre?: CategoryInterface | null;
-    productCount: number;
-    subcategoryCount: number;
-}
-
-// ProductGallery
-export interface ProductGalleryProps {
-    images: string[];
-    productName: string;
-}
-
-// ProductsSection
-export interface ProductsSectionProps {
-    products: ProductInterface[];
-    categoria: CategoryInterface;
-    searchQuery: string;
-    loading: boolean;
-    error: string | null;
-    onAddToCart: (product: ProductInterface) => void;
-    onRetry: () => void;
-    onClearSearch: () => void;
-}
-
-// Filter
-export interface FilterProps {
-    onFiltersChange: (filters: SearchFiltersInterface) => void;
-}
-
-// ============ INTERFACES DE API ============
+// ============ INTERFACES DE API ACTUALIZADAS ============
 export interface ApiError {
     message: string;
     status: number;
 }
 
-// ============ UNION TYPES PARA CONTEXTS ============
+// Union types para contexts
 export type UserAction =
     | { type: "SET_LOADING"; payload: boolean }
     | { type: "SET_ERROR"; payload: string | null }
@@ -236,6 +208,19 @@ export type CartAction =
       }
     | { type: "SYNC_SUCCESS"; payload: CartItemInterface[] }
     | { type: "CLEAR_CART" };
+
+// Nuevas acciones para productos del vendedor
+export type VendorProductAction =
+    | { type: "SET_LOADING"; payload: boolean }
+    | { type: "SET_CREATING"; payload: boolean }
+    | { type: "SET_UPDATING"; payload: boolean }
+    | { type: "SET_DELETING"; payload: boolean }
+    | { type: "SET_ERROR"; payload: string | null }
+    | { type: "LOAD_PRODUCTS_SUCCESS"; payload: ProductInterface[] }
+    | { type: "CREATE_PRODUCT_SUCCESS"; payload: ProductInterface }
+    | { type: "UPDATE_PRODUCT_SUCCESS"; payload: ProductInterface }
+    | { type: "DELETE_PRODUCT_SUCCESS"; payload: number }
+    | { type: "RESET" };
 
 // ============ INTERFACES DE HOOKS ============
 export interface UseCategoryReturn {
@@ -268,4 +253,20 @@ export interface UseFormReturn<T> {
     validate: () => boolean;
     reset: () => void;
     setErrors: (errors: Partial<Record<keyof T, string>>) => void;
+}
+
+// Hook específico para gestión de productos del vendedor
+export interface UseVendorProductsReturn {
+    products: ProductInterface[];
+    loading: boolean;
+    creating: boolean;
+    updating: boolean;
+    deleting: boolean;
+    error: string | null;
+
+    createProduct: (data: ProductFormData) => Promise<void>;
+    updateProduct: (id: number, data: ProductFormData) => Promise<void>;
+    deleteProduct: (id: number) => Promise<void>;
+    loadProducts: () => Promise<void>;
+    reset: () => void;
 }

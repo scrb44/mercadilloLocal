@@ -7,14 +7,14 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Producto {
 
     @Id
@@ -27,7 +27,7 @@ public class Producto {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "productos")
-    private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
+    private List<Comprador> compradores  = new ArrayList<>(); // Relación muchos a muchos con Comprador
 
     @ManyToMany
     @JoinTable(
@@ -38,9 +38,9 @@ public class Producto {
     private List<Categoria> categorias;
 
 
-    @ManyToOne
-    @JoinColumn(name = "vendedor_id")
-    private Vendedor vendedor;  // Relación muchos a uno con Vendedor
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Vendedor vendedor;
+
 
     public Producto(){}
 

@@ -1,9 +1,9 @@
 import axios from "axios";
-
 import React, {
     createContext,
     useContext,
     useState,
+    useEffect,
     type ReactNode,
 } from "react";
 import mercadilloService from "../services";
@@ -18,6 +18,7 @@ interface UserContextType {
     error: string | null;
     login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => void;
+    setUser: (user: UserInterface | null) => void; // Añadido para actualizar desde otros componentes
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -30,54 +31,153 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [user, setUser] = useState<UserInterface | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Iniciar en true para verificar token
     const [error, setError] = useState<string | null>(null);
 
     const isAuthenticated = user !== null;
 
-const login = async (credentials: LoginCredentials) => {
-  try {
-    setLoading(true);
-    setError(null);
+    // ============ VERIFICAR TOKEN AL INICIAR ============
+    useEffect(() => {
+        const initializeAuth = () => {
+            try {
+                const token = localStorage.getItem("token");
 
-    const response = await axios.post("http://localhost:8080/api/auth/login", {
-      email: credentials.email,
-      password: credentials.password,
-    });
+                if (!token) {
+                    console.log("🔐 No hay token guardado");
+                    setLoading(false);
+                    return;
+                }
 
-    const { token, rol, nombre, usuario, id } = response.data;
+                console.log("🔐 Token encontrado en localStorage");
 
-    // Guardar token localmente para usar en otras peticiones
-    localStorage.setItem("token", token);
+                // Decodificar el payload del JWT
+                try {
+                    const payload = JSON.parse(atob(token.split(".")[1]));
+                    console.log("🔧 Payload completo del token:", payload);
 
-    const userData: UserInterface = {
-      id,
-      usuario,
-      nombre,
-      email: credentials.email,
-      role: rol,
-      token,
+                    // Verificar si el token no ha expirado
+                    const now = Date.now() / 1000;
+                    if (payload.exp && payload.exp < now) {
+                        console.warn("⚠️ Token expirado, limpiando sesión");
+                        localStorage.removeItem("token");
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Configurar axios con el token
+                    axios.defaults.headers.common[
+                        "Authorization"
+                    ] = `Bearer ${token}`;
+
+                    // Crear objeto usuario desde el token - adaptado a tu estructura
+                    const userData: UserInterface = {
+                        id: payload.id || payload.userId || payload.sub,
+                        usuario:
+                            payload.usuario || payload.username || payload.sub,
+                        nombre: payload.nombre || payload.name || "Usuario",
+                        email: payload.email || payload.sub || "",
+                        role: payload.role || payload.roles || "COMPRADOR",
+                        token,
+                    };
+
+                    console.log("✅ Usuario restaurado desde token:", userData);
+                    setUser(userData);
+                } catch (decodeError) {
+                    console.warn(
+                        "⚠️ Error decodificando token, limpiando sesión:",
+                        decodeError
+                    );
+                    localStorage.removeItem("token");
+                    delete axios.defaults.headers.common["Authorization"];
+                }
+            } catch (error: any) {
+                console.warn("⚠️ Error inicializando autenticación:", error);
+                localStorage.removeItem("token");
+                delete axios.defaults.headers.common["Authorization"];
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initializeAuth();
+    }, []);
+
+    const login = async (credentials: LoginCredentials) => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            console.log("🔐 Intentando login...");
+
+            const response = await axios.post(
+                "http://localhost:8080/api/auth/login",
+                {
+                    email: credentials.email,
+                    password: credentials.password,
+                }
+            );
+
+            // Tu API devuelve: { id, role, usuario, nombre, email, imagen, token }
+            const { token, role, nombre, usuario, id, email, imagen } =
+                response.data;
+
+            // Guardar token localmente para usar en otras peticiones
+            localStorage.setItem("token", token);
+
+            // Configurar axios para futuras requests
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+            const userData: UserInterface = {
+                id,
+                usuario,
+                nombre,
+                email: email || credentials.email, // Usar email de respuesta o el que se usó para login
+                role,
+                token,
+                imagen, // Incluir imagen de la respuesta
+            };
+
+            setUser(userData);
+            console.log(
+                "✅ Login exitoso:",
+                userData.usuario,
+                "- Rol:",
+                userData.role
+            );
+        } catch (err: any) {
+            console.error("❌ Error en login:", err);
+
+            if (err.response?.data?.mensaje) {
+                // Tu API usa "mensaje" en lugar de "message"
+                setError(err.response.data.mensaje);
+            } else if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError("Credenciales incorrectas");
+            }
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
-    setUser(userData);
-  } catch (err: any) {
-    if (err.response?.data?.message) {
-      setError(err.response.data.message);
-    } else {
-      setError("Credenciales incorrectas");
-    }
-    throw err;
-  } finally {
-    setLoading(false);
-  }
-};
-
-
     const logout = () => {
+        console.log("🔐 Cerrando sesión...");
+
+        // Limpiar estado local
         setUser(null);
         setError(null);
+
+        // Limpiar token de localStorage
+        localStorage.removeItem("token");
+
+        // Limpiar headers de axios
+        delete axios.defaults.headers.common["Authorization"];
+
+        // Limpiar cache de servicios
         mercadilloService.clearLocalCache();
-        console.log("🔧 Logout exitoso");
+
+        console.log("✅ Logout exitoso");
     };
 
     const contextValue: UserContextType = {
@@ -87,6 +187,7 @@ const login = async (credentials: LoginCredentials) => {
         error,
         login,
         logout,
+        setUser, // Permitir actualizar el usuario desde otros componentes
     };
 
     return (

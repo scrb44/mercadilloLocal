@@ -119,49 +119,60 @@ function Home() {
             <div className={classes.container}>
                 <main className={classes.main}>
                     {/* Sección de bienvenida - siempre visible */}
-                    <div
-                        className={`${classes.welcomeSection} ${classes.fadeInInitial}`}
-                    >
-                        <h1 className={classes.welcomeTitle}>
-                            Bienvenido a Mercadillo Local
-                        </h1>
-                        <p className={classes.welcomeSubtitle}>
-                            Explora productos y tiendas cerca de ti
-                        </p>
+                    <div className={`${classes.welcomeSection} ${classes.fadeInInitial}`}>
+    <div className={classes.welcomeContent}>
+        <div className={classes.welcomeText}>
+            <h1 className={classes.welcomeTitle}>
+                Bienvenido a Mercadillo Local
+            </h1>
+            <p className={classes.welcomeSubtitle}>
+                Explora productos y tiendas cerca de ti
+            </p>
 
-                        {/* Indicador de municipio en banner */}
-                        <MunicipioIndicator
-                            style="banner"
-                            size="large"
-                            showChangeButton={true}
-                        />
-                    </div>
+            <MunicipioIndicator
+                style="banner"
+                size="large"
+                showChangeButton={true}
+            />
+        </div>
 
-                    {/* Sección de categorías - fade in cuando esté lista */}
+        <div className={classes.welcomeImageWrapper}>
+            <img
+                src="https://sh-assets.holidu.com/imagecache/blog-photos/16902_Fill_670_0.jpg"
+                alt="Mercado local"
+                className={classes.welcomeImage}
+            />
+        </div>
+    </div>
+</div>
+
+
                     <section
-                        className={`${classes.categoriesSection} ${
-                            initialLoadComplete
-                                ? classes.fadeInCategories
-                                : classes.hidden
-                        }`}
-                    >
-                        <div className={classes.sectionHeader}>
-                            <h2 className={classes.sectionTitle}>
-                                Categorías Principales
-                            </h2>
-                            <p className={classes.sectionSubtitle}>
-                                Encuentra productos organizados por categorías
-                            </p>
-                        </div>
+    className={`${classes.categoriesSection} ${
+        initialLoadComplete ? classes.fadeInCategories : classes.hidden
+    }`}
+>
+    <div className={classes.sectionHeader}>
+        <h2 className={classes.sectionTitle}>Categorías Principales</h2>
+        <p className={classes.sectionSubtitle}>
+            Encuentra productos organizados por categorías
+        </p>
+    </div>
 
-                        <CategoryList
-                            categories={categoriasPrincipales}
-                            loading={categoriesLoading}
-                            error={categoriesError}
-                            onRetry={handleCategoriesRetry}
-                            showSubcategories={false}
-                        />
-                    </section>
+    <div className={classes.horizontalScroll}>
+        {categoriasPrincipales.map((categoria) => (
+            <CategoryList
+                key={categoria.id}
+                categories={[categoria]} // individual
+                loading={false}
+                error={null}
+                onRetry={() => {}}
+                showSubcategories={false}
+            />
+        ))}
+    </div>
+</section>
+
 
                     {/* Sección de productos - fade in progresivo */}
                     <section
