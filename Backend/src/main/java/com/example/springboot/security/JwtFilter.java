@@ -30,6 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         // Ignorar rutas públicas
+
         if (path.startsWith("/api/auth/") || path.startsWith("/api/productos/") || path.startsWith("/api/Categoria/")) {
             filterChain.doFilter(request, response);
             return;

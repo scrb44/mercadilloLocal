@@ -2,7 +2,6 @@ package com.example.springboot.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +11,11 @@ public class Comprador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String usuario;
     private String nombre;
-    @JsonIgnore // 👈 Esto oculta la contraseña del JSON
+
+    @JsonIgnore
     private String password;
     @Column(unique = true)  // <-- aquí la restricción única
     private String email;
@@ -24,14 +25,13 @@ public class Comprador {
 
     @ManyToMany
     @JoinTable(
-            name = "comprador_producto",
+            name = "carrito",  // Tabla intermedia carrito (comprador-producto)
             joinColumns = @JoinColumn(name = "comprador_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
     private List<Producto> productos;
 
-
-    public Comprador(){}
+    public Comprador() {}
 
     public Comprador(Long id, String usuario, String nombre, String password, String email, String telf, String imagen, List<Producto> productos) {
         this.id = id;
@@ -44,10 +44,11 @@ public class Comprador {
         this.productos = productos;
     }
 
+    // getters y setters...
+
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -55,7 +56,6 @@ public class Comprador {
     public String getUsuario() {
         return usuario;
     }
-
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
@@ -63,7 +63,6 @@ public class Comprador {
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -71,7 +70,6 @@ public class Comprador {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -79,7 +77,6 @@ public class Comprador {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -87,24 +84,21 @@ public class Comprador {
     public String getTelf() {
         return telf;
     }
-
     public void setTelf(String telf) {
         this.telf = telf;
-    }
-
-    public List<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(List<Producto> productos) {
-        this.productos = productos;
     }
 
     public String getImagen() {
         return imagen;
     }
-
     public void setImagen(String imagen) {
         this.imagen = imagen;
+    }
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
     }
 }
