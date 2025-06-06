@@ -14,7 +14,7 @@ import {
     type ProductFormData,
     type VendorProductAction,
 } from "../types/types";
-import { vendorProductsService } from "../services/vendorProductServices";
+import { vendorProductsService } from "../services/vendorProductServices"; // Importación corregida
 
 // ============ ESTADO INICIAL ============
 
@@ -135,32 +135,50 @@ export const VendorProductsProvider: React.FC<VendorProductsProviderProps> = ({
 
     // ============ CREAR PRODUCTO ============
 
-    const createProduct = useCallback(async (productData: ProductFormData) => {
-        // Validar datos antes de enviar
-        const validation =
-            vendorProductsService.validateProductData(productData);
-        if (!validation.valid) {
-            dispatch({
-                type: "SET_ERROR",
-                payload: validation.errors.join(", "),
-            });
-            return;
-        }
+    const createProduct = useCallback(
+        async (productData: ProductFormData): Promise<void> => {
+            // Prevenir llamadas duplicadas
+            if (state.creating) {
+                console.log(
+                    "⚠️ Ya se está creando un producto, ignorando llamada duplicada"
+                );
+                return; // Cambiado: no lanzar error, solo return
+            }
 
-        dispatch({ type: "SET_CREATING", payload: true });
+            // Validar datos antes de enviar
+            const validation =
+                vendorProductsService.validateProductData(productData);
+            if (!validation.valid) {
+                const errorMessage = validation.errors.join(", ");
+                dispatch({
+                    type: "SET_ERROR",
+                    payload: errorMessage,
+                });
+                return; // Cambiado: no lanzar error, solo return
+            }
 
-        try {
-            const newProduct = await vendorProductsService.createProduct(
-                productData
-            );
-            dispatch({ type: "CREATE_PRODUCT_SUCCESS", payload: newProduct });
-        } catch (error: any) {
-            dispatch({
-                type: "SET_ERROR",
-                payload: error.message || "Error al crear producto",
-            });
-        }
-    }, []);
+            dispatch({ type: "SET_CREATING", payload: true });
+
+            try {
+                const newProduct = await vendorProductsService.createProduct(
+                    productData
+                );
+                dispatch({
+                    type: "CREATE_PRODUCT_SUCCESS",
+                    payload: newProduct,
+                });
+                // No retornamos el producto, solo void
+            } catch (error: any) {
+                const errorMessage = error.message || "Error al crear producto";
+                dispatch({
+                    type: "SET_ERROR",
+                    payload: errorMessage,
+                });
+                // No re-lanzamos el error para mantener la signatura Promise<void>
+            }
+        },
+        [state.creating]
+    );
 
     // ============ ACTUALIZAR PRODUCTO ============
 
@@ -199,14 +217,6 @@ export const VendorProductsProvider: React.FC<VendorProductsProviderProps> = ({
     // ============ ELIMINAR PRODUCTO ============
 
     const deleteProduct = useCallback(async (id: number) => {
-        if (
-            !window.confirm(
-                "¿Estás seguro de que quieres eliminar este producto?"
-            )
-        ) {
-            return;
-        }
-
         dispatch({ type: "SET_DELETING", payload: true });
 
         try {
