@@ -1,3 +1,5 @@
+// WhoWeAre.tsx
+
 import React from 'react';
 import Header from '../../componentes/header';
 import styles from './WhoWeAre.module.css';
@@ -5,6 +7,11 @@ import styles from './WhoWeAre.module.css';
 interface Herramienta {
   nombre: string;
   img: string;
+}
+
+interface Desarrollador {
+  nombre: string;
+  foto: string;
 }
 
 const herramientas: Herramienta[] = [
@@ -19,6 +26,21 @@ const herramientas: Herramienta[] = [
   { nombre: 'IntelliJ', img: 'https://resources.jetbrains.com/storage/products/intellij-idea/img/meta/intellij-idea_logo_300x300.png' }
 ];
 
+const desarrolladores: Desarrollador[] = [
+  {
+    nombre: 'Doriana Da Costa',
+    foto: 'https://media.licdn.com/dms/image/v2/C4D03AQG0hJ5y882LkA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1643560722400?e=2147483647&v=beta&t=ThcsbLEwki4s1dZGDE1PBjOIAi-VREhC6Hz9EPmfIqk'
+  },
+  {
+    nombre: 'Sofía Ríos',
+    foto: 'https://media.licdn.com/dms/image/v2/D4D03AQFP_ljBMTruLw/profile-displayphoto-shrink_200_200/B4DZaVqXSbGgAY-/0/1746267633186?e=2147483647&v=beta&t=J6Z6IUGpZkv0JtH1rwS95_NQtiP3gbESJgZkNi6D6Gk'
+  },
+  {
+    nombre: 'Santiago Chávez',
+    foto: 'https://media.licdn.com/dms/image/v2/D4E03AQHww-ZnfxJaYg/profile-displayphoto-shrink_200_200/B4EZbQh5EUHcAY-/0/1747255268297?e=2147483647&v=beta&t=i1fRd0lvCZjOlUFsorOeuBnC5IjPKCkqCbp4Pk2kwqM' 
+  }
+];
+
 const WhoWeAre: React.FC = () => {
   return (
     <>
@@ -31,11 +53,16 @@ const WhoWeAre: React.FC = () => {
 
         <section aria-labelledby="devs-title">
           <h2 id="devs-title" className={styles.subtitle}>Desarrolladores</h2>
-          <ul className={styles.devsList}>
-            <li>Doriana Da Costa</li>
-            <li>Sofía Ríos</li>
-            <li>Santiago Chávez</li>
-          </ul>
+          <div className={styles.devsGrid}>
+            {desarrolladores.map((dev) => (
+              <div key={dev.nombre} className={styles.devCard}>
+                {dev.foto && (
+                  <img src={dev.foto} alt={dev.nombre} className={styles.devFoto} loading="lazy" />
+                )}
+                <span className={styles.devNombre}>{dev.nombre}</span>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section aria-labelledby="tools-title">
