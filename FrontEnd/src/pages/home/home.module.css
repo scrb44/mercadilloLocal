@@ -36,6 +36,8 @@
     -webkit-overflow-scrolling: touch;
 }
 
+
+
 .horizontalScroll::-webkit-scrollbar {
     height: 8px;
 }
