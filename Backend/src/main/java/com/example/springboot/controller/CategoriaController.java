@@ -3,10 +3,12 @@ package com.example.springboot.controller;
 import com.example.springboot.model.Categoria;
 import com.example.springboot.model.Producto;
 import com.example.springboot.service.CategoriaService;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/Categoria")
@@ -19,11 +21,14 @@ private final CategoriaService categoriaService;
         this.categoriaService = categoriaService;
     }
 
-    @GetMapping
-    public List<Categoria> obtenerCagorias() {
-        return categoriaService.obtenerTodos();
-    }
 
+    @GetMapping()
+    public List<Categoria> obtenerCagorias(@RequestParam(required = false) Long localidadId) {
+        if(localidadId == null)
+            return categoriaService.obtenerTodos();
+        else
+            return categoriaService.categoriasConProductos(localidadId);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> obtenerComprador(@PathVariable Long id) {

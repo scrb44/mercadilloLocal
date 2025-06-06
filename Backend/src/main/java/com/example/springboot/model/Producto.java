@@ -44,7 +44,9 @@ public class Producto {
 
     public Producto(){}
 
-    public Producto(Long id, String descripcion, BigDecimal precio, String nombre, String imagen, List<Comprador> compradores, List<Categoria> categorias, Vendedor vendedor) {
+    public Producto(Long id, String descripcion, BigDecimal precio,
+                    String nombre, String imagen, List<Comprador> compradores,
+                    List<Categoria> categorias, Vendedor vendedor) {
         this.id = id;
         this.descripcion = descripcion;
         this.precio = precio;

@@ -39,34 +39,56 @@ public class DataLoader {
 
             // Crear y guardar categorías
             Map<String, Categoria> categorias = new HashMap<>();
-            for (String nombre : List.of("Ultramarinos", "Papelerías", "Discos", "Ropa", "Carpinteria")) {
-                Categoria cat = new Categoria();
-                cat.setNombre(nombre);
 
-                switch (nombre) {
-                    case "Ultramarinos" -> cat.setImagen("https://s1.ppllstatics.com/elcorreo/www/multimedia/202002/17/media/cortadas/ultramarinos20-kYXE-U10018206059290B-1248x770@El%20Correo.jpg");
-                    case "Papelerías" -> cat.setImagen("https://us.123rf.com/450wm/almaje/almaje1801/almaje180100908/94443196-volver-a-la-escuela-concepto-suministros-de-oficina-de-la-escuela.jpg?ver=6");
-                    case "Discos" -> cat.setImagen("https://www.lavanguardia.com/files/og_thumbnail/uploads/2018/02/19/5fa4312eb56bf.jpeg");
-                    case "Ropa" -> cat.setImagen("https://sopotey.com/blog/wp-content/uploads/2024/04/ropa-de-marca-original.jpg");
-                    case "Carpinteria" -> cat.setImagen("https://miroytengo.es/blog/wp-content/uploads/403-2.jpg");
-                }
 
-                categoriaRepo.save(cat);
-                categorias.put(nombre, cat);
-            }
+            Categoria cat1= new Categoria();
+            cat1.setNombre("Ultramarinos");
+            categoriaRepo.save(cat1);
+            categorias.put(cat1.getNombre(), cat1);
 
-            // Localidad Málaga
-            Localidad malaga = localidadRepo.findByNombre("Málaga");
-            if (malaga == null) {
-                malaga = new Localidad();
-                malaga.setNombre("Málaga");
-                malaga = localidadRepo.save(malaga);
-            }
+            Categoria cat2= new Categoria();
+            cat2.setNombre("Papelerías");
+            categoriaRepo.save(cat2);
+            categorias.put(cat2.getNombre(), cat2);
 
-            // Vendedor Tasca Malagueña
-            Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
-            if (vendedorTasca == null) {
-                vendedorTasca = new Vendedor();
+            Categoria cat3= new Categoria();
+            cat3.setNombre("Discos");
+            categoriaRepo.save(cat3);
+            categorias.put(cat3.getNombre(), cat3);
+
+            Categoria cat4= new Categoria();
+            cat4.setNombre("Ropa");
+            categoriaRepo.save(cat4);
+            categorias.put(cat4.getNombre(), cat4);
+
+            Categoria cat5= new Categoria();
+            cat5.setNombre("Carpinteria");
+            categoriaRepo.save(cat5);
+            categorias.put(cat5.getNombre(), cat5);
+
+
+            Localidad malaga = new Localidad();
+            malaga.setNombre("Málaga");
+            localidadRepo.save(malaga);
+
+            Localidad fuengirola = new Localidad();
+            fuengirola.setNombre("fuengirola");
+            localidadRepo.save(fuengirola);
+
+            Localidad ojen = new Localidad();
+            ojen.setNombre("ojen");
+            localidadRepo.save(ojen);
+
+            Localidad istan = new Localidad();
+            istan.setNombre("istan");
+            localidadRepo.save(istan);
+
+            Localidad coin = new Localidad();
+            coin.setNombre("coin");
+            localidadRepo.save(coin);
+
+            // Crear o recuperar vendedor
+            Vendedor vendedorTasca = new Vendedor();
                 vendedorTasca.setNombre("Tasca Malagueña");
                 vendedorTasca.setUsuario("TascaMalaquena");
                 vendedorTasca.setEmail("tascamalaga@gmail.com");
@@ -75,8 +97,20 @@ public class DataLoader {
                 vendedorTasca.setPassword(passwordEncoder.encode("123456")); // Usa PasswordEncoder en producción
                 vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTasca.setLocalidad(malaga);
-                vendedorTasca = vendedorRepo.save(vendedorTasca);
+                vendedorRepo.save(vendedorTasca);
                 System.out.println("🛍️ Vendedor 'TascaMalaquena' creado.");
+
+                 Vendedor vendedorPaco = new Vendedor();
+                vendedorPaco.setNombre("carpinteriaFuengirola");
+                vendedorPaco.setUsuario("TascaMalaquena");
+                vendedorPaco.setEmail("tascamalaga@gmail.com");
+                vendedorPaco.setTelf("644545467");
+                vendedorPaco.setVerificado(true);
+                vendedorPaco.setPassword("123456"); // Usa encoder si es necesario
+                vendedorPaco.setImagen("");
+                vendedorPaco.setLocalidad(fuengirola);
+                vendedorRepo.save(vendedorPaco);
+
             }
 
             // Lista de productos
