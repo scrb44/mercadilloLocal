@@ -12,10 +12,9 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class LocalidadController {
 
-    @Autowired
     private final LocalidadService localidadService;
 
-
+    @Autowired
     public LocalidadController(LocalidadService localidadService) {
         this.localidadService = localidadService;
     }
@@ -26,8 +25,10 @@ public class LocalidadController {
     }
 
     @GetMapping("/conVendedores")
-    public List<Localidad> getConVendedores() {
-        return localidadService.getProvinciasConVendedores();
+    public List<Localidad> getConVendedores(){
+        return localidadService.getAllProvincias().stream()
+            .filter(p -> (p.getVendedores() != null ))
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
