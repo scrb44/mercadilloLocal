@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 @Service
 public class CompradorService {
@@ -100,6 +98,20 @@ public class CompradorService {
         compradorRepository.save(comprador);
     }
 
+    public List<Producto> obtenerProductosDelCarritoPorId(Long compradorId) {
+        Comprador comprador = compradorRepository.findById(compradorId).orElse(null);
+        if (comprador != null) {
+            return comprador.getProductos();
+        }
+        return Collections.emptyList();
+    }
 
+    @Transactional
+    public void limpiarCarrito(Long compradorId) {
+        Comprador comprador = compradorRepository.findById(compradorId)
+                .orElseThrow(() -> new RuntimeException("Comprador no encontrado"));
+
+        comprador.getProductos().clear();
+        compradorRepository.save(comprador);
+    }
 }
-
