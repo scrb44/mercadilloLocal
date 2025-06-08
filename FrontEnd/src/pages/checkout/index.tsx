@@ -151,8 +151,6 @@ function CheckoutContent() {
         }
 
         try {
-            console.log("🔧 Iniciando procesamiento de pago...");
-
             // ✅ USAR ROL REAL DEL USUARIO
             const userData: UserPaymentData = {
                 id: user.id,
@@ -161,18 +159,13 @@ function CheckoutContent() {
                 email: user.email,
             };
 
-            console.log("🔧 Datos del usuario para pago:", userData);
-
             // Procesar el pago
             const pedidoCreado = await payment.processPayment(userData);
 
             if (pedidoCreado) {
-                console.log("✅ Pago procesado exitosamente");
-
                 // ✅ LIMPIAR CARRITO DESPUÉS DEL PAGO EXITOSO
                 try {
                     await cart.clearCart();
-                    console.log("✅ Carrito limpiado exitosamente");
                 } catch (clearError) {
                     console.warn("⚠️ Error limpiando carrito:", clearError);
                     // No fallar por esto, el pago ya fue exitoso
