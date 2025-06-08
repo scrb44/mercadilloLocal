@@ -1,4 +1,4 @@
-// src/componentes/checkout/PaymentForm.tsx
+// src/componentes/checkout/PaymentForm.tsx - ACTUALIZADO con mejor manejo de estados
 
 import { useState } from "react";
 import {
@@ -29,26 +29,73 @@ function PaymentForm({
     loading,
 }: PaymentFormProps) {
     const [acceptTerms, setAcceptTerms] = useState(false);
+    const [subscribeNewsletter, setSubscribeNewsletter] = useState(false);
+    const [processingError, setProcessingError] = useState<string | null>(null);
 
-    const handlePaymentSubmit = (e: React.FormEvent) => {
+    const handlePaymentSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProcessingError(null);
 
+        // Validaciones
         if (!selectedPaymentMethod) {
-            alert("Por favor, selecciona un método de pago");
+            setProcessingError("Por favor, selecciona un método de pago");
             return;
         }
 
         if (!acceptTerms) {
-            alert("Debes aceptar los términos y condiciones");
+            setProcessingError(
+                "Debes aceptar los términos y condiciones para continuar"
+            );
             return;
         }
 
-        onProcessPayment();
+        if (!paymentSummary) {
+            setProcessingError("Error: No se encontró el resumen del pedido");
+            return;
+        }
+
+        if (!billingInfo) {
+            setProcessingError("Error: No se encontró la información de envío");
+            return;
+        }
+
+        // Procesar el pago
+        try {
+            await onProcessPayment();
+        } catch (error) {
+            setProcessingError(
+                (error as Error).message || "Error procesando el pago"
+            );
+        }
     };
+
+    // Calcular resumen financiero
+    const financialSummary = paymentSummary
+        ? {
+              subtotal: paymentSummary.subtotal,
+              platformFees: paymentSummary.totalPlatformFees,
+              shipping: paymentSummary.shippingCost,
+              total: paymentSummary.totalAmount,
+          }
+        : null;
 
     return (
         <div className={classes.paymentForm}>
             <h2 className={classes.title}>Método de pago</h2>
+
+            {/* Banner de error específico del formulario */}
+            {processingError && (
+                <div className={classes.errorBanner}>
+                    <span className={classes.errorIcon}>⚠️</span>
+                    <span className={classes.errorText}>{processingError}</span>
+                    <button
+                        onClick={() => setProcessingError(null)}
+                        className={classes.dismissError}
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
 
             <form onSubmit={handlePaymentSubmit} className={classes.form}>
                 {/* Métodos de pago */}
@@ -87,17 +134,17 @@ function PaymentForm({
                                             )
                                         }
                                         disabled={!method.available || loading}
-                                        className={classes.radio}
+                                        className={classes.paymentRadio}
                                     />
-                                    <div className={classes.methodInfo}>
-                                        <div className={classes.methodHeader}>
+                                    <div className={classes.paymentInfo}>
+                                        <div className={classes.paymentHeader}>
                                             <span
-                                                className={classes.methodIcon}
+                                                className={classes.paymentIcon}
                                             >
                                                 {method.icon}
                                             </span>
                                             <span
-                                                className={classes.methodName}
+                                                className={classes.paymentName}
                                             >
                                                 {method.name}
                                             </span>
@@ -112,10 +159,10 @@ function PaymentForm({
                                             )}
                                         </div>
                                         {method.processingFee &&
-                                            method.processingFee > 0 && (
+                                            method.available && (
                                                 <div
                                                     className={
-                                                        classes.methodFee
+                                                        classes.processingFee
                                                     }
                                                 >
                                                     Comisión:{" "}
@@ -124,135 +171,109 @@ function PaymentForm({
                                             )}
                                     </div>
                                 </label>
-
-                                {/* Formulario específico para tarjeta */}
-                                {selectedPaymentMethod === method.id &&
-                                    method.id === "stripe_card" && (
-                                        <div className={classes.cardForm}>
-                                            <div className={classes.cardNotice}>
-                                                <div
-                                                    className={
-                                                        classes.noticeIcon
-                                                    }
-                                                >
-                                                    ℹ️
-                                                </div>
-                                                <div
-                                                    className={
-                                                        classes.noticeText
-                                                    }
-                                                >
-                                                    <strong>
-                                                        Modo de prueba activado
-                                                    </strong>
-                                                    <br />
-                                                    Puedes usar la tarjeta de
-                                                    prueba: 4242 4242 4242 4242
-                                                    <br />
-                                                    Cualquier fecha futura y CVC
-                                                    (123)
-                                                </div>
-                                            </div>
-
-                                            {/* Aquí iría el Stripe Elements cuando se integre completamente */}
-                                            <div
-                                                className={
-                                                    classes.mockCardInput
-                                                }
-                                            >
-                                                <input
-                                                    type="text"
-                                                    placeholder="4242 4242 4242 4242"
-                                                    className={
-                                                        classes.cardInput
-                                                    }
-                                                    disabled={loading}
-                                                />
-                                                <div
-                                                    className={classes.cardRow}
-                                                >
-                                                    <input
-                                                        type="text"
-                                                        placeholder="MM/YY"
-                                                        className={
-                                                            classes.cardInput
-                                                        }
-                                                        disabled={loading}
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="CVC"
-                                                        className={
-                                                            classes.cardInput
-                                                        }
-                                                        disabled={loading}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                             </div>
                         ))}
                     </div>
+
+                    {/* Información adicional del método seleccionado */}
+                    {selectedPaymentMethod === "stripe_card" && (
+                        <div className={classes.paymentDetails}>
+                            <div className={classes.cardInfo}>
+                                <h4>💳 Pago con tarjeta</h4>
+                                <p>
+                                    Tu pago se procesará de forma segura
+                                    mediante Stripe. Los datos de tu tarjeta
+                                    están protegidos con cifrado de nivel
+                                    bancario.
+                                </p>
+                                <div className={classes.securityBadges}>
+                                    <span className={classes.badge}>
+                                        🔒 SSL
+                                    </span>
+                                    <span className={classes.badge}>
+                                        🛡️ PCI DSS
+                                    </span>
+                                    <span className={classes.badge}>
+                                        ✅ Verificado
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Resumen del pedido */}
-                {paymentSummary && (
+                {/* Resumen financiero */}
+                {financialSummary && (
                     <div className={classes.section}>
                         <h3 className={classes.sectionTitle}>
                             Resumen del pago
                         </h3>
-
-                        <div className={classes.paymentBreakdown}>
-                            <div className={classes.breakdownRow}>
+                        <div className={classes.financialSummary}>
+                            <div className={classes.summaryRow}>
+                                <span>Subtotal productos:</span>
                                 <span>
-                                    Productos ({paymentSummary.totalItems}):
-                                </span>
-                                <span>
-                                    {paymentUtils.formatPrice(
-                                        paymentSummary.subtotal
-                                    )}
+                                    {financialSummary.subtotal.toFixed(2)}€
                                 </span>
                             </div>
-                            <div className={classes.breakdownRow}>
-                                <span>Envío:</span>
+                            <div className={classes.summaryRow}>
+                                <span>Gastos de envío:</span>
                                 <span>
-                                    {paymentSummary.shippingCost === 0
-                                        ? "Gratis"
-                                        : paymentUtils.formatPrice(
-                                              paymentSummary.shippingCost
-                                          )}
+                                    {financialSummary.shipping === 0
+                                        ? "GRATIS"
+                                        : `${financialSummary.shipping.toFixed(
+                                              2
+                                          )}€`}
                                 </span>
                             </div>
-                            <div className={classes.breakdownDivider}></div>
-                            <div className={classes.breakdownTotal}>
+                            <div className={classes.summaryRow}>
+                                <span>Comisiones de servicio:</span>
+                                <span>
+                                    {financialSummary.platformFees.toFixed(2)}€
+                                </span>
+                            </div>
+                            <div
+                                className={`${classes.summaryRow} ${classes.total}`}
+                            >
                                 <span>Total a pagar:</span>
                                 <span>
-                                    {paymentUtils.formatPrice(
-                                        paymentSummary.totalAmount
-                                    )}
+                                    {financialSummary.total.toFixed(2)}€
                                 </span>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Información de envío */}
+                {/* Información de envío confirmada */}
                 {billingInfo && (
                     <div className={classes.section}>
-                        <h3 className={classes.sectionTitle}>Envío a:</h3>
-                        <div className={classes.shippingInfo}>
-                            <div className={classes.shippingName}>
-                                {billingInfo.shippingAddress.fullName}
-                            </div>
-                            <div className={classes.shippingAddress}>
+                        <h3 className={classes.sectionTitle}>
+                            Dirección de envío
+                        </h3>
+                        <div className={classes.shippingConfirmation}>
+                            <div className={classes.shippingDetails}>
+                                <strong>
+                                    {billingInfo.shippingAddress.fullName}
+                                </strong>
+                                <br />
                                 {billingInfo.shippingAddress.address1}
-                                {billingInfo.shippingAddress.address2 &&
-                                    `, ${billingInfo.shippingAddress.address2}`}
-                            </div>
-                            <div className={classes.shippingCity}>
+                                <br />
+                                {billingInfo.shippingAddress.address2 && (
+                                    <>
+                                        {billingInfo.shippingAddress.address2}
+                                        <br />
+                                    </>
+                                )}
                                 {billingInfo.shippingAddress.postalCode}{" "}
                                 {billingInfo.shippingAddress.city}
+                                <br />
+                                {billingInfo.shippingAddress.province},{" "}
+                                {billingInfo.shippingAddress.country}
+                                {billingInfo.phone && (
+                                    <>
+                                        <br />
+                                        Tel: {billingInfo.phone}
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -260,66 +281,90 @@ function PaymentForm({
 
                 {/* Términos y condiciones */}
                 <div className={classes.section}>
-                    <label className={classes.checkboxContainer}>
-                        <input
-                            type="checkbox"
-                            checked={acceptTerms}
-                            onChange={(e) => setAcceptTerms(e.target.checked)}
-                            className={classes.checkbox}
-                            disabled={loading}
-                        />
-                        <span className={classes.checkboxLabel}>
-                            Acepto los{" "}
-                            <a
-                                href="/terminos"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                términos y condiciones
-                            </a>{" "}
-                            y la{" "}
-                            <a
-                                href="/privacidad"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                política de privacidad
-                            </a>
-                        </span>
-                    </label>
+                    <div className={classes.checkboxGroup}>
+                        <label className={classes.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={acceptTerms}
+                                onChange={(e) =>
+                                    setAcceptTerms(e.target.checked)
+                                }
+                                disabled={loading}
+                                className={classes.checkbox}
+                            />
+                            <span className={classes.checkboxText}>
+                                Acepto los{" "}
+                                <a
+                                    href="/terminos"
+                                    target="_blank"
+                                    className={classes.link}
+                                >
+                                    términos y condiciones
+                                </a>{" "}
+                                y la{" "}
+                                <a
+                                    href="/privacidad"
+                                    target="_blank"
+                                    className={classes.link}
+                                >
+                                    política de privacidad
+                                </a>
+                            </span>
+                        </label>
+
+                        <label className={classes.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={subscribeNewsletter}
+                                onChange={(e) =>
+                                    setSubscribeNewsletter(e.target.checked)
+                                }
+                                disabled={loading}
+                                className={classes.checkbox}
+                            />
+                            <span className={classes.checkboxText}>
+                                Quiero recibir ofertas y novedades por email
+                                (opcional)
+                            </span>
+                        </label>
+                    </div>
                 </div>
 
+                {/* Botones de acción */}
                 <div className={classes.actions}>
                     <button
                         type="button"
                         onClick={onBack}
-                        className={classes.secondaryButton}
                         disabled={loading}
+                        className={classes.backButton}
                     >
-                        ← Volver
+                        ← Volver a envío
                     </button>
+
                     <button
                         type="submit"
-                        className={classes.primaryButton}
                         disabled={
-                            loading || !selectedPaymentMethod || !acceptTerms
+                            loading || !acceptTerms || !selectedPaymentMethod
                         }
+                        className={classes.submitButton}
                     >
                         {loading ? (
                             <>
-                                <span className={classes.spinner}></span>
+                                <span className={classes.loadingSpinner}></span>
                                 Procesando pago...
                             </>
                         ) : (
-                            `Pagar ${
-                                paymentSummary
-                                    ? paymentUtils.formatPrice(
-                                          paymentSummary.totalAmount
-                                      )
-                                    : ""
-                            }`
+                            <>🔒 Pagar {financialSummary?.total.toFixed(2)}€</>
                         )}
                     </button>
+                </div>
+
+                {/* Información de seguridad */}
+                <div className={classes.securityInfo}>
+                    <p className={classes.securityText}>
+                        🔒 Tu información está protegida. No almacenamos datos
+                        de tarjetas de crédito.
+                    </p>
                 </div>
             </form>
         </div>

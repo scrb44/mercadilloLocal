@@ -1,12 +1,22 @@
-// src/services/pedidosService.ts - Servicio para gestión de pedidos en el frontend
-import { API_BASE_URL } from "../constants";
+// src/services/pedidosService.ts - Servicio completo para gestión de pedidos
 
-// Función helper para crear requests autenticados
+import { ENDPOINTS } from "../constants";
+
+const API_BASE_URL = "http://localhost:8080";
+
+// Función helper para crear requests autenticados con debugging
 async function createAuthenticatedRequest(
     endpoint: string,
     options: RequestInit = {}
 ) {
     const token = localStorage.getItem("token");
+
+    console.log("🔧 DEBUG - createAuthenticatedRequest:", {
+        endpoint,
+        hasToken: !!token,
+        tokenPreview: token ? token.substring(0, 20) + "..." : "NO_TOKEN",
+        method: options.method || "GET",
+    });
 
     if (!token) {
         throw new Error(
@@ -24,17 +34,31 @@ async function createAuthenticatedRequest(
         ...options.headers,
     };
 
+    console.log("🔧 DEBUG - Request details:", {
+        url,
+        headers: {
+            ...headers,
+            Authorization: `Bearer ${token.substring(0, 20)}...`,
+        },
+        body: options.body,
+    });
+
     try {
         const response = await fetch(url, {
             ...options,
             headers,
         });
 
+        console.log("🔧 DEBUG - Response status:", response.status);
+
         if (!response.ok) {
             let errorMessage = `Error HTTP: ${response.status}`;
+            let errorDetails = null;
 
             try {
                 const errorBody = await response.clone().text();
+                console.log("🔧 DEBUG - Error response body:", errorBody);
+
                 if (errorBody) {
                     try {
                         const errorJson = JSON.parse(errorBody);
@@ -42,6 +66,7 @@ async function createAuthenticatedRequest(
                             errorMessage =
                                 errorJson.message || errorJson.mensaje;
                         }
+                        errorDetails = errorJson;
                     } catch {
                         if (errorBody.length < 200) {
                             errorMessage = errorBody;
@@ -49,8 +74,15 @@ async function createAuthenticatedRequest(
                     }
                 }
             } catch (e) {
-                // Ignore error parsing
+                console.log("🔧 DEBUG - Could not parse error body");
             }
+
+            console.error("❌ API Error:", {
+                status: response.status,
+                statusText: response.statusText,
+                errorMessage,
+                errorDetails,
+            });
 
             if (response.status === 401) {
                 localStorage.removeItem("token");
@@ -60,7 +92,7 @@ async function createAuthenticatedRequest(
             }
             if (response.status === 403) {
                 throw new Error(
-                    "No tienes permisos para realizar esta acción."
+                    "No tienes permisos para realizar esta acción. Verifica que estés logueado como comprador."
                 );
             }
 
@@ -69,6 +101,7 @@ async function createAuthenticatedRequest(
 
         return response;
     } catch (error: any) {
+        console.error("❌ Network Error:", error);
         if (error.name === "TypeError" && error.message.includes("fetch")) {
             throw new Error("Error de conexión. Verifica tu internet.");
         }
@@ -129,18 +162,62 @@ export const pedidosService = {
      */
     async crearPedido(request: CrearPedidoRequest): Promise<PedidoAPI> {
         try {
+            console.log("🔧 Creando pedido con datos:", request);
+
+            // ✅ VALIDACIONES DE TIPOS
+            if (
+                !request.compradorEmail ||
+                typeof request.compradorEmail !== "string"
+            ) {
+                throw new Error(
+                    `compradorEmail debe ser un string válido: ${request.compradorEmail}`
+                );
+            }
+
+            if (
+                !request.tipoComprador ||
+                typeof request.tipoComprador !== "string"
+            ) {
+                throw new Error(
+                    `tipoComprador debe ser un string válido: ${request.tipoComprador}`
+                );
+            }
+
+            if (!request.productos || request.productos.length === 0) {
+                throw new Error("No hay productos en el pedido");
+            }
+
+            // ✅ ASEGURAR TIPOS CORRECTOS
+            const requestConTiposCorrectos = {
+                ...request,
+                compradorId: request.compradorId || 0, // Temporal por compatibilidad
+                total: Number(request.total),
+                cantidadProductos: Number(request.cantidadProductos),
+            };
+
+            console.log(
+                "🔧 Request con tipos corregidos:",
+                requestConTiposCorrectos
+            );
+
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/crear",
                 {
                     method: "POST",
-                    body: JSON.stringify(request),
+                    body: JSON.stringify(requestConTiposCorrectos),
                 }
             );
 
             const data = await response.json();
+            console.log("✅ Pedido creado exitosamente:", data);
+
             return data.pedido;
         } catch (error: any) {
-            console.error("❌ Error creando pedido:", error);
+            console.error("❌ Error creando pedido:", {
+                message: error.message,
+                request,
+                stack: error.stack,
+            });
             throw new Error(error.message || "Error al crear el pedido");
         }
     },
@@ -150,10 +227,18 @@ export const pedidosService = {
      */
     async obtenerHistorial(): Promise<PedidoAPI[]> {
         try {
+            console.log("🔧 Obteniendo historial de pedidos");
+
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/historial"
             );
             const data = await response.json();
+
+            console.log(
+                "✅ Historial obtenido:",
+                data.pedidos?.length || 0,
+                "pedidos"
+            );
 
             return data.pedidos || [];
         } catch (error: any) {
@@ -163,14 +248,49 @@ export const pedidosService = {
     },
 
     /**
+     * Obtener pedidos recientes (últimos 30 días)
+     */
+    async obtenerPedidosRecientes(): Promise<PedidoAPI[]> {
+        try {
+            console.log("🔧 Obteniendo pedidos recientes");
+
+            const response = await createAuthenticatedRequest(
+                "/api/pedidos/recientes"
+            );
+            const data = await response.json();
+
+            console.log(
+                "✅ Pedidos recientes obtenidos:",
+                data.pedidos?.length || 0,
+                "pedidos"
+            );
+
+            return data.pedidos || [];
+        } catch (error: any) {
+            console.error("❌ Error obteniendo pedidos recientes:", error);
+            throw new Error(
+                error.message || "Error al obtener los pedidos recientes"
+            );
+        }
+    },
+
+    /**
      * Obtener solo pedidos pagados
      */
     async obtenerPedidosPagados(): Promise<PedidoAPI[]> {
         try {
+            console.log("🔧 Obteniendo pedidos pagados");
+
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/pagados"
             );
             const data = await response.json();
+
+            console.log(
+                "✅ Pedidos pagados obtenidos:",
+                data.pedidos?.length || 0,
+                "pedidos"
+            );
 
             return data.pedidos || [];
         } catch (error: any) {
@@ -186,10 +306,14 @@ export const pedidosService = {
      */
     async obtenerPedidoPorId(pedidoId: number): Promise<PedidoAPI> {
         try {
+            console.log("🔧 Obteniendo pedido:", pedidoId);
+
             const response = await createAuthenticatedRequest(
                 `/api/pedidos/${pedidoId}`
             );
             const data = await response.json();
+
+            console.log("✅ Pedido obtenido:", data.pedido);
 
             return data.pedido;
         } catch (error: any) {
@@ -199,52 +323,18 @@ export const pedidosService = {
     },
 
     /**
-     * Obtener estadísticas de pedidos
-     */
-    async obtenerEstadisticas(): Promise<EstadisticasPedidos> {
-        try {
-            const response = await createAuthenticatedRequest(
-                "/api/pedidos/estadisticas"
-            );
-            const data = await response.json();
-
-            return data.estadisticas;
-        } catch (error: any) {
-            console.error("❌ Error obteniendo estadísticas:", error);
-            throw new Error(
-                error.message || "Error al obtener las estadísticas"
-            );
-        }
-    },
-
-    /**
-     * Obtener pedidos recientes (últimos 30 días)
-     */
-    async obtenerPedidosRecientes(): Promise<PedidoAPI[]> {
-        try {
-            const response = await createAuthenticatedRequest(
-                "/api/pedidos/recientes"
-            );
-            const data = await response.json();
-
-            return data.pedidos || [];
-        } catch (error: any) {
-            console.error("❌ Error obteniendo pedidos recientes:", error);
-            throw new Error(
-                error.message || "Error al obtener los pedidos recientes"
-            );
-        }
-    },
-
-    /**
      * Buscar pedido por número
      */
     async buscarPorNumero(numeroPedido: string): Promise<PedidoAPI> {
         try {
+            console.log("🔧 Buscando pedido por número:", numeroPedido);
+
             const response = await createAuthenticatedRequest(
                 `/api/pedidos/buscar/${numeroPedido}`
             );
             const data = await response.json();
+
+            console.log("✅ Pedido encontrado:", data.pedido);
 
             return data.pedido;
         } catch (error: any) {
@@ -254,13 +344,40 @@ export const pedidosService = {
     },
 
     /**
+     * Obtener estadísticas de pedidos
+     */
+    async obtenerEstadisticas(): Promise<EstadisticasPedidos> {
+        try {
+            console.log("🔧 Obteniendo estadísticas de pedidos");
+
+            const response = await createAuthenticatedRequest(
+                "/api/pedidos/estadisticas"
+            );
+            const data = await response.json();
+
+            console.log("✅ Estadísticas obtenidas:", data);
+
+            return data.estadisticas || data; // Compatibilidad con diferentes respuestas del backend
+        } catch (error: any) {
+            console.error("❌ Error obteniendo estadísticas:", error);
+            throw new Error(
+                error.message || "Error al obtener las estadísticas"
+            );
+        }
+    },
+
+    /**
      * Parsear productos del JSON
      */
     parsearProductos(productosJson: string): ProductoPedido[] {
         try {
+            if (!productosJson || productosJson.trim() === "") {
+                console.warn("🔧 JSON de productos vacío o inválido");
+                return [];
+            }
             return JSON.parse(productosJson);
         } catch (error) {
-            console.error("Error parseando productos JSON:", error);
+            console.error("❌ Error parseando productos JSON:", error);
             return [];
         }
     },
@@ -270,7 +387,18 @@ export const pedidosService = {
      */
     formatearFecha(fechaString: string): string {
         try {
+            if (!fechaString) {
+                return "Fecha no disponible";
+            }
+
             const fecha = new Date(fechaString);
+
+            // Verificar si la fecha es válida
+            if (isNaN(fecha.getTime())) {
+                console.warn("🔧 Fecha inválida:", fechaString);
+                return fechaString;
+            }
+
             return fecha.toLocaleDateString("es-ES", {
                 year: "numeric",
                 month: "long",
@@ -279,17 +407,63 @@ export const pedidosService = {
                 minute: "2-digit",
             });
         } catch (error) {
-            return fechaString;
+            console.error("❌ Error formateando fecha:", error);
+            return fechaString || "Fecha no disponible";
         }
     },
 
     /**
      * Formatear precio
      */
-    formatearPrecio(precio: number): string {
-        return new Intl.NumberFormat("es-ES", {
-            style: "currency",
-            currency: "EUR",
-        }).format(precio);
+    formatearPrecio(precio: number | string): string {
+        try {
+            const precioNumerico =
+                typeof precio === "string" ? parseFloat(precio) : precio;
+
+            if (isNaN(precioNumerico)) {
+                console.warn("🔧 Precio inválido:", precio);
+                return "0,00 €";
+            }
+
+            return new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: "EUR",
+            }).format(precioNumerico);
+        } catch (error) {
+            console.error("❌ Error formateando precio:", error);
+            return "0,00 €";
+        }
+    },
+
+    /**
+     * Función de debug para verificar token
+     */
+    async debugToken(): Promise<any> {
+        try {
+            const token = localStorage.getItem("token");
+            console.log("🔧 DEBUG Token info:", {
+                hasToken: !!token,
+                tokenLength: token?.length,
+                tokenPreview: token
+                    ? token.substring(0, 50) + "..."
+                    : "NO_TOKEN",
+            });
+
+            if (token) {
+                // Intentar decodificar el payload (no verificar firma, solo leer)
+                try {
+                    const payload = JSON.parse(atob(token.split(".")[1]));
+                    console.log("🔧 DEBUG Token payload:", payload);
+                    return payload;
+                } catch (e) {
+                    console.warn("❌ No se pudo decodificar el token:", e);
+                }
+            }
+
+            return null;
+        } catch (error) {
+            console.error("❌ Error en debug token:", error);
+            return null;
+        }
     },
 };

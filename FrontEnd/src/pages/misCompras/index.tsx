@@ -31,6 +31,8 @@ function MisCompras() {
                 setLoading(true);
                 setError(null);
 
+                console.log("🔧 Cargando datos de pedidos...");
+
                 const [pedidosData, estadisticasData] = await Promise.all([
                     filtro === "todos"
                         ? pedidosService.obtenerHistorial()
@@ -40,6 +42,11 @@ function MisCompras() {
 
                 setPedidos(pedidosData);
                 setEstadisticas(estadisticasData);
+
+                console.log("✅ Datos cargados:", {
+                    pedidos: pedidosData.length,
+                    estadisticas: estadisticasData,
+                });
             } catch (err: any) {
                 console.error("❌ Error cargando datos:", err);
                 setError(err.message || "Error al cargar los pedidos");
