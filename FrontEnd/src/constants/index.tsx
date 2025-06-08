@@ -1,4 +1,4 @@
-// src/constants/index.ts - CORREGIDO con endpoints exactos del backend
+// src/constants/index.ts - Constantes de la aplicación COMPLETO
 
 // URLs y endpoints - EXACTOS según el backend Spring Boot
 export const API_BASE_URL = "http://localhost:8080";
@@ -11,6 +11,7 @@ export const ENDPOINTS = {
     AUTH: "/api/auth",
     USER: "/api/usuario",
     PAYMENTS: "/api/payments", // Para futuro uso
+    PEDIDOS: "/api/pedidos", // ✅ NUEVO: Para gestión de pedidos
     LOCALIDADES: "/api/localidad", // NUEVO: para obtener localidades
 } as const;
 
@@ -26,6 +27,7 @@ export const ROUTES = {
     PRODUCT: "/producto",
     PROFILE: "/perfil",
     ORDERS: "/pedidos",
+    MIS_COMPRAS: "/mis-compras", // ✅ NUEVO: Ruta para historial de compras
     CHECKOUT: "/checkout",
     PAYMENT: "/pago",
     PAYMENT_CONFIRMATION: "/pago/confirmacion",
@@ -72,6 +74,11 @@ export const ERROR_MESSAGES = {
     CART_REMOVE_ERROR: "Error al eliminar producto del carrito",
     CART_UPDATE_ERROR: "Error al actualizar cantidad",
     CART_CLEAR_ERROR: "Error al vaciar el carrito",
+
+    // ✅ NUEVOS: Errores específicos de pedidos
+    ORDER_CREATE_ERROR: "Error al crear el pedido",
+    ORDER_LOAD_ERROR: "Error al cargar pedidos",
+    ORDER_NOT_FOUND: "Pedido no encontrado",
 } as const;
 
 // Mensajes de éxito - ACTUALIZADOS
@@ -85,7 +92,11 @@ export const SUCCESS_MESSAGES = {
     PRODUCT_CREATED: "Producto creado exitosamente",
     PRODUCT_UPDATED: "Producto actualizado correctamente",
     PRODUCT_DELETED: "Producto eliminado correctamente",
-    QUANTITY_UPDATED: "Cantidad actualizada correctamente", // NUEVO
+    QUANTITY_UPDATED: "Cantidad actualizada correctamente",
+
+    // ✅ NUEVOS: Mensajes de éxito para pedidos
+    ORDER_CREATED: "¡Pedido realizado exitosamente!",
+    PAYMENT_SUCCESS: "Pago procesado correctamente",
 } as const;
 
 // Configuración de la aplicación
@@ -115,6 +126,11 @@ export const ORDER_STATUS = {
     SHIPPED: "shipped",
     DELIVERED: "delivered",
     CANCELLED: "cancelled",
+
+    // ✅ NUEVOS: Estados específicos de pago
+    PAGADO: "PAGADO",
+    PENDIENTE: "PENDIENTE",
+    FALLIDO: "FALLIDO",
 } as const;
 
 // Métodos de pago
@@ -234,6 +250,7 @@ export const generateBreadcrumbs = (currentPath: string) => {
             "mis-productos": "Mis Productos",
             "subir-producto": "Crear Producto",
             "editar-producto": "Editar Producto",
+            "mis-compras": "Mis Compras", // ✅ NUEVO
             perfil: "Mi Perfil",
             carrito: "Carrito",
             categoria: "Categoría",

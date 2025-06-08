@@ -24,6 +24,7 @@ const Login = lazy(() => import("./pages/login"));
 const Register = lazy(() => import("./pages/register"));
 const Perfil = lazy(() => import("./pages/perfil"));
 const Checkout = lazy(() => import("./pages/checkout"));
+const MisCompras = lazy(() => import("./pages/misCompras")); // ✅ NUEVO
 
 // Lazy loading para páginas de vendedores
 const VendorProducts = lazy(() => import("./pages/vendorProducts"));
@@ -143,6 +144,16 @@ function AppContent() {
                                                 element={
                                                     <PageSuspense>
                                                         <Cart />
+                                                    </PageSuspense>
+                                                }
+                                            />
+
+                                            {/* ✅ NUEVA RUTA: Mis Compras */}
+                                            <Route
+                                                path="/mis-compras"
+                                                element={
+                                                    <PageSuspense>
+                                                        <MisCompras />
                                                     </PageSuspense>
                                                 }
                                             />
@@ -310,6 +321,18 @@ function AppContent() {
                                             <Cart />
                                         </PageSuspense>
                                     </CartProvider>
+                                </MunicipioGuard>
+                            }
+                        />
+
+                        {/* ✅ Mis Compras para no autenticados - mostrar que necesitan login */}
+                        <Route
+                            path="/mis-compras"
+                            element={
+                                <MunicipioGuard>
+                                    <PageSuspense>
+                                        <MisCompras />
+                                    </PageSuspense>
                                 </MunicipioGuard>
                             }
                         />
