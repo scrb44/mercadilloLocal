@@ -33,11 +33,21 @@ export {
     calculateCartTotals,
 } from "./cartAdapter";
 
+// ============ CART RESPONSE ADAPTERS (NUEVO) ============
+export {
+    adaptCarritoResponse,
+    adaptAndConsolidateCartResponse,
+    consolidateCartItems,
+    findCartItem,
+    isProductInCart,
+    getProductQuantityInCart,
+} from "./cartResponseAdapter";
+
 // ============ EXPORT TYPES ============
 export type {
     ApiProduct,
     ApiCategory,
-    ApiVendor,
+    ApiVendedor as ApiVendor,
     ApiCart,
     ApiCartItem,
     ApiResponse,
