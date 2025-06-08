@@ -12,9 +12,19 @@ public class UpdateQuantityRequest {
     }
 
     // Getters y Setters
-    public Long getProductoId() { return productoId; }
-    public void setProductoId(Long productoId) { this.productoId = productoId; }
+    public Long getProductoId() {
+        return productoId;
+    }
 
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }
