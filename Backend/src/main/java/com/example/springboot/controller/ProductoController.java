@@ -68,9 +68,45 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<Producto> agregarProducto(@RequestBody Producto producto) {
-        Producto nuevoProducto = productoService.agregarProducto(producto);
-        return ResponseEntity.ok(nuevoProducto);
+    public ResponseEntity<?> agregarProducto(@RequestBody Producto producto, HttpServletRequest request) {
+        try {
+            // Verificar que hay autenticación básica
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("mensaje", "Token requerido"));
+            }
+
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);
+
+            // Verificar que es vendedor
+            if (!"VENDEDOR".equals(role)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Collections.singletonMap("mensaje", "Solo vendedores pueden crear productos"));
+            }
+
+            // 🔧 BUSCAR VENDEDOR POR EMAIL Y ASIGNARLO AL PRODUCTO
+            Vendedor vendedor = vendedorService.buscarPorEmail(email);
+            if (vendedor == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("mensaje", "Vendedor no encontrado"));
+            }
+
+            // Asignar el vendedor al producto
+            producto.setVendedor(vendedor);
+
+            // Crear el producto
+            Producto nuevoProducto = productoService.agregarProducto(producto);
+
+            return ResponseEntity.ok(nuevoProducto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("mensaje", "Error interno del servidor: " + e.getMessage()));
+        }
     }
 
     // 🔧 MÉTODO PUT CORREGIDO

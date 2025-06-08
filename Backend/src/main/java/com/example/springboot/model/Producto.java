@@ -20,9 +20,12 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String descripcion;
     private BigDecimal precio;
     private String nombre;
+
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String imagen;
 
     @JsonIgnore

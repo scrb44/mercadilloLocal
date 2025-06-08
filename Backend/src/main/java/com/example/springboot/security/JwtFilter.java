@@ -21,21 +21,23 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
+    protected void doFilterInternal(
+            HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+            FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Ignorar rutas públicas
-
-        if (path.startsWith("/api/auth/") || path.startsWith("/api/productos/") || path.startsWith("/api/Categoria/")) {
+        // 🔧 RUTAS COMPLETAMENTE PÚBLICAS (sin token requerido)
+        if (path.startsWith("/api/auth/") ||
+                (path.startsWith("/api/productos/") && "GET".equals(method)) ||
+                (path.startsWith("/api/Categoria/") && "GET".equals(method))) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 🔧 PARA TODAS LAS DEMÁS RUTAS, VERIFICAR TOKEN
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
@@ -45,7 +47,6 @@ public class JwtFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                // Token inválido o expirado
             }
         }
 
@@ -58,7 +59,6 @@ public class JwtFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-
             }
         }
 
