@@ -63,8 +63,6 @@ function EditProduct() {
     }, [isAuthenticated, user, navigate, productId]);
 
     // ============ CARGAR PRODUCTO ============
-    // Agrega este debug temporal en EditProduct, justo antes de la comparación:
-
     useEffect(() => {
         const loadProduct = async () => {
             if (!productId) return;
@@ -73,15 +71,19 @@ function EditProduct() {
                 setLoadingProduct(true);
                 setProductError(null);
 
-                const product = await mercadilloService.getProduct(
-                    Number(productId)
-                );
+                // 🔧 INVALIDAR CACHE ANTES de cargar
+                const cacheKey = `mercadillo-product-${productId}`;
+                localStorage.removeItem(cacheKey);
 
-                // TODO: Aquí implementaremos la comparación correcta una vez que veamos los logs
+                // 🔧 USAR mercadilloService con useCache = false
+                const product = await mercadilloService.getProduct(
+                    Number(productId),
+                    false // useCache = false para forzar recarga desde API
+                );
 
                 setCurrentProduct(product);
 
-                // Resto del código...
+                // Inicializar formulario con datos del producto
                 setFormData({
                     name: product.name,
                     description: product.description,
@@ -92,6 +94,7 @@ function EditProduct() {
                     ),
                 });
 
+                // Establecer preview de imagen si existe
                 if (product.img[0]) {
                     setImagePreview(product.img[0]);
                 }
