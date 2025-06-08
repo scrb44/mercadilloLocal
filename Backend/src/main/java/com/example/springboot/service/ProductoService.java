@@ -22,12 +22,33 @@ public class ProductoService {
     }
 
     public Producto getProducto(Long id) {
-        return productoRepo.getReferenceById(id);
+        try {
+            return productoRepo.findById(id).orElse(null);
+        } catch (Exception e) {
+            System.out.println("❌ Error obteniendo producto " + id + ": " + e.getMessage());
+            return null;
+        }
     }
 
     public Producto agregarProducto(Producto producto) {
         return productoRepo.save(producto);
     }
+
+    // 🔧 MÉTODO ACTUALIZAR PRODUCTO
+    public Producto actualizarProducto(Producto producto) {
+        try {
+            // Verificar que el producto existe
+            if (!productoRepo.existsById(producto.getId())) {
+                throw new RuntimeException("Producto no encontrado con ID: " + producto.getId());
+            }
+
+            Producto productoGuardado = productoRepo.save(producto);
+            return productoGuardado;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public void eliminarProducto(Long id) {
         productoRepo.deleteById(id);
     }
