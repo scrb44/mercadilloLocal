@@ -60,22 +60,27 @@ public class DataLoader {
             if (malaga == null) {
                 malaga = new Localidad();
                 malaga.setNombre("Málaga");
+                malaga.setProvincia("Málaga");
                 malaga = localidadRepo.save(malaga);
             }
             Localidad fuengirola = new Localidad();
-            fuengirola.setNombre("fuengirola");
+            fuengirola.setNombre("Fuengirola");
+            fuengirola.setProvincia("Málaga");
             localidadRepo.save(fuengirola);
 
             Localidad ojen = new Localidad();
-            ojen.setNombre("ojen");
+            ojen.setNombre("Ojen");
+            ojen.setProvincia("Málaga");
             localidadRepo.save(ojen);
 
             Localidad istan = new Localidad();
-            istan.setNombre("istan");
+            istan.setNombre("Istan");
+            istan.setProvincia("Málaga");
             localidadRepo.save(istan);
 
             Localidad coin = new Localidad();
-            coin.setNombre("coin");
+            coin.setNombre("Coin");
+            coin.setProvincia("Málaga");
             localidadRepo.save(coin);
 
             // Vendedor Tasca Malagueña
