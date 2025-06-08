@@ -27,35 +27,16 @@ function CheckoutContent() {
     const rolesPermitidos = ["COMPRADOR", "VENDEDOR", "ADMIN"];
     const puedeComprar = user?.role && rolesPermitidos.includes(user.role);
 
-    // ============ DEBUG ============
-    console.log("🔧 Checkout Debug:", {
-        isAuthenticated,
-        hasUser: !!user,
-        userRole: user?.role,
-        puedeComprar,
-        hasCart: !!cart,
-        cartItems: cart?.items?.length || 0,
-        hasPayment: !!payment,
-        paymentState: payment?.state?.currentStep || "undefined",
-        paymentSummary: !!payment?.state?.paymentSummary,
-        completed: payment?.state?.completed || false,
-        orderId: payment?.state?.orderId || "none",
-    });
-
     // ============ EFECTOS ============
     useEffect(() => {
-        console.log("🔧 Checkout useEffect ejecutándose...");
-
         // Redirigir si no está autenticado
         if (!isAuthenticated || !user) {
-            console.log("❌ Usuario no autenticado, redirigiendo...");
             navigate("/login?redirect=/checkout");
             return;
         }
 
         // ✅ NUEVA VALIDACIÓN: Solo roles permitidos pueden hacer checkout
         if (!puedeComprar) {
-            console.log("❌ Usuario no puede hacer checkout, rol no permitido");
             return; // No redirigimos, mostramos mensaje
         }
 
@@ -72,16 +53,12 @@ function CheckoutContent() {
             payment.state.currentStep !== "confirmation" &&
             !payment.state.completed
         ) {
-            console.log(
-                "❌ Carrito vacío y no hay pago completado, redirigiendo..."
-            );
             navigate("/carrito");
             return;
         }
 
         // Inicializar el pago si no está inicializado
         if (!payment.state.paymentSummary && cart.items.length > 0) {
-            console.log("✅ Inicializando pago...");
             try {
                 // Convertir items del carrito al formato PaymentItem
                 const paymentItems: PaymentItem[] = cart.items.map((item) => ({
@@ -94,7 +71,6 @@ function CheckoutContent() {
 
                 // Pasar los items convertidos al initializePayment
                 payment.initializePayment(paymentItems);
-                console.log("✅ Pago inicializado correctamente");
             } catch (error) {
                 console.error("❌ Error inicializando pago:", error);
                 payment.setError(

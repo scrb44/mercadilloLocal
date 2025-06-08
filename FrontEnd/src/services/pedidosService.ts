@@ -11,13 +11,6 @@ async function createAuthenticatedRequest(
 ) {
     const token = localStorage.getItem("token");
 
-    console.log("🔧 DEBUG - createAuthenticatedRequest:", {
-        endpoint,
-        hasToken: !!token,
-        tokenPreview: token ? token.substring(0, 20) + "..." : "NO_TOKEN",
-        method: options.method || "GET",
-    });
-
     if (!token) {
         throw new Error(
             "No se encontró token de autenticación. Debes iniciar sesión."
@@ -34,22 +27,11 @@ async function createAuthenticatedRequest(
         ...options.headers,
     };
 
-    console.log("🔧 DEBUG - Request details:", {
-        url,
-        headers: {
-            ...headers,
-            Authorization: `Bearer ${token.substring(0, 20)}...`,
-        },
-        body: options.body,
-    });
-
     try {
         const response = await fetch(url, {
             ...options,
             headers,
         });
-
-        console.log("🔧 DEBUG - Response status:", response.status);
 
         if (!response.ok) {
             let errorMessage = `Error HTTP: ${response.status}`;
@@ -57,7 +39,6 @@ async function createAuthenticatedRequest(
 
             try {
                 const errorBody = await response.clone().text();
-                console.log("🔧 DEBUG - Error response body:", errorBody);
 
                 if (errorBody) {
                     try {
@@ -73,9 +54,7 @@ async function createAuthenticatedRequest(
                         }
                     }
                 }
-            } catch (e) {
-                console.log("🔧 DEBUG - Could not parse error body");
-            }
+            } catch (e) {}
 
             console.error("❌ API Error:", {
                 status: response.status,
@@ -162,8 +141,6 @@ export const pedidosService = {
      */
     async crearPedido(request: CrearPedidoRequest): Promise<PedidoAPI> {
         try {
-            console.log("🔧 Creando pedido con datos:", request);
-
             // ✅ VALIDACIONES DE TIPOS
             if (
                 !request.compradorEmail ||
@@ -195,11 +172,6 @@ export const pedidosService = {
                 cantidadProductos: Number(request.cantidadProductos),
             };
 
-            console.log(
-                "🔧 Request con tipos corregidos:",
-                requestConTiposCorrectos
-            );
-
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/crear",
                 {
@@ -209,7 +181,6 @@ export const pedidosService = {
             );
 
             const data = await response.json();
-            console.log("✅ Pedido creado exitosamente:", data);
 
             return data.pedido;
         } catch (error: any) {
@@ -227,18 +198,10 @@ export const pedidosService = {
      */
     async obtenerHistorial(): Promise<PedidoAPI[]> {
         try {
-            console.log("🔧 Obteniendo historial de pedidos");
-
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/historial"
             );
             const data = await response.json();
-
-            console.log(
-                "✅ Historial obtenido:",
-                data.pedidos?.length || 0,
-                "pedidos"
-            );
 
             return data.pedidos || [];
         } catch (error: any) {
@@ -252,18 +215,10 @@ export const pedidosService = {
      */
     async obtenerPedidosRecientes(): Promise<PedidoAPI[]> {
         try {
-            console.log("🔧 Obteniendo pedidos recientes");
-
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/recientes"
             );
             const data = await response.json();
-
-            console.log(
-                "✅ Pedidos recientes obtenidos:",
-                data.pedidos?.length || 0,
-                "pedidos"
-            );
 
             return data.pedidos || [];
         } catch (error: any) {
@@ -279,18 +234,10 @@ export const pedidosService = {
      */
     async obtenerPedidosPagados(): Promise<PedidoAPI[]> {
         try {
-            console.log("🔧 Obteniendo pedidos pagados");
-
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/pagados"
             );
             const data = await response.json();
-
-            console.log(
-                "✅ Pedidos pagados obtenidos:",
-                data.pedidos?.length || 0,
-                "pedidos"
-            );
 
             return data.pedidos || [];
         } catch (error: any) {
@@ -306,14 +253,10 @@ export const pedidosService = {
      */
     async obtenerPedidoPorId(pedidoId: number): Promise<PedidoAPI> {
         try {
-            console.log("🔧 Obteniendo pedido:", pedidoId);
-
             const response = await createAuthenticatedRequest(
                 `/api/pedidos/${pedidoId}`
             );
             const data = await response.json();
-
-            console.log("✅ Pedido obtenido:", data.pedido);
 
             return data.pedido;
         } catch (error: any) {
@@ -327,14 +270,10 @@ export const pedidosService = {
      */
     async buscarPorNumero(numeroPedido: string): Promise<PedidoAPI> {
         try {
-            console.log("🔧 Buscando pedido por número:", numeroPedido);
-
             const response = await createAuthenticatedRequest(
                 `/api/pedidos/buscar/${numeroPedido}`
             );
             const data = await response.json();
-
-            console.log("✅ Pedido encontrado:", data.pedido);
 
             return data.pedido;
         } catch (error: any) {
@@ -348,14 +287,10 @@ export const pedidosService = {
      */
     async obtenerEstadisticas(): Promise<EstadisticasPedidos> {
         try {
-            console.log("🔧 Obteniendo estadísticas de pedidos");
-
             const response = await createAuthenticatedRequest(
                 "/api/pedidos/estadisticas"
             );
             const data = await response.json();
-
-            console.log("✅ Estadísticas obtenidas:", data);
 
             return data.estadisticas || data; // Compatibilidad con diferentes respuestas del backend
         } catch (error: any) {
@@ -441,19 +376,11 @@ export const pedidosService = {
     async debugToken(): Promise<any> {
         try {
             const token = localStorage.getItem("token");
-            console.log("🔧 DEBUG Token info:", {
-                hasToken: !!token,
-                tokenLength: token?.length,
-                tokenPreview: token
-                    ? token.substring(0, 50) + "..."
-                    : "NO_TOKEN",
-            });
 
             if (token) {
                 // Intentar decodificar el payload (no verificar firma, solo leer)
                 try {
                     const payload = JSON.parse(atob(token.split(".")[1]));
-                    console.log("🔧 DEBUG Token payload:", payload);
                     return payload;
                 } catch (e) {
                     console.warn("❌ No se pudo decodificar el token:", e);

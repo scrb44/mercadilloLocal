@@ -171,16 +171,12 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
     const initializePayment = useCallback(
         (cartItems: PaymentItem[]) => {
             try {
-                console.log("🔧 Inicializando pago con items:", cartItems);
-
                 // Convertir los items del carrito al formato correcto
                 const paymentItems = convertToPaymentItems(cartItems);
 
                 // Crear el resumen de pago
                 const paymentSummary =
                     paymentUtils.calculatePaymentSummary(paymentItems);
-
-                console.log("✅ Resumen de pago creado:", paymentSummary);
 
                 dispatch({
                     type: "INITIALIZE_PAYMENT",
@@ -221,11 +217,6 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
             dispatch({ type: "SET_PROCESSING", payload: true });
 
             try {
-                console.log("🔧 Procesando pago...");
-
-                // ✅ DEBUGGING: Verificar datos del usuario
-                console.log("🔧 DEBUG - Datos del usuario:", userData);
-
                 // ✅ VALIDACIÓN: Asegurar que tenemos email
                 if (!userData.email || typeof userData.email !== "string") {
                     throw new Error(
@@ -239,12 +230,8 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
                     allItems.push(...group.items);
                 });
 
-                console.log("🔧 DEBUG - Items del pago:", allItems);
-
                 // Convertir los items de pago a productos de pedido
                 const productos = convertToProductoPedido(allItems);
-
-                console.log("🔧 DEBUG - Productos convertidos:", productos);
 
                 // Preparar la request para crear el pedido
                 const pedidoRequest: CrearPedidoRequest = {
@@ -263,8 +250,6 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
                     productos: productos,
                 };
 
-                console.log("🔧 DEBUGGING - Request completa:", pedidoRequest);
-
                 // ✅ DEBUGGING: Verificar token antes de enviar
                 await pedidosService.debugToken();
 
@@ -273,15 +258,11 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
                     pedidoRequest
                 );
 
-                console.log("✅ Pedido creado exitosamente:", pedidoCreado);
-
                 // Marcar como completado
                 dispatch({
                     type: "SET_COMPLETED",
                     payload: { orderId: pedidoCreado.numeroPedido },
                 });
-
-                console.log("✅ Pago procesado exitosamente");
 
                 return pedidoCreado;
             } catch (error) {
@@ -298,7 +279,6 @@ export function PaymentProvider({ children }: PaymentProviderProps) {
     );
 
     const confirmPayment = useCallback(async (paymentData: any) => {
-        console.log("🔧 confirmPayment llamado");
         // Esta función se mantiene para compatibilidad
         return null;
     }, []);

@@ -160,8 +160,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
         // Limpiar cache de servicios
         mercadilloService.clearLocalCache();
-
-        console.log("✅ Logout exitoso");
     };
 
     const contextValue: UserContextType = {

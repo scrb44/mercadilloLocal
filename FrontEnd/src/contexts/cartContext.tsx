@@ -211,12 +211,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({
 
         try {
             setError(null);
-            console.log(`🛒 ${user.role} limpiando carrito`);
 
             setItems([]);
             await cartService.clearCart(user.id);
-
-            console.log(`✅ Carrito de ${user.role} limpiado exitosamente`);
         } catch (err: any) {
             console.error("❌ Error limpiando carrito:", err);
             setError("Error al vaciar el carrito");

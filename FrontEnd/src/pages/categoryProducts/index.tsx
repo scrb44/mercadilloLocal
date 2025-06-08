@@ -48,9 +48,7 @@ function CategoryProducts() {
         []
     );
 
-    const handleAddToCart = useCallback((product: any) => {
-        console.log("Producto añadido desde CategoryProducts:", product.name);
-    }, []);
+    const handleAddToCart = useCallback((product: any) => {}, []);
 
     const handleClearSearch = useCallback(() => {
         setSearchQuery("");

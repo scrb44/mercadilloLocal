@@ -139,9 +139,6 @@ export const VendorProductsProvider: React.FC<VendorProductsProviderProps> = ({
         async (productData: ProductFormData): Promise<void> => {
             // Prevenir llamadas duplicadas
             if (state.creating) {
-                console.log(
-                    "⚠️ Ya se está creando un producto, ignorando llamada duplicada"
-                );
                 return; // Cambiado: no lanzar error, solo return
             }
 

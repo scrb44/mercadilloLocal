@@ -28,7 +28,6 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
         try {
             await cart.addItem(product, 1);
-            console.log("✅ Producto añadido al carrito:", product.name);
 
             // Llamar callback si se proporciona
             if (onAddToCart) {

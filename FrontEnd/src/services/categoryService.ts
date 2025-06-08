@@ -51,16 +51,12 @@ export const categoriesService = {
                 // Si la categoría no existe en la API, buscar en mock
                 const mockCategory = MOCK_CATEGORIES.find((c) => c.id === id);
                 if (mockCategory) {
-                    console.log(`📦 Usando categoría mock para ID ${id}`);
                     return mockCategory;
                 }
             } else if (error.message?.includes("fetch")) {
                 // Si hay problema de red, usar mock temporalmente
                 const mockCategory = MOCK_CATEGORIES.find((c) => c.id === id);
                 if (mockCategory) {
-                    console.log(
-                        `🌐 API no disponible, usando mock para ID ${id}`
-                    );
                     return mockCategory;
                 }
             }

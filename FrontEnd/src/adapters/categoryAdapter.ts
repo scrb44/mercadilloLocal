@@ -126,10 +126,6 @@ export function validateApiCategory(
         typeof apiCategory.nombre === "string"; // 🔧 Validar "nombre" en lugar de "name"
     // No validar productos y subcategorias como requeridos porque pueden ser undefined
 
-    if (!isValid) {
-        console.log("❌ Categoría API inválida:", apiCategory);
-    }
-
     return isValid;
 }
 
