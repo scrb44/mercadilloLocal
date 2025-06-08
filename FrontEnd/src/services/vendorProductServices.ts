@@ -100,9 +100,7 @@ async function createAuthenticatedRequest(
                         errorMessage = errorBody;
                     }
                 }
-            } catch (e) {
-                console.log("No se pudo leer el cuerpo del error");
-            }
+            } catch (e) {}
 
             if (response.status === 401) {
                 localStorage.removeItem("token");
@@ -181,20 +179,6 @@ export const vendorProductsService = {
             isCreatingProduct = true;
             const vendorId = await getCurrentVendorId();
 
-            console.log("👤 Creando producto para vendedor ID:", vendorId);
-
-            // 🔧 DEBUG: Verificar qué imagen se está enviando
-            console.log("📸 Debug de imagen:");
-            console.log("📸 productData.imagen existe:", !!productData.imagen);
-            console.log(
-                "📸 productData.imagen length:",
-                productData.imagen?.length || 0
-            );
-            console.log(
-                "📸 productData.imagen preview:",
-                productData.imagen?.substring(0, 100) + "..."
-            );
-
             // ESTRUCTURA según el modelo Producto.java
             const request = {
                 nombre: productData.name.trim(),
@@ -205,14 +189,6 @@ export const vendorProductsService = {
                     id: categoryId,
                 })),
             };
-
-            console.log("📤 Request final (sin imagen para no saturar logs):");
-            console.log({
-                ...request,
-                imagen: request.imagen
-                    ? `[IMAGEN BASE64 - ${request.imagen.length} chars]`
-                    : "sin imagen",
-            });
 
             const response = await createAuthenticatedRequest(
                 ENDPOINTS.PRODUCTS,
