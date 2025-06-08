@@ -8,11 +8,11 @@ import { adaptApiProducts } from "./productAdapter";
  * Convierte una categoría de la API al formato que usa el frontend
  */
 export function adaptApiCategory(apiCategory: ApiCategory): CategoryInterface {
-    const result = {
+    const result: CategoryInterface = {
         id: apiCategory.id,
-        name: apiCategory.nombre,
-        img: apiCategory.imagen || "",
-        fatherId: apiCategory.categoriaPadre?.id,
+        name: apiCategory.nombre, // 🔧 API usa "nombre", frontend usa "name"
+        img: apiCategory.imagen || "", // 🔧 API usa "imagen", frontend usa "img"
+        fatherId: apiCategory.categoriaPadre?.id, // 🔧 API usa "categoriaPadre", frontend usa "fatherId"
     };
     return result;
 }
@@ -33,8 +33,8 @@ export function adaptCategoryToApi(
     category: CategoryInterface
 ): Partial<ApiCategory> {
     return {
-        nombre: category.name,
-        imagen: category.img || null,
+        nombre: category.name, // 🔧 Frontend usa "name", API espera "nombre"
+        imagen: category.img || null, // 🔧 Frontend usa "img", API espera "imagen"
         // categoriaPadre: category.fatherId ? { id: category.fatherId } : null,
     };
 }
@@ -46,8 +46,8 @@ export function adaptCategoryToApi(
  * (La API devuelve productos anidados en cada categoría)
  */
 export function extractAllProductsFromCategories(apiCategories: ApiCategory[]) {
-    const allProducts = apiCategories.flatMap((category) =>
-        adaptApiProducts(category.productos)
+    const allProducts = apiCategories.flatMap(
+        (category) => adaptApiProducts(category.productos || []) // 🔧 Manejar productos undefined
     );
 
     return allProducts;
@@ -57,7 +57,7 @@ export function extractAllProductsFromCategories(apiCategories: ApiCategory[]) {
  * Extrae productos de una categoría específica
  */
 export function extractProductsFromCategory(apiCategory: ApiCategory) {
-    return adaptApiProducts(apiCategory.productos);
+    return adaptApiProducts(apiCategory.productos || []); // 🔧 Manejar productos undefined
 }
 
 /**
@@ -72,16 +72,18 @@ export function flattenCategories(
         // Agregar la categoría actual
         const category: CategoryInterface = {
             id: apiCategory.id,
-            name: apiCategory.nombre,
-            img: apiCategory.imagen || "",
-            fatherId: parentId,
+            name: apiCategory.nombre, // 🔧 Usar "nombre" de la API
+            img: apiCategory.imagen || "", // 🔧 Usar "imagen" de la API
+            fatherId: parentId, // 🔧 Usar parentId pasado como parámetro
         };
         flattened.push(category);
 
         // Procesar subcategorías recursivamente
-        apiCategory.subcategorias.forEach((subcategory) => {
-            processCategory(subcategory, apiCategory.id);
-        });
+        if (apiCategory.subcategorias && apiCategory.subcategorias.length > 0) {
+            apiCategory.subcategorias.forEach((subcategory) => {
+                processCategory(subcategory, apiCategory.id);
+            });
+        }
     }
 
     // Procesar todas las categorías principales
@@ -118,13 +120,17 @@ export function organizeHierarchicalCategories(apiCategories: ApiCategory[]) {
 export function validateApiCategory(
     apiCategory: any
 ): apiCategory is ApiCategory {
-    return (
+    const isValid =
         typeof apiCategory === "object" &&
         typeof apiCategory.id === "number" &&
-        typeof apiCategory.nombre === "string" &&
-        Array.isArray(apiCategory.productos) &&
-        Array.isArray(apiCategory.subcategorias)
-    );
+        typeof apiCategory.nombre === "string"; // 🔧 Validar "nombre" en lugar de "name"
+    // No validar productos y subcategorias como requeridos porque pueden ser undefined
+
+    if (!isValid) {
+        console.log("❌ Categoría API inválida:", apiCategory);
+    }
+
+    return isValid;
 }
 
 /**
@@ -150,16 +156,17 @@ export function searchProductsInCategories(
     const query = searchQuery.toLowerCase();
 
     return apiCategories.flatMap((category) =>
-        category.productos
+        (category.productos || []) // 🔧 Manejar productos undefined
             .filter(
                 (product) =>
                     product.nombre.toLowerCase().includes(query) ||
-                    product.descripcion.toLowerCase().includes(query)
+                    (product.descripcion &&
+                        product.descripcion.toLowerCase().includes(query))
             )
             .map((product) => ({
                 ...adaptApiProduct(product),
                 categoryId: category.id,
-                categoryName: category.nombre,
+                categoryName: category.nombre, // 🔧 Usar "nombre" de la API
             }))
     );
 }
