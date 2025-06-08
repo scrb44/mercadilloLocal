@@ -35,13 +35,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // Productos - GET público, POST/PUT/DELETE requieren autenticación
-                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/productos/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/producto/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/producto/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/producto/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/producto/**").authenticated()
 
                         // Categorías - solo GET público
-                        .requestMatchers(HttpMethod.GET, "/api/Categoria/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categoria/**").permitAll()
 
                         // Carrito - requiere autenticación
                         .requestMatchers("/api/carrito/**").authenticated()

@@ -4,8 +4,8 @@
 export const API_BASE_URL = "http://localhost:8080";
 
 export const ENDPOINTS = {
-    PRODUCTS: "/api/productos",
-    CATEGORIES: "/api/Categoria",
+    PRODUCTS: "/api/producto",
+    CATEGORIES: "/api/categoria",
     VENDORS: "/api/vendedores",
     CART: "/api/carrito",
     AUTH: "/api/auth",
@@ -16,7 +16,7 @@ export const ENDPOINTS = {
 // Rutas de la aplicación
 export const ROUTES = {
     HOME: "/",
-    WHO_WE_ARE: "/quienes-somos", 
+    WHO_WE_ARE: "/quienes-somos",
     LOGIN: "/login",
     REGISTER: "/registro",
     CART: "/carrito",
