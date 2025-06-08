@@ -4,11 +4,12 @@ import { type CartInterface, type CartItemInterface } from "../types/types";
 import { adaptApiProduct } from "./productAdapter";
 
 /**
- * Tipo de respuesta que devuelve el CarritoController según el código Java
+ * Tipo de respuesta que devuelve el CarritoController según el código Java ACTUALIZADO
  */
 interface CarritoResponse {
     userId: number;
-    products: any[]; // Array de productos del backend
+    products: any[]; // Array de productos únicos del backend
+    quantities: { [productId: string]: number }; // Mapa de cantidades por producto
     updatedAt: string;
 }
 
@@ -22,11 +23,12 @@ export function adaptCarritoResponse(response: CarritoResponse): CartInterface {
             // Cada producto del carrito es un producto completo
             const adaptedProduct = adaptApiProduct(product);
 
-            // En el backend actual, no se maneja cantidad por separado
-            // Cada entrada en el array representa 1 unidad
+            // 🔧 NUEVO: Obtener cantidad real desde el mapa de quantities
+            const quantity = response.quantities[product.id.toString()] || 1;
+
             const cartItem: CartItemInterface = {
                 product: adaptedProduct,
-                quantity: 1, // Cantidad fija por ahora
+                quantity: quantity, // ✅ Cantidad real desde el backend
             };
 
             return cartItem;
@@ -60,17 +62,13 @@ export function consolidateCartItems(
 }
 
 /**
- * Adapta respuesta completa del carrito y consolida elementos duplicados
+ * Adapta respuesta completa del carrito (ya no necesita consolidación)
  */
 export function adaptAndConsolidateCartResponse(
     response: CarritoResponse
 ): CartInterface {
-    const adaptedCart = adaptCarritoResponse(response);
-
-    return {
-        ...adaptedCart,
-        products: consolidateCartItems(adaptedCart.products),
-    };
+    // ✅ Ya no necesitamos consolidar porque el backend lo hace
+    return adaptCarritoResponse(response);
 }
 
 /**
