@@ -1,0 +1,468 @@
+/* src/pages/misCompras/MisCompras.module.css - Estilos para historial de compras */
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding-top: 100px; /* Espacio para header fijo */
+}
+
+.container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    width: 100%;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ============ ESTADÍSTICAS ============ */
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.estadisticaCard {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.estadisticaCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.estadisticaNumero {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 8px;
+}
+
+.estadisticaLabel {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+/* ============ FILTROS ============ */
+.filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    justify-content: center;
+}
+
+.filtroButton {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.filtroButton:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.filtroActivo {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============ ESTADOS ============ */
+.loading,
+.unauthenticated,
+.empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading p,
+.unauthenticated p,
+.empty p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.emptyIcon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.emptyTitle {
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 0 16px 0;
+    font-weight: 600;
+}
+
+.emptyText {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 24px !important;
+}
+
+.loginButton,
+.shopButton {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.8);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.loginButton:hover,
+.shopButton:hover {
+    background: rgba(29, 78, 216, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+/* ============ ERROR ============ */
+.error {
+    background: rgba(220, 38, 38, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.errorIcon {
+    font-size: 1.2rem;
+}
+
+.errorText {
+    color: #fca5a5;
+    font-weight: 500;
+}
+
+/* ============ LISTA DE PEDIDOS ============ */
+.pedidosList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pedidoCard {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.pedidoCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.pedidoHeader {
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.pedidoHeader:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pedidoInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.pedidoNumero {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.pedidoFecha {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.pedidoCantidad {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+}
+
+.pedidoRight {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.pedidoTotal {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.pedidoEstado {
+    display: flex;
+    align-items: center;
+}
+
+.estadoBadge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+.estadoPAGADO {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.expandIcon {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+/* ============ DETALLES EXPANDIDOS ============ */
+.pedidoDetalles {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.entregaInfo {
+    margin-bottom: 24px;
+}
+
+.entregaInfo h4,
+.productosInfo h4 {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+}
+
+.entregaInfo p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.productosList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.productoItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.productoImagen {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.productoInfo {
+    flex: 1;
+}
+
+.productoNombre {
+    color: white;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.productoCantidad {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+}
+
+.productoPrecio {
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .page {
+        padding-top: 20px; /* Header no fijo en móvil */
+    }
+
+    .container {
+        padding: 20px 16px;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .estadisticas {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .filtros {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filtroButton {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .pedidoHeader {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .pedidoRight {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .productoItem {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .productoImagen {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 16px 12px;
+    }
+
+    .title {
+        font-size: 1.75rem;
+    }
+
+    .estadisticaCard {
+        padding: 20px;
+    }
+
+    .estadisticaNumero {
+        font-size: 1.5rem;
+    }
+
+    .pedidoCard {
+        border-radius: 12px;
+    }
+
+    .pedidoHeader {
+        padding: 16px;
+    }
+
+    .pedidoDetalles {
+        padding: 16px;
+    }
+}
