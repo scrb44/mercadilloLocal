@@ -1,31 +1,31 @@
 package com.example.springboot.dto;
 
-    public class CarritoRequest {
-        private Long compradorId;
-        private Long productoId;
+public class CarritoRequest {
+    private Long productoId;
+    private Integer quantity;
 
-
-        public CarritoRequest(){}
-
-        public CarritoRequest(Long compradorId, Long productoId) {
-            this.compradorId = compradorId;
-            this.productoId = productoId;
-        }
-
-        public Long getCompradorId() {
-            return compradorId;
-        }
-
-        public void setCompradorId(Long compradorId) {
-            this.compradorId = compradorId;
-        }
-
-        public Long getProductoId() {
-            return productoId;
-        }
-
-        public void setProductoId(Long productoId) {
-            this.productoId = productoId;
-        }
+    public CarritoRequest() {
     }
 
+    public CarritoRequest(Long productoId, Integer quantity) {
+        this.productoId = productoId;
+        this.quantity = quantity;
+    }
+
+    // Getters y Setters
+    public Long getProductoId() {
+        return productoId;
+    }
+
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+}
