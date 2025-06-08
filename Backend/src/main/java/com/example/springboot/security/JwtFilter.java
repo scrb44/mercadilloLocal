@@ -31,8 +31,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 🔧 RUTAS COMPLETAMENTE PÚBLICAS (sin token requerido)
         if (path.startsWith("/api/auth/") ||
-                (path.startsWith("/api/productos/") && "GET".equals(method)) ||
-                (path.startsWith("/api/Categoria/") && "GET".equals(method))) {
+                (path.startsWith("/api/producto/") && "GET".equals(method)) ||
+                (path.startsWith("/api/categoria/") && "GET".equals(method))) {
             filterChain.doFilter(request, response);
             return;
         }
