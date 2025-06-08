@@ -1,4 +1,4 @@
-// src/context/CartContext.tsx - VERSIÓN SIMPLIFICADA
+// src/context/CartContext.tsx - UNIVERSAL para todos los tipos de usuario
 import React, {
     createContext,
     useContext,
@@ -6,29 +6,33 @@ import React, {
     useEffect,
     type ReactNode,
 } from "react";
-import mercadilloService from "../services";
+import { cartService } from "../services/cartService";
 import {
     type ProductInterface,
     type CartItemInterface,
     type CartContextType,
+    type UserInterface,
 } from "../types/types";
 
 // ============ CONTEXT ============
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// ============ PROVIDER SIMPLIFICADO ============
+// ============ PROVIDER UNIVERSAL ============
 interface CartProviderProps {
     children: ReactNode;
-    userId: string | number;
+    user: UserInterface | null;
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({
     children,
-    userId,
+    user,
 }) => {
     const [items, setItems] = useState<CartItemInterface[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // ✅ CAMBIADO: Ahora TODOS los usuarios autenticados pueden usar carrito
+    const canUseCart = user !== null && user.id;
 
     // Calcular totales automáticamente
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -37,30 +41,58 @@ export const CartProvider: React.FC<CartProviderProps> = ({
         0
     );
 
-    // Cargar carrito al inicializar
+    // ✅ Cargar carrito para CUALQUIER usuario autenticado
     useEffect(() => {
-        if (!userId) return;
+        if (!canUseCart) {
+            console.log("🛒 Usuario no autenticado o sin ID:", user);
+            setItems([]);
+            return;
+        }
 
         const loadCart = async () => {
             try {
                 setLoading(true);
-                const cart = await mercadilloService.getCart(userId);
-                setItems(cart.products);
+                setError(null);
+
+                console.log(`🛒 Cargando carrito para ${user.role}:`, user.id);
+                const cart = await cartService.getCart(user.id);
+                setItems(cart.products || []);
+
+                console.log(
+                    "🛒 Carrito cargado:",
+                    cart.products?.length || 0,
+                    "productos"
+                );
             } catch (err: any) {
-                setError("Error al cargar el carrito");
-                console.error("Error loading cart:", err);
+                console.error("❌ Error cargando carrito:", err);
+
+                if (err.message?.includes("Sesión expirada")) {
+                    setError(
+                        "Tu sesión ha expirado. Inicia sesión nuevamente."
+                    );
+                } else {
+                    setError("Error al cargar el carrito");
+                }
+
+                setItems([]); // Carrito vacío en caso de error
             } finally {
                 setLoading(false);
             }
         };
 
         loadCart();
-    }, [userId]);
+    }, [user?.id, canUseCart]);
 
     // ============ FUNCIONES DEL CARRITO ============
     const addItem = async (product: ProductInterface, quantity: number = 1) => {
+        if (!canUseCart) {
+            setError("Debes iniciar sesión para agregar productos al carrito");
+            return;
+        }
+
         try {
             setError(null);
+            console.log(`🛒 ${user.role} agregando producto:`, product.name);
 
             // Actualización optimista (inmediata en UI)
             const existingItemIndex = items.findIndex(
@@ -76,16 +108,32 @@ export const CartProvider: React.FC<CartProviderProps> = ({
             }
 
             // Sincronizar con backend
-            await mercadilloService.addToCart(userId, product.id, quantity);
+            const updatedCart = await cartService.addToCart(
+                user.id,
+                product.id,
+                quantity
+            );
+            setItems(updatedCart.products || []);
+
+            console.log(
+                `✅ Producto agregado exitosamente al carrito de ${user.role}`
+            );
         } catch (err: any) {
-            setError("Error al añadir producto al carrito");
+            console.error("❌ Error agregando producto:", err);
+
+            if (err.message?.includes("Sesión expirada")) {
+                setError("Tu sesión ha expirado. Inicia sesión nuevamente.");
+            } else {
+                setError("Error al añadir producto al carrito");
+            }
+
             // Revertir cambio optimista cargando desde servidor
             try {
-                const cart = await mercadilloService.getCart(userId);
-                setItems(cart.products);
+                const cart = await cartService.getCart(user.id);
+                setItems(cart.products || []);
             } catch (revertError) {
                 console.error(
-                    "Error reverting optimistic update:",
+                    "Error revirtiendo cambio optimista:",
                     revertError
                 );
             }
@@ -93,33 +141,58 @@ export const CartProvider: React.FC<CartProviderProps> = ({
     };
 
     const removeItem = async (productId: number) => {
+        if (!canUseCart) {
+            setError("Debes iniciar sesión para modificar el carrito");
+            return;
+        }
+
         try {
             setError(null);
+            console.log(`🛒 ${user.role} removiendo producto:`, productId);
 
             // Actualización optimista
             setItems(items.filter((item) => item.product.id !== productId));
 
             // Sincronizar con backend
-            await mercadilloService.removeFromCart(userId, productId);
+            const updatedCart = await cartService.removeFromCart(
+                user.id,
+                productId
+            );
+            setItems(updatedCart.products || []);
+
+            console.log(
+                `✅ Producto removido exitosamente del carrito de ${user.role}`
+            );
         } catch (err: any) {
+            console.error("❌ Error removiendo producto:", err);
             setError("Error al eliminar producto del carrito");
+
             // Revertir cambio
             try {
-                const cart = await mercadilloService.getCart(userId);
-                setItems(cart.products);
+                const cart = await cartService.getCart(user.id);
+                setItems(cart.products || []);
             } catch (revertError) {
-                console.error("Error reverting:", revertError);
+                console.error("Error revirtiendo:", revertError);
             }
         }
     };
 
     const updateQuantity = async (productId: number, quantity: number) => {
+        if (!canUseCart) {
+            setError("Debes iniciar sesión para modificar el carrito");
+            return;
+        }
+
         if (quantity <= 0) {
             return removeItem(productId);
         }
 
         try {
             setError(null);
+            console.log(`🛒 ${user.role} actualizando cantidad:`, {
+                productId,
+                quantity,
+            });
 
             // Actualización optimista
             const newItems = items.map((item) =>
@@ -128,36 +201,54 @@ export const CartProvider: React.FC<CartProviderProps> = ({
             setItems(newItems);
 
             // Sincronizar con backend
-            await mercadilloService.updateCartQuantity(
-                userId,
+            const updatedCart = await cartService.updateCartQuantity(
+                user.id,
                 productId,
                 quantity
             );
+            setItems(updatedCart.products || []);
+
+            console.log(
+                `✅ Cantidad actualizada exitosamente en carrito de ${user.role}`
+            );
         } catch (err: any) {
+            console.error("❌ Error actualizando cantidad:", err);
             setError("Error al actualizar cantidad");
+
             // Revertir cambio
             try {
-                const cart = await mercadilloService.getCart(userId);
-                setItems(cart.products);
+                const cart = await cartService.getCart(user.id);
+                setItems(cart.products || []);
             } catch (revertError) {
-                console.error("Error reverting:", revertError);
+                console.error("Error revirtiendo:", revertError);
             }
         }
     };
 
     const clearCart = async () => {
+        if (!canUseCart) {
+            setError("Debes iniciar sesión para modificar el carrito");
+            return;
+        }
+
         try {
             setError(null);
+            console.log(`🛒 ${user.role} limpiando carrito`);
+
             setItems([]);
-            await mercadilloService.clearCart(userId);
+            await cartService.clearCart(user.id);
+
+            console.log(`✅ Carrito de ${user.role} limpiado exitosamente`);
         } catch (err: any) {
+            console.error("❌ Error limpiando carrito:", err);
             setError("Error al vaciar el carrito");
+
             // Recargar carrito
             try {
-                const cart = await mercadilloService.getCart(userId);
-                setItems(cart.products);
+                const cart = await cartService.getCart(user.id);
+                setItems(cart.products || []);
             } catch (revertError) {
-                console.error("Error reloading cart:", revertError);
+                console.error("Error recargando carrito:", revertError);
             }
         }
     };
@@ -174,9 +265,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({
 
     // ============ VALOR DEL CONTEXT ============
     const contextValue: CartContextType = {
-        items,
-        totalItems,
-        totalPrice,
+        items: canUseCart ? items : [], // Solo mostrar items si está autenticado
+        totalItems: canUseCart ? totalItems : 0,
+        totalPrice: canUseCart ? totalPrice : 0,
         loading,
         error,
         addItem,

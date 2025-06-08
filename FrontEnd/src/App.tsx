@@ -1,9 +1,9 @@
-// src/App.tsx - OPTIMIZADO PARA CARGA INICIAL RÁPIDA
+// src/App.tsx - ACTUALIZADO para pasar usuario completo al CartProvider
 
 import { useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { UserProvider, CartProvider, useUser } from "./contexts";
+import { UserProvider, useUser } from "./contexts";
 import { MunicipioProvider } from "./contexts/municipioContext";
 import { VendorProductsProvider } from "./contexts/vendorProductsContext";
 
@@ -14,7 +14,7 @@ import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 // Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
 import MunicipioSelector from "./pages/municipioSelector";
-import WhoWeAre from "./pages/whoWeAre"; // Importa tu componente "Quiénes Somos"
+import WhoWeAre from "./pages/whoWeAre";
 
 // Lazy loading para páginas no críticas
 const CategoryProducts = lazy(() => import("./pages/categoryProducts"));
@@ -72,6 +72,9 @@ const LazyPaymentProvider = lazy(() =>
     }))
 );
 
+// ✅ CORREGIDO: Importar CartProvider corregido
+import { CartProvider } from "./contexts/cartContext";
+
 function AppContent() {
     const { user, isAuthenticated } = useUser();
 
@@ -95,12 +98,12 @@ function AppContent() {
 
                 {/* Todas las demás rutas protegidas por MunicipioGuard */}
                 {isAuthenticated && user ? (
-                    // Usuario autenticado - con carrito y pagos lazy
+                    // ✅ Usuario autenticado - CartProvider recibe usuario completo
                     <Route
                         path="/*"
                         element={
                             <MunicipioGuard>
-                                <CartProvider userId={user.id}>
+                                <CartProvider user={user}>
                                     <VendorProductsProvider>
                                         <Routes>
                                             <Route
@@ -169,6 +172,7 @@ function AppContent() {
                                                     </PageSuspense>
                                                 }
                                             />
+
                                             {/* RUTAS DE PAGO CON LAZY LOADING */}
                                             <Route
                                                 path="/checkout"
@@ -257,7 +261,7 @@ function AppContent() {
                         }
                     />
                 ) : (
-                    // Usuario no autenticado - sin carrito ni pagos
+                    // ✅ Usuario no autenticado - CartProvider con usuario dummy para compradores
                     <>
                         <Route
                             path="/"
@@ -295,13 +299,17 @@ function AppContent() {
                                 </MunicipioGuard>
                             }
                         />
+
+                        {/* ✅ Carrito para no autenticados - mostrar que necesitan login */}
                         <Route
                             path="/carrito"
                             element={
                                 <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Cart />
-                                    </PageSuspense>
+                                    <CartProvider user={null}>
+                                        <PageSuspense>
+                                            <Cart />
+                                        </PageSuspense>
+                                    </CartProvider>
                                 </MunicipioGuard>
                             }
                         />
