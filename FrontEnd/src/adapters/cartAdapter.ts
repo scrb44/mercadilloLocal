@@ -3,6 +3,7 @@
 import { type CartInterface, type CartItemInterface } from "../types/types";
 import { type ApiCart, type ApiCartItem } from "../types/apiTypes";
 import { PlaceholderURL } from "../constants";
+
 /**
  * Convierte un carrito de la API al formato que usa el frontend
  */
@@ -25,17 +26,36 @@ export function adaptApiCartItems(
     // ya que la API del carrito probablemente solo devuelve IDs de productos
 
     return apiCartItems.map((apiItem) => ({
-        // Tendrás que cargar el producto completo usando el adaptador de productos
+        // 🔧 PRODUCTO con estructura completa según ProductInterface
         product: {
             id: apiItem.productoId,
             name: "Cargando...", // Placeholder hasta cargar el producto completo
             description: "",
             price: 0,
             img: [PlaceholderURL],
-            video: [],
-            vendedor: { id: 0, name: "Cargando...", img: "" },
-            categories: [],
-            municipality: "",
+            video: [], // Propiedad opcional pero definida
+            categories: [], // Array vacío en lugar de never[]
+
+            // 🔧 VENDEDOR con estructura completa según VendedorInterface
+            vendedor: {
+                id: 0,
+                name: "Cargando...",
+                img: "",
+                nombre: "Cargando...", // Propiedad requerida
+                imagen: "", // Propiedad requerida
+                email: undefined,
+                usuario: undefined,
+                verificado: undefined,
+                localidad: undefined,
+                telf: undefined,
+            },
+
+            // 🔧 MUNICIPALITY con estructura correcta según Localidad
+            municipality: {
+                id: 0,
+                nombre: "Cargando...",
+                provincia: "Cargando...",
+            },
         },
         quantity: apiItem.cantidad,
     }));
@@ -118,4 +138,39 @@ export function calculateCartTotals(cart: CartInterface) {
     );
 
     return { totalItems, totalPrice };
+}
+
+// ============ FUNCIÓN HELPER PARA CREAR PRODUCTO PLACEHOLDER ============
+
+/**
+ * Crea un producto placeholder con la estructura completa de ProductInterface
+ * Útil para cuando solo tenemos el ID del producto del carrito
+ */
+export function createProductPlaceholder(productId: number) {
+    return {
+        id: productId,
+        name: "Cargando producto...",
+        description: "Obteniendo información del producto...",
+        price: 0,
+        img: [PlaceholderURL],
+        video: [],
+        categories: [],
+        vendedor: {
+            id: 0,
+            name: "Cargando vendedor...",
+            img: "",
+            nombre: "Cargando vendedor...",
+            imagen: "",
+            email: undefined,
+            usuario: undefined,
+            verificado: undefined,
+            localidad: undefined,
+            telf: undefined,
+        },
+        municipality: {
+            id: 0,
+            nombre: "Cargando localidad...",
+            provincia: "Cargando provincia...",
+        },
+    };
 }
