@@ -142,3 +142,75 @@ export function clearAllMercadilloCache(): void {
         }
     });
 }
+
+// En cache.ts - Agregar funciones específicas para invalidar cache de productos:
+
+// Función para invalidar cache específico de un producto
+export function invalidateProductCache(productId: number): void {
+    const productKey = `${CACHE_PREFIXES.PRODUCT}${productId}`;
+    removeItem(productKey);
+}
+
+// Función para invalidar todos los caches relacionados con productos
+export function invalidateProductRelatedCaches(): void {
+    Object.keys(localStorage).forEach((key) => {
+        if (
+            key.startsWith(CACHE_PREFIXES.SEARCH) ||
+            key.includes("vendor-products") ||
+            key.includes("category-products")
+        ) {
+            removeItem(key);
+        }
+    });
+}
+
+// Función para invalidar cache de un vendedor específico
+export function invalidateVendorCache(vendorId: number): void {
+    const vendorKey = `${CACHE_PREFIXES.VENDOR}${vendorId}`;
+    removeItem(vendorKey);
+
+    // También invalidar productos del vendedor
+    Object.keys(localStorage).forEach((key) => {
+        if (key.includes(`vendor-${vendorId}-products`)) {
+            removeItem(key);
+        }
+    });
+}
+
+// Función para obtener versión fresca de un producto (sin cache)
+export function getFreshProduct<T>(productId: number): T | null {
+    // Forzar eliminación del cache antes de obtener
+    invalidateProductCache(productId);
+    return null; // Forzar que se obtenga desde la API
+}
+
+// Función mejorada para setear cache de producto con timestamp
+export function cacheProductWithTimestamp<T>(productId: number, data: T): void {
+    const cacheData = {
+        data,
+        timestamp: Date.now(),
+        ttl: PRODUCTS_TTL,
+        version: 1, // Para futuras migraciones de cache
+    };
+
+    setItem(`${CACHE_PREFIXES.PRODUCT}${productId}`, cacheData, PRODUCTS_TTL);
+}
+
+// Función para verificar si el cache de un producto está actualizado
+export function isProductCacheStale(
+    productId: number,
+    maxAge: number = PRODUCTS_TTL
+): boolean {
+    const cacheKey = `${CACHE_PREFIXES.PRODUCT}${productId}`;
+    const cachedItem = localStorage.getItem(cacheKey);
+
+    if (!cachedItem) return true;
+
+    try {
+        const parsed = JSON.parse(cachedItem);
+        const age = Date.now() - parsed.timestamp;
+        return age > maxAge;
+    } catch {
+        return true;
+    }
+}
