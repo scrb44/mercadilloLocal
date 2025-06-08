@@ -34,6 +34,9 @@ public class SecurityConfig {
                         // Rutas de autenticación - siempre públicas
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // Localidad - Get público
+                        .requestMatchers(HttpMethod.GET, "/api/localidad/**").permitAll()
+
                         // Productos - GET público, POST/PUT/DELETE requieren autenticación
                         .requestMatchers(HttpMethod.GET, "/api/producto/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/producto/**").authenticated()
