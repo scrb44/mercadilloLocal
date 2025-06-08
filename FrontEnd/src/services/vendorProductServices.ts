@@ -179,23 +179,40 @@ export const vendorProductsService = {
 
         try {
             isCreatingProduct = true;
-
-            // Obtener ID del vendedor desde el perfil
             const vendorId = await getCurrentVendorId();
+
+            console.log("👤 Creando producto para vendedor ID:", vendorId);
+
+            // 🔧 DEBUG: Verificar qué imagen se está enviando
+            console.log("📸 Debug de imagen:");
+            console.log("📸 productData.imagen existe:", !!productData.imagen);
+            console.log(
+                "📸 productData.imagen length:",
+                productData.imagen?.length || 0
+            );
+            console.log(
+                "📸 productData.imagen preview:",
+                productData.imagen?.substring(0, 100) + "..."
+            );
 
             // ESTRUCTURA según el modelo Producto.java
             const request = {
                 nombre: productData.name.trim(),
                 descripcion: productData.description.trim(),
                 precio: Number(productData.price),
-                imagen: productData.imagen || "",
-                vendedor: {
-                    id: vendorId,
-                },
+                imagen: productData.imagen || "", // ⬅️ Enviar la imagen real del formulario
                 categorias: productData.categoryIds.map((categoryId) => ({
                     id: categoryId,
                 })),
             };
+
+            console.log("📤 Request final (sin imagen para no saturar logs):");
+            console.log({
+                ...request,
+                imagen: request.imagen
+                    ? `[IMAGEN BASE64 - ${request.imagen.length} chars]`
+                    : "sin imagen",
+            });
 
             const response = await createAuthenticatedRequest(
                 ENDPOINTS.PRODUCTS,
@@ -275,7 +292,6 @@ export const vendorProductsService = {
             // 🔧 USAR ADAPTADOR para convertir respuesta
             return adaptApiProduct(apiProduct as ApiProduct);
         } catch (error: any) {
-            console.error("❌ Error actualizando producto:", error);
             throw new Error(error.message || "Error al actualizar el producto");
         } finally {
             isUpdatingProduct[id] = false;

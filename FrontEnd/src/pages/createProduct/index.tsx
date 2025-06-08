@@ -81,9 +81,6 @@ function CreateProduct() {
             !state.error &&
             isSubmitting
         ) {
-            console.log(
-                "✅ Producto creado detectado (lista aumentó), navegando..."
-            );
             navigate("/mis-productos", { replace: true });
         }
     }, [
@@ -153,9 +150,12 @@ function CreateProduct() {
             reader.onloadend = () => {
                 const imageData = reader.result as string;
 
-                // Establecer preview y datos del formulario
+                // ✅ GUARDAR LA IMAGEN BASE64 REAL
                 setImagePreview(imageData);
-                setFormData((prev) => ({ ...prev, imagen: imageData }));
+                setFormData((prev) => ({
+                    ...prev,
+                    imagen: imageData, // ⬅️ GUARDAR LA IMAGEN REAL, no el placeholder
+                }));
 
                 setUploadingImage(false);
             };

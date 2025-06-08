@@ -209,19 +209,17 @@ function EditProduct() {
                 // Crear preview local
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    setImagePreview(e.target?.result as string);
+                    const imageData = e.target?.result as string;
+
+                    setImagePreview(imageData);
+
+                    // ✅ GUARDAR LA IMAGEN BASE64 REAL
+                    setFormData((prev) => ({
+                        ...prev,
+                        imagen: imageData, // ⬅️ IMAGEN REAL, no placeholder
+                    }));
                 };
                 reader.readAsDataURL(file);
-
-                // Aquí podrías subir la imagen al servidor
-                // const imageUrl = await vendorProductsService.uploadProductImage(file);
-                // setFormData(prev => ({ ...prev, imagen: imageUrl }));
-
-                // Por ahora, usamos el preview local
-                setFormData((prev) => ({
-                    ...prev,
-                    imagen: "updated_image_placeholder",
-                }));
             } catch (error: any) {
                 setFormErrors((prev) => ({
                     ...prev,
