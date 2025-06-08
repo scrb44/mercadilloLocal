@@ -35,6 +35,7 @@ export function adaptApiCartItems(
             video: [],
             vendedor: { id: 0, name: "Cargando...", img: "" },
             categories: [],
+            municipality: "",
         },
         quantity: apiItem.cantidad,
     }));
