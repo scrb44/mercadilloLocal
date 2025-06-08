@@ -44,7 +44,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({
     // ✅ Cargar carrito para CUALQUIER usuario autenticado
     useEffect(() => {
         if (!canUseCart) {
-            console.log("🛒 Usuario no autenticado o sin ID:", user);
             setItems([]);
             return;
         }
@@ -54,22 +53,23 @@ export const CartProvider: React.FC<CartProviderProps> = ({
                 setLoading(true);
                 setError(null);
 
-                console.log(`🛒 Cargando carrito para ${user.role}:`, user.id);
                 const cart = await cartService.getCart(user.id);
                 setItems(cart.products || []);
-
-                console.log(
-                    "🛒 Carrito cargado:",
-                    cart.products?.length || 0,
-                    "productos"
-                );
             } catch (err: any) {
                 console.error("❌ Error cargando carrito:", err);
 
-                if (err.message?.includes("Sesión expirada")) {
+                // Manejar errores específicos
+                if (
+                    err.message?.includes("Sesión expirada") ||
+                    err.message?.includes("Token")
+                ) {
                     setError(
                         "Tu sesión ha expirado. Inicia sesión nuevamente."
                     );
+                } else if (err.message?.includes("permisos")) {
+                    setError("No tienes permisos para acceder al carrito.");
+                } else if (err.message?.includes("conexión")) {
+                    setError("Error de conexión. Revisa tu internet.");
                 } else {
                     setError("Error al cargar el carrito");
                 }
@@ -92,7 +92,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({
 
         try {
             setError(null);
-            console.log(`🛒 ${user.role} agregando producto:`, product.name);
 
             // Actualización optimista (inmediata en UI)
             const existingItemIndex = items.findIndex(
@@ -114,13 +113,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({
                 quantity
             );
             setItems(updatedCart.products || []);
-
-            console.log(
-                `✅ Producto agregado exitosamente al carrito de ${user.role}`
-            );
         } catch (err: any) {
-            console.error("❌ Error agregando producto:", err);
-
             if (err.message?.includes("Sesión expirada")) {
                 setError("Tu sesión ha expirado. Inicia sesión nuevamente.");
             } else {
@@ -148,7 +141,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({
 
         try {
             setError(null);
-            console.log(`🛒 ${user.role} removiendo producto:`, productId);
 
             // Actualización optimista
             setItems(items.filter((item) => item.product.id !== productId));
@@ -159,12 +151,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({
                 productId
             );
             setItems(updatedCart.products || []);
-
-            console.log(
-                `✅ Producto removido exitosamente del carrito de ${user.role}`
-            );
         } catch (err: any) {
-            console.error("❌ Error removiendo producto:", err);
             setError("Error al eliminar producto del carrito");
 
             // Revertir cambio
@@ -189,10 +176,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({
 
         try {
             setError(null);
-            console.log(`🛒 ${user.role} actualizando cantidad:`, {
-                productId,
-                quantity,
-            });
 
             // Actualización optimista
             const newItems = items.map((item) =>
@@ -207,12 +190,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({
                 quantity
             );
             setItems(updatedCart.products || []);
-
-            console.log(
-                `✅ Cantidad actualizada exitosamente en carrito de ${user.role}`
-            );
         } catch (err: any) {
-            console.error("❌ Error actualizando cantidad:", err);
             setError("Error al actualizar cantidad");
 
             // Revertir cambio

@@ -43,17 +43,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 const token = localStorage.getItem("token");
 
                 if (!token) {
-                    console.log("🔐 No hay token guardado");
                     setLoading(false);
                     return;
                 }
-
-                console.log("🔐 Token encontrado en localStorage");
-
                 // Decodificar el payload del JWT
                 try {
                     const payload = JSON.parse(atob(token.split(".")[1]));
-                    console.log("🔧 Payload completo del token:", payload);
 
                     // Verificar si el token no ha expirado
                     const now = Date.now() / 1000;
@@ -80,7 +75,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                         token,
                     };
 
-                    console.log("✅ Usuario restaurado desde token:", userData);
                     setUser(userData);
                 } catch (decodeError) {
                     console.warn(
@@ -106,8 +100,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         try {
             setLoading(true);
             setError(null);
-
-            console.log("🔐 Intentando login...");
 
             const response = await axios.post(
                 "http://localhost:8080/api/auth/login",
@@ -138,12 +130,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             };
 
             setUser(userData);
-            console.log(
-                "✅ Login exitoso:",
-                userData.usuario,
-                "- Rol:",
-                userData.role
-            );
         } catch (err: any) {
             console.error("❌ Error en login:", err);
 
@@ -162,8 +148,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     };
 
     const logout = () => {
-        console.log("🔐 Cerrando sesión...");
-
         // Limpiar estado local
         setUser(null);
         setError(null);
