@@ -22,11 +22,11 @@ public class CategoriaController {
     }
 
     @GetMapping()
-    public List<Categoria> obtenerCagorias(@RequestParam(required = false) Long localidadId) {
-        if(localidadId == null)
+    public List<Categoria> obtenerCagorias(@RequestParam(required = false) Long localidad) {
+        if(localidad == null)
             return categoriaService.obtenerTodos();
         else
-            return categoriaService.categoriasConProductos(localidadId);
+            return categoriaService.categoriasConProductos(localidad);
     }
 
 
