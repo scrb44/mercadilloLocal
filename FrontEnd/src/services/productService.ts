@@ -1,4 +1,4 @@
-// src/services/productService.ts - PRIORIZA API REAL - CORREGIDO
+// src/services/productService.ts - CORREGIDO con parámetros que coinciden con el backend
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -108,7 +108,7 @@ export const productsService = {
 
     // 🔧 Nuevo método específico para editing que siempre trae datos frescos
     async getProductForEditing(id: number): Promise<ProductInterface> {
-        return productsService.getProduct(id, false, true); // 🔧 Usar productsService en lugar de this
+        return productsService.getProduct(id, false, true);
     },
 
     async getProducts(
@@ -121,19 +121,33 @@ export const productsService = {
             if (useCache) {
                 const cached =
                     getCachedSearchResults<ProductInterface[]>(cacheKey);
-                if (cached) return cached;
+                if (cached) {
+                    return cached;
+                }
             }
 
+            // 🔧 CORREGIDO: Usar los nombres de parámetros exactos del backend
             const params = new URLSearchParams();
-            if (filters?.category)
-                params.append("category", filters.category.toString());
-            if (filters?.vendor)
-                params.append("vendor", filters.vendor.toString());
-            if (filters?.minPrice)
-                params.append("minPrice", filters.minPrice.toString());
-            if (filters?.maxPrice)
-                params.append("maxPrice", filters.maxPrice.toString());
-            if (filters?.query) params.append("q", filters.query);
+
+            if (filters?.category) {
+                params.append("categoria", filters.category.toString());
+            }
+
+            if (filters?.vendor) {
+                params.append("vendedor", filters.vendor.toString());
+            }
+
+            if (filters?.minPrice) {
+                params.append("minPrice", filters.minPrice.toString()); // ✅ Este está correcto
+            }
+
+            if (filters?.maxPrice) {
+                params.append("maxPrice", filters.maxPrice.toString()); // ✅ Este está correcto
+            }
+
+            if (filters?.query) {
+                params.append("busqueda", filters.query);
+            }
 
             const url = `${ENDPOINTS.PRODUCTS}${
                 params.toString() ? "?" + params.toString() : ""
@@ -141,6 +155,7 @@ export const productsService = {
 
             // PRIORIZAR API real
             const apiProducts = await apiClient.get<ApiProduct[]>(url);
+
             const adaptedProducts = adaptValidApiProducts(apiProducts);
 
             cacheSearchResults(cacheKey, adaptedProducts);
@@ -149,12 +164,25 @@ export const productsService = {
             console.warn(
                 "🔧 API de productos no disponible, usando datos de ejemplo"
             );
+            console.warn("Error:", error.message);
 
-            let filteredProducts = MOCK_PRODUCTS;
+            let filteredProducts = [...MOCK_PRODUCTS]; // Clonar array
+
+            // Filtrar por categoría primero
+            if (filters?.category) {
+                filteredProducts = filteredProducts.filter((product) => {
+                    const hasCategory = product.categories.some(
+                        (cat) => cat.id === filters.category
+                    );
+                    return hasCategory;
+                });
+            }
 
             // Filtrar por búsqueda si hay query
-            if (filters?.query) {
+            if (filters?.query && filters.query.trim()) {
                 const query = filters.query.toLowerCase();
+                const beforeSearch = filteredProducts.length;
+
                 filteredProducts = filteredProducts.filter(
                     (p) =>
                         p.name.toLowerCase().includes(query) ||
@@ -162,12 +190,24 @@ export const productsService = {
                 );
             }
 
-            // Filtrar por categoría si se especifica
-            if (filters?.category) {
-                filteredProducts = filteredProducts.filter((product) =>
-                    product.categories.some(
-                        (cat) => cat.id === filters.category
-                    )
+            // Filtrar por vendor si se especifica
+            if (filters?.vendor) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.vendedor?.id === filters.vendor
+                );
+            }
+
+            // Filtrar por precio mínimo
+            if (filters?.minPrice) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.price >= filters.minPrice!
+                );
+            }
+
+            // Filtrar por precio máximo
+            if (filters?.maxPrice) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.price <= filters.maxPrice!
                 );
             }
 
@@ -179,7 +219,6 @@ export const productsService = {
         query: string,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
-        // Usar productsService.getProducts en lugar de this.getProducts
         return productsService.getProducts({ query }, useCache);
     },
 };
