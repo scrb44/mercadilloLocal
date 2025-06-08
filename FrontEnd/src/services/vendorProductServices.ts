@@ -1,7 +1,10 @@
-// src/services/vendorProductsService.ts - USANDO ENDPOINT /api/auth/perfil
+// src/services/vendorProductServices.ts - USANDO ENDPOINT /api/auth/perfil Y ADAPTADORES
 
 import { ENDPOINTS } from "../constants";
 import { type ProductInterface, type ProductFormData } from "../types/types";
+import { removeItem } from "./cache";
+import { adaptApiProduct } from "../adapters"; // 🔧 Importar adaptador existente
+import { type ApiProduct } from "../types/apiTypes"; // 🔧 Importar tipo de API
 
 const API_BASE_URL = "http://localhost:8080";
 
@@ -17,8 +20,6 @@ async function getCurrentVendorId(): Promise<number> {
         if (!token) {
             throw new Error("No hay token de autenticación");
         }
-
-        console.log("🔍 Obteniendo perfil del usuario...");
 
         const response = await fetch(`${API_BASE_URL}/api/auth/perfil`, {
             headers: {
@@ -36,7 +37,6 @@ async function getCurrentVendorId(): Promise<number> {
         }
 
         const userProfile = await response.json();
-        console.log("👤 Perfil obtenido:", userProfile);
 
         // Verificar que sea vendedor
         if (userProfile.rol !== "VENDEDOR") {
@@ -49,7 +49,6 @@ async function getCurrentVendorId(): Promise<number> {
             throw new Error("ID del vendedor no válido");
         }
 
-        console.log("✅ ID del vendedor:", vendorId);
         return Number(vendorId);
     } catch (error: any) {
         console.error("❌ Error obteniendo perfil del vendedor:", error);
@@ -80,26 +79,16 @@ async function createAuthenticatedRequest(
         ...options.headers,
     };
 
-    console.log("🔄 Request details:");
-    console.log("URL:", url);
-    console.log("Method:", options.method || "GET");
-    if (options.body) {
-        console.log("Body:", options.body);
-    }
-
     try {
         const response = await fetch(url, {
             ...options,
             headers,
         });
 
-        console.log("📥 Response status:", response.status);
-
         if (!response.ok) {
             let errorMessage = `Error HTTP: ${response.status}`;
             try {
                 const errorBody = await response.clone().text();
-                console.log("❌ Error response body:", errorBody);
 
                 try {
                     const errorJson = JSON.parse(errorBody);
@@ -154,8 +143,6 @@ export const vendorProductsService = {
             // Obtener ID del vendedor desde el perfil
             const vendorId = await getCurrentVendorId();
 
-            console.log("🔍 Buscando productos para vendedor ID:", vendorId);
-
             // Obtener productos filtrados por vendedor
             const productsResponse = await createAuthenticatedRequest(
                 `${ENDPOINTS.PRODUCTS}?vendedor=${vendorId}`
@@ -163,35 +150,14 @@ export const vendorProductsService = {
             const vendorProducts = await productsResponse.json();
 
             if (!Array.isArray(vendorProducts)) {
-                console.log("⚠️ Respuesta no es array:", vendorProducts);
                 return [];
             }
 
-            // Adaptar productos al formato frontend
-            const adaptedProducts = vendorProducts.map((apiProduct: any) => ({
-                id: apiProduct.id,
-                name: apiProduct.nombre || apiProduct.name,
-                description: apiProduct.descripcion || apiProduct.description,
-                price: Number(apiProduct.precio || apiProduct.price),
-                img: apiProduct.imagen ? [apiProduct.imagen] : [],
-                categories:
-                    apiProduct.categorias || apiProduct.categories || [],
-                vendedor: {
-                    id: vendorId,
-                    name:
-                        apiProduct.vendedor?.nombre ||
-                        apiProduct.vendedor?.usuario ||
-                        "Mi Tienda",
-                    img: apiProduct.vendedor?.imagen || "",
-                },
-                municipality: {
-                    id: 1,
-                    nombre: "Sin especificar",
-                    provincia: "Málaga",
-                },
-            }));
+            // 🔧 USAR ADAPTADOR para convertir cada producto
+            const adaptedProducts = vendorProducts.map(
+                (apiProduct: ApiProduct) => adaptApiProduct(apiProduct)
+            );
 
-            console.log("📦 Productos encontrados:", adaptedProducts.length);
             return adaptedProducts;
         } catch (error: any) {
             console.error("❌ Error cargando productos:", error);
@@ -217,8 +183,6 @@ export const vendorProductsService = {
             // Obtener ID del vendedor desde el perfil
             const vendorId = await getCurrentVendorId();
 
-            console.log("👤 Creando producto para vendedor ID:", vendorId);
-
             // ESTRUCTURA según el modelo Producto.java
             const request = {
                 nombre: productData.name.trim(),
@@ -233,11 +197,6 @@ export const vendorProductsService = {
                 })),
             };
 
-            console.log(
-                "📤 Enviando producto:",
-                JSON.stringify(request, null, 2)
-            );
-
             const response = await createAuthenticatedRequest(
                 ENDPOINTS.PRODUCTS,
                 {
@@ -247,27 +206,9 @@ export const vendorProductsService = {
             );
 
             const apiProduct = await response.json();
-            console.log("✅ Producto creado exitosamente:", apiProduct);
 
-            // Adaptar respuesta al formato frontend
-            return {
-                id: apiProduct.id,
-                name: apiProduct.nombre,
-                description: apiProduct.descripcion,
-                price: Number(apiProduct.precio),
-                img: apiProduct.imagen ? [apiProduct.imagen] : [],
-                categories: apiProduct.categorias || [],
-                vendedor: {
-                    id: vendorId,
-                    name: apiProduct.vendedor?.nombre || "Mi Tienda",
-                    img: apiProduct.vendedor?.imagen || "",
-                },
-                municipality: {
-                    id: 1,
-                    nombre: "Sin especificar",
-                    provincia: "Málaga",
-                },
-            };
+            // 🔧 USAR ADAPTADOR para convertir respuesta
+            return adaptApiProduct(apiProduct as ApiProduct);
         } catch (error: any) {
             console.error("❌ Error creando producto:", error);
             throw new Error(error.message || "Error al crear el producto");
@@ -306,11 +247,6 @@ export const vendorProductsService = {
                 })),
             };
 
-            console.log(
-                "📤 Actualizando producto:",
-                JSON.stringify(request, null, 2)
-            );
-
             const response = await createAuthenticatedRequest(
                 `${ENDPOINTS.PRODUCTS}/${id}`,
                 {
@@ -321,24 +257,23 @@ export const vendorProductsService = {
 
             const apiProduct = await response.json();
 
-            return {
-                id: apiProduct.id,
-                name: apiProduct.nombre,
-                description: apiProduct.descripcion,
-                price: Number(apiProduct.precio),
-                img: apiProduct.imagen ? [apiProduct.imagen] : [],
-                categories: apiProduct.categorias || [],
-                vendedor: {
-                    id: vendorId,
-                    name: apiProduct.vendedor?.nombre || "Mi Tienda",
-                    img: apiProduct.vendedor?.imagen || "",
-                },
-                municipality: {
-                    id: 1,
-                    nombre: "Sin especificar",
-                    provincia: "Málaga",
-                },
-            };
+            // 🔧 INVALIDAR CACHE del producto específico
+            const cacheKey = `mercadillo-product-${id}`;
+            removeItem(cacheKey);
+
+            // 🔧 También invalidar cache de búsquedas que puedan contener este producto
+            Object.keys(localStorage).forEach((key) => {
+                if (
+                    key.startsWith("mercadillo-search-") ||
+                    key.startsWith("mercadillo-vendor-products") ||
+                    key.includes("all-categories")
+                ) {
+                    removeItem(key);
+                }
+            });
+
+            // 🔧 USAR ADAPTADOR para convertir respuesta
+            return adaptApiProduct(apiProduct as ApiProduct);
         } catch (error: any) {
             console.error("❌ Error actualizando producto:", error);
             throw new Error(error.message || "Error al actualizar el producto");
@@ -362,7 +297,20 @@ export const vendorProductsService = {
                 method: "DELETE",
             });
 
-            console.log("✅ Producto eliminado exitosamente");
+            // 🔧 INVALIDAR CACHE del producto eliminado
+            const cacheKey = `mercadillo-product-${id}`;
+            removeItem(cacheKey);
+
+            // También invalidar caches relacionados
+            Object.keys(localStorage).forEach((key) => {
+                if (
+                    key.startsWith("mercadillo-search-") ||
+                    key.startsWith("mercadillo-vendor-products") ||
+                    key.includes("all-categories")
+                ) {
+                    removeItem(key);
+                }
+            });
         } catch (error: any) {
             console.error("❌ Error eliminando producto:", error);
             throw new Error(error.message || "Error al eliminar el producto");
