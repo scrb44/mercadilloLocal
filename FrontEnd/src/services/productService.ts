@@ -6,6 +6,7 @@ import {
     getCachedProduct,
     cacheSearchResults,
     getCachedSearchResults,
+    removeItem,
 } from "./cache";
 import { MOCK_PRODUCTS } from "./mockData";
 import {
@@ -13,22 +14,60 @@ import {
     type SearchFiltersInterface,
 } from "../types/types";
 import { type ApiProduct } from "../types/apiTypes";
-import {
-    adaptApiProduct,
-    adaptApiProducts,
-    adaptValidApiProducts,
-} from "../adapters";
+import { adaptApiProduct, adaptValidApiProducts } from "../adapters";
 
 const apiClient = createApiClient();
+
+// 🔧 Funciones helper para cache (usando las funciones existentes)
+const invalidateProductCache = (productId: number): void => {
+    const cacheKey = `mercadillo-product-${productId}`;
+    removeItem(cacheKey);
+};
+
+const isProductCacheStale = (
+    productId: number,
+    maxAge: number = 1000 * 60 * 15
+): boolean => {
+    const cacheKey = `mercadillo-product-${productId}`;
+    const cachedItem = localStorage.getItem(cacheKey);
+
+    if (!cachedItem) return true;
+
+    try {
+        const parsed = JSON.parse(cachedItem);
+        const age = Date.now() - parsed.timestamp;
+        return age > maxAge;
+    } catch {
+        return true;
+    }
+};
+
+const cacheProductWithTimestamp = (
+    productId: number,
+    data: ProductInterface
+): void => {
+    cacheProduct(productId, data); // Usar función existente
+};
 
 export const productsService = {
     async getProduct(
         id: number,
-        useCache: boolean = true
+        useCache: boolean = true,
+        forceRefresh: boolean = false
     ): Promise<ProductInterface> {
-        if (useCache) {
+        // 🔧 Si se fuerza refresh, invalidar cache primero
+        if (forceRefresh) {
+            invalidateProductCache(id);
+        }
+
+        // 🔧 Verificar cache solo si useCache es true y no se fuerza refresh
+        if (useCache && !forceRefresh) {
             const cached = getCachedProduct<ProductInterface>(id);
-            if (cached) return cached;
+            if (cached && !isProductCacheStale(id)) {
+                return cached;
+            } else if (cached) {
+                invalidateProductCache(id);
+            }
         }
 
         try {
@@ -38,27 +77,25 @@ export const productsService = {
             );
 
             const adaptedProduct = adaptApiProduct(apiProduct);
-            cacheProduct(id, adaptedProduct);
+
+            // 🔧 Guardar en cache solo si no se forzó refresh
+            if (!forceRefresh) {
+                cacheProductWithTimestamp(id, adaptedProduct);
+            }
+
             return adaptedProduct;
         } catch (error: any) {
             console.warn(`🔧 API falló para producto ${id}:`, error.message);
 
             // SOLO usar mock si la API definitivamente no está disponible
-            // Y SOLO para IDs que realmente existen en el mock
             if (error.status === 404) {
-                // Si el producto no existe en la API, buscar en mock
                 const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
                 if (mockProduct) {
-                    console.log(`📦 Usando producto mock para ID ${id}`);
                     return mockProduct;
                 }
             } else if (error.message?.includes("fetch")) {
-                // Si hay problema de red, usar mock temporalmente
                 const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
                 if (mockProduct) {
-                    console.log(
-                        `🌐 API no disponible, usando mock para ID ${id}`
-                    );
                     return mockProduct;
                 }
             }
@@ -67,6 +104,11 @@ export const productsService = {
                 `Producto con ID ${id} no encontrado en API ni en datos locales`
             );
         }
+    },
+
+    // 🔧 Nuevo método específico para editing que siempre trae datos frescos
+    async getProductForEditing(id: number): Promise<ProductInterface> {
+        return productsService.getProduct(id, false, true); // 🔧 Usar productsService en lugar de this
     },
 
     async getProducts(
@@ -137,7 +179,7 @@ export const productsService = {
         query: string,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
-        // Corregido: usar productsService.getProducts en lugar de this.getProducts
+        // Usar productsService.getProducts en lugar de this.getProducts
         return productsService.getProducts({ query }, useCache);
     },
 };
