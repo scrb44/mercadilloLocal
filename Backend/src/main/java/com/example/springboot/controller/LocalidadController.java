@@ -23,7 +23,7 @@ public class LocalidadController {
         return localidadService.getAllProvincias();
     }
 
-    @GetMapping("/conVendedores")
+    @GetMapping("/con-vendedores")
     public List<Localidad> getConVendedores() {
         return localidadService.getProvinciasConVendedores();
     }
