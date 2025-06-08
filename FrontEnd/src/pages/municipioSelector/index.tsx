@@ -1,4 +1,4 @@
-// src/pages/municipioSelector/index.tsx
+// src/pages/municipioSelector/index.tsx - ACTUALIZADO para usar API
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,7 +8,9 @@ import {
 import classes from "./municipioSelector.module.css";
 
 function MunicipioSelector() {
-    const { municipios, setMunicipio } = useMunicipio();
+    const { municipios, setMunicipio, loading, error, refetchMunicipios } =
+        useMunicipio();
+
     const [selectedMunicipio, setSelectedMunicipio] =
         useState<MunicipioInterface | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -34,6 +36,93 @@ function MunicipioSelector() {
         setSearchQuery(e.target.value);
     };
 
+    const handleRetry = async () => {
+        try {
+            await refetchMunicipios();
+        } catch (err) {
+            console.error("Error al reintentar cargar municipios:", err);
+        }
+    };
+
+    // Estado de carga
+    if (loading) {
+        return (
+            <div className={classes.municipioSelector}>
+                <div className={classes.container}>
+                    <main className={classes.main}>
+                        <div className={classes.selectorCard}>
+                            <div className={classes.header}>
+                                <h1 className={classes.title}>
+                                    ¡Bienvenido a Mercadillo Local!
+                                </h1>
+                                <p className={classes.subtitle}>
+                                    Cargando municipios disponibles...
+                                </p>
+                                <div className={classes.iconContainer}>
+                                    <span className={classes.icon}>⏳</span>
+                                </div>
+                            </div>
+
+                            <div className={classes.municipiosSection}>
+                                <div className={classes.noResults}>
+                                    <span className={classes.noResultsIcon}>
+                                        🔄
+                                    </span>
+                                    <p className={classes.noResultsText}>
+                                        Cargando municipios desde el servidor...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    // Estado de error
+    if (error) {
+        return (
+            <div className={classes.municipioSelector}>
+                <div className={classes.container}>
+                    <main className={classes.main}>
+                        <div className={classes.selectorCard}>
+                            <div className={classes.header}>
+                                <h1 className={classes.title}>
+                                    ¡Bienvenido a Mercadillo Local!
+                                </h1>
+                                <p className={classes.subtitle}>
+                                    Hubo un problema cargando los municipios
+                                </p>
+                                <div className={classes.iconContainer}>
+                                    <span className={classes.icon}>❌</span>
+                                </div>
+                            </div>
+
+                            <div className={classes.municipiosSection}>
+                                <div className={classes.noResults}>
+                                    <span className={classes.noResultsIcon}>
+                                        ⚠️
+                                    </span>
+                                    <p className={classes.noResultsText}>
+                                        {error}
+                                    </p>
+                                    <button
+                                        onClick={handleRetry}
+                                        className={classes.clearSearchButton}
+                                    >
+                                        Reintentar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    // Render normal
     return (
         <div className={classes.municipioSelector}>
             <div className={classes.container}>
@@ -77,52 +166,83 @@ function MunicipioSelector() {
                                 Municipios disponibles (
                                 {filteredMunicipios.length})
                             </h3>
-                            <div className={classes.municipiosList}>
-                                {filteredMunicipios.map((municipio) => (
-                                    <button
-                                        key={municipio.id}
-                                        onClick={() =>
-                                            handleMunicipioClick(municipio)
-                                        }
-                                        className={`${classes.municipioCard} ${
-                                            selectedMunicipio?.id ===
-                                            municipio.id
-                                                ? classes.municipioSelected
-                                                : ""
-                                        }`}
-                                    >
-                                        <span className={classes.municipioIcon}>
-                                            🏘️
-                                        </span>
-                                        <div className={classes.municipioInfo}>
-                                            <span
-                                                className={
-                                                    classes.municipioName
-                                                }
-                                            >
-                                                {municipio.nombre}
-                                            </span>
-                                            <span
-                                                className={
-                                                    classes.municipioProvincia
-                                                }
-                                            >
-                                                {municipio.provincia}
-                                            </span>
-                                        </div>
-                                        {selectedMunicipio?.id ===
-                                            municipio.id && (
-                                            <span
-                                                className={classes.selectedIcon}
-                                            >
-                                                ✓
-                                            </span>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
 
-                            {filteredMunicipios.length === 0 && (
+                            {/* Mostrar municipios o mensaje de sin resultados */}
+                            {filteredMunicipios.length > 0 ? (
+                                <div className={classes.municipiosList}>
+                                    {filteredMunicipios.map((municipio) => (
+                                        <button
+                                            key={municipio.id}
+                                            onClick={() =>
+                                                handleMunicipioClick(municipio)
+                                            }
+                                            className={`${
+                                                classes.municipioCard
+                                            } ${
+                                                selectedMunicipio?.id ===
+                                                municipio.id
+                                                    ? classes.municipioSelected
+                                                    : ""
+                                            }`}
+                                        >
+                                            <span
+                                                className={
+                                                    classes.municipioIcon
+                                                }
+                                            >
+                                                🏘️
+                                            </span>
+                                            <div
+                                                className={
+                                                    classes.municipioInfo
+                                                }
+                                            >
+                                                <span
+                                                    className={
+                                                        classes.municipioName
+                                                    }
+                                                >
+                                                    {municipio.nombre}
+                                                </span>
+                                                <span
+                                                    className={
+                                                        classes.municipioProvincia
+                                                    }
+                                                >
+                                                    {municipio.provincia}
+                                                </span>
+                                            </div>
+                                            {selectedMunicipio?.id ===
+                                                municipio.id && (
+                                                <span
+                                                    className={
+                                                        classes.selectedIcon
+                                                    }
+                                                >
+                                                    ✓
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : municipios.length === 0 ? (
+                                // No hay municipios cargados
+                                <div className={classes.noResults}>
+                                    <span className={classes.noResultsIcon}>
+                                        📭
+                                    </span>
+                                    <p className={classes.noResultsText}>
+                                        No se encontraron municipios disponibles
+                                    </p>
+                                    <button
+                                        onClick={handleRetry}
+                                        className={classes.clearSearchButton}
+                                    >
+                                        Recargar
+                                    </button>
+                                </div>
+                            ) : (
+                                // No hay resultados de búsqueda
                                 <div className={classes.noResults}>
                                     <span className={classes.noResultsIcon}>
                                         🔍

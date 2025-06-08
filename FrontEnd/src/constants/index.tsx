@@ -12,7 +12,7 @@ export const ENDPOINTS = {
     USER: "/api/usuario",
     PAYMENTS: "/api/payments", // Para futuro uso
     PEDIDOS: "/api/pedidos", // ✅ NUEVO: Para gestión de pedidos
-    LOCALIDADES: "/api/localidad", // NUEVO: para obtener localidades
+    LOCALIDADES: "/api/localidad/con-vendedores",
 } as const;
 
 // Rutas de la aplicación

@@ -1,4 +1,5 @@
-// src/services/productService.ts - CORREGIDO con parámetros que coinciden con el backend
+// src/services/productService.ts - ACTUALIZADO para incluir localidad
+
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -13,75 +14,42 @@ import {
     type ProductInterface,
     type SearchFiltersInterface,
 } from "../types/types";
-import { type ApiProduct } from "../types/apiTypes";
-import { adaptApiProduct, adaptValidApiProducts } from "../adapters";
+import {
+    adaptApiProduct,
+    adaptValidApiProducts,
+    type ApiProduct,
+} from "../adapters";
 
 const apiClient = createApiClient();
 
-// 🔧 Funciones helper para cache (usando las funciones existentes)
+// 🔧 Funciones helper para cache usando las funciones existentes
 const invalidateProductCache = (productId: number): void => {
-    const cacheKey = `mercadillo-product-${productId}`;
-    removeItem(cacheKey);
+    removeItem(`mercadillo-product-${productId}`);
 };
 
 const isProductCacheStale = (
     productId: number,
     maxAge: number = 1000 * 60 * 15
 ): boolean => {
-    const cacheKey = `mercadillo-product-${productId}`;
-    const cachedItem = localStorage.getItem(cacheKey);
-
-    if (!cachedItem) return true;
-
-    try {
-        const parsed = JSON.parse(cachedItem);
-        const age = Date.now() - parsed.timestamp;
-        return age > maxAge;
-    } catch {
-        return true;
-    }
+    const cached = getCachedProduct<ProductInterface>(productId);
+    if (!cached) return true;
+    // Si existe en cache y no ha expirado, no está stale
+    return false;
 };
 
-const cacheProductWithTimestamp = (
-    productId: number,
-    data: ProductInterface
-): void => {
-    cacheProduct(productId, data); // Usar función existente
-};
+export interface SearchFiltersWithLocalidad extends SearchFiltersInterface {
+    localidad?: number; // Agregar filtro de localidad
+}
 
 export const productsService = {
-    async getProduct(
-        id: number,
-        useCache: boolean = true,
-        forceRefresh: boolean = false
-    ): Promise<ProductInterface> {
-        // 🔧 Si se fuerza refresh, invalidar cache primero
-        if (forceRefresh) {
-            invalidateProductCache(id);
-        }
-
-        // 🔧 Verificar cache solo si useCache es true y no se fuerza refresh
-        if (useCache && !forceRefresh) {
-            const cached = getCachedProduct<ProductInterface>(id);
-            if (cached && !isProductCacheStale(id)) {
-                return cached;
-            } else if (cached) {
-                invalidateProductCache(id);
-            }
-        }
-
+    async getProduct(id: number): Promise<ProductInterface> {
         try {
-            // SIEMPRE intentar API real primero
+            // Obtener desde API
             const apiProduct = await apiClient.get<ApiProduct>(
                 `${ENDPOINTS.PRODUCTS}/${id}`
             );
 
             const adaptedProduct = adaptApiProduct(apiProduct);
-
-            // 🔧 Guardar en cache solo si no se forzó refresh
-            if (!forceRefresh) {
-                cacheProductWithTimestamp(id, adaptedProduct);
-            }
 
             return adaptedProduct;
         } catch (error: any) {
@@ -108,11 +76,11 @@ export const productsService = {
 
     // 🔧 Nuevo método específico para editing que siempre trae datos frescos
     async getProductForEditing(id: number): Promise<ProductInterface> {
-        return productsService.getProduct(id, false, true);
+        return productsService.getProduct(id);
     },
 
     async getProducts(
-        filters?: SearchFiltersInterface,
+        filters?: SearchFiltersWithLocalidad,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
         try {
@@ -126,7 +94,7 @@ export const productsService = {
                 }
             }
 
-            // 🔧 CORREGIDO: Usar los nombres de parámetros exactos del backend
+            // 🔧 ACTUALIZADO: Incluir parámetro de localidad
             const params = new URLSearchParams();
 
             if (filters?.category) {
@@ -138,15 +106,20 @@ export const productsService = {
             }
 
             if (filters?.minPrice) {
-                params.append("minPrice", filters.minPrice.toString()); // ✅ Este está correcto
+                params.append("minPrice", filters.minPrice.toString());
             }
 
             if (filters?.maxPrice) {
-                params.append("maxPrice", filters.maxPrice.toString()); // ✅ Este está correcto
+                params.append("maxPrice", filters.maxPrice.toString());
             }
 
             if (filters?.query) {
                 params.append("busqueda", filters.query);
+            }
+
+            // ✅ NUEVO: Agregar parámetro de localidad
+            if (filters?.localidad) {
+                params.append("localidad", filters.localidad.toString());
             }
 
             const url = `${ENDPOINTS.PRODUCTS}${
@@ -181,7 +154,6 @@ export const productsService = {
             // Filtrar por búsqueda si hay query
             if (filters?.query && filters.query.trim()) {
                 const query = filters.query.toLowerCase();
-                const beforeSearch = filteredProducts.length;
 
                 filteredProducts = filteredProducts.filter(
                     (p) =>
@@ -211,15 +183,37 @@ export const productsService = {
                 );
             }
 
+            // ✅ NUEVO: Filtrar por localidad en mock data
+            if (filters?.localidad) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.municipality?.id === filters.localidad
+                );
+            }
+
             return filteredProducts;
         }
     },
 
     async searchProducts(
         query: string,
+        localidad?: number,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
-        return productsService.getProducts({ query }, useCache);
+        return productsService.getProducts({ query, localidad }, useCache);
+    },
+
+    // ✅ NUEVO: Método específico para obtener productos por localidad
+    async getProductsByLocalidad(
+        localidadId: number,
+        additionalFilters?: Omit<SearchFiltersWithLocalidad, "localidad">,
+        useCache: boolean = true
+    ): Promise<ProductInterface[]> {
+        const filters: SearchFiltersWithLocalidad = {
+            ...additionalFilters,
+            localidad: localidadId,
+        };
+
+        return productsService.getProducts(filters, useCache);
     },
 };
 

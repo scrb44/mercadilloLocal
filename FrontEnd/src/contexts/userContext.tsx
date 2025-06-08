@@ -1,3 +1,5 @@
+// src/contexts/userContext.tsx - CORREGIDO
+
 import axios from "axios";
 import React, {
     createContext,
@@ -11,14 +13,14 @@ import { type UserInterface, type LoginCredentials } from "../types/types";
 
 // ============ INTERFACES ============
 
-interface UserContextType {
+export interface UserContextType {
     user: UserInterface | null;
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
     login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => void;
-    setUser: (user: UserInterface | null) => void; // Añadido para actualizar desde otros componentes
+    setUser: (user: UserInterface | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -31,7 +33,7 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [user, setUser] = useState<UserInterface | null>(null);
-    const [loading, setLoading] = useState(true); // Iniciar en true para verificar token
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const isAuthenticated = user !== null;
@@ -46,48 +48,44 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                     setLoading(false);
                     return;
                 }
-                // Decodificar el payload del JWT
+
+                // Verificar si el token es válido
                 try {
                     const payload = JSON.parse(atob(token.split(".")[1]));
+                    const isExpired = payload.exp * 1000 < Date.now();
 
-                    // Verificar si el token no ha expirado
-                    const now = Date.now() / 1000;
-                    if (payload.exp && payload.exp < now) {
-                        console.warn("⚠️ Token expirado, limpiando sesión");
+                    if (isExpired) {
                         localStorage.removeItem("token");
+                        delete axios.defaults.headers.common["Authorization"];
                         setLoading(false);
                         return;
                     }
 
-                    // Configurar axios con el token
-                    axios.defaults.headers.common[
-                        "Authorization"
-                    ] = `Bearer ${token}`;
-
-                    // Crear objeto usuario desde el token - adaptado a tu estructura
+                    // Token válido - construir usuario desde payload
                     const userData: UserInterface = {
                         id: payload.id || payload.userId || payload.sub,
+                        role: payload.role || payload.rol || "COMPRADOR",
                         usuario:
                             payload.usuario || payload.username || payload.sub,
-                        nombre: payload.nombre || payload.name || "Usuario",
+                        nombre: payload.nombre || payload.name || "",
                         email: payload.email || payload.sub || "",
-                        role: payload.role || payload.roles || "COMPRADOR",
-                        token,
+                        token: token,
+                        verificado: payload.verificado || false,
+                        imagen: payload.imagen || "",
+                        localidad: payload.localidad || undefined,
                     };
 
                     setUser(userData);
-                } catch (decodeError) {
-                    console.warn(
-                        "⚠️ Error decodificando token, limpiando sesión:",
-                        decodeError
-                    );
+                    axios.defaults.headers.common[
+                        "Authorization"
+                    ] = `Bearer ${token}`;
+                } catch (tokenError) {
+                    console.warn("⚠️ Token inválido:", tokenError);
                     localStorage.removeItem("token");
                     delete axios.defaults.headers.common["Authorization"];
                 }
-            } catch (error: any) {
-                console.warn("⚠️ Error inicializando autenticación:", error);
-                localStorage.removeItem("token");
-                delete axios.defaults.headers.common["Authorization"];
+            } catch (error) {
+                console.error("❌ Error inicializando autenticación:", error);
             } finally {
                 setLoading(false);
             }
@@ -96,7 +94,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         initializeAuth();
     }, []);
 
-    const login = async (credentials: LoginCredentials) => {
+    // ============ LOGIN ============
+    const login = async (credentials: LoginCredentials): Promise<void> => {
         try {
             setLoading(true);
             setError(null);
@@ -109,44 +108,51 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 }
             );
 
-            // Tu API devuelve: { id, role, usuario, nombre, email, imagen, token }
-            const { token, role, nombre, usuario, id, email, imagen } =
-                response.data;
+            const { token, ...userData } = response.data;
 
-            // Guardar token localmente para usar en otras peticiones
+            if (!token) {
+                throw new Error("No se recibió token del servidor");
+            }
+
+            // Guardar token
             localStorage.setItem("token", token);
-
-            // Configurar axios para futuras requests
             axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-            const userData: UserInterface = {
-                id,
-                usuario,
-                nombre,
-                email: email || credentials.email, // Usar email de respuesta o el que se usó para login
-                role,
-                token,
-                imagen, // Incluir imagen de la respuesta
+            // Crear objeto de usuario
+            const userObject: UserInterface = {
+                id: userData.id,
+                role: userData.rol || userData.role || "COMPRADOR",
+                usuario: userData.usuario || userData.username,
+                nombre: userData.nombre || userData.name,
+                email: userData.email,
+                token: token,
+                verificado: userData.verificado || false,
+                imagen: userData.imagen || "",
+                localidad: userData.localidad || undefined,
             };
 
-            setUser(userData);
+            setUser(userObject);
         } catch (err: any) {
             console.error("❌ Error en login:", err);
 
+            let errorMessage = "Credenciales incorrectas";
+
             if (err.response?.data?.mensaje) {
-                // Tu API usa "mensaje" en lugar de "message"
-                setError(err.response.data.mensaje);
+                errorMessage = err.response.data.mensaje;
             } else if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else {
-                setError("Credenciales incorrectas");
+                errorMessage = err.response.data.message;
+            } else if (err.message) {
+                errorMessage = err.message;
             }
-            throw err;
+
+            setError(errorMessage);
+            throw new Error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
+    // ============ LOGOUT ============
     const logout = () => {
         // Limpiar estado local
         setUser(null);
@@ -159,9 +165,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         delete axios.defaults.headers.common["Authorization"];
 
         // Limpiar cache de servicios
-        mercadilloService.clearLocalCache();
+        try {
+            mercadilloService.clearLocalCache();
+        } catch (error) {
+            console.warn("Error limpiando cache:", error);
+        }
     };
 
+    // ============ VALOR DEL CONTEXTO ============
     const contextValue: UserContextType = {
         user,
         isAuthenticated,
@@ -169,7 +180,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         error,
         login,
         logout,
-        setUser, // Permitir actualizar el usuario desde otros componentes
+        setUser,
     };
 
     return (
@@ -180,7 +191,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 };
 
 // ============ HOOK ============
-
 export const useUser = (): UserContextType => {
     const context = useContext(UserContext);
     if (context === undefined) {
