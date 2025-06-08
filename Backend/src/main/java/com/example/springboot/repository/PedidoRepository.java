@@ -14,49 +14,72 @@ import java.util.Optional;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    // Buscar pedidos por comprador (cualquier tipo de usuario)
+    // ============ MÉTODOS ORIGINALES (mantener compatibilidad) ============
+
     List<Pedido> findByCompradorIdAndTipoCompradorOrderByFechaPedidoDesc(Long compradorId, String tipoComprador);
 
-    // Buscar pedidos por email del comprador
-    List<Pedido> findByCompradorEmailOrderByFechaPedidoDesc(String email);
-
-    // Buscar por número de pedido
-    Optional<Pedido> findByNumeroPedido(String numeroPedido);
-
-    // Buscar pedidos por estado de pago
-    List<Pedido> findByEstadoPagoOrderByFechaPedidoDesc(String estadoPago);
-
-    // Buscar pedidos pagados de un usuario
     List<Pedido> findByCompradorIdAndTipoCompradorAndEstadoPagoOrderByFechaPedidoDesc(
             Long compradorId, String tipoComprador, String estadoPago);
 
-    // Buscar pedidos recientes de un usuario (últimos X días)
-    @Query("SELECT p FROM Pedido p WHERE p.compradorId = :compradorId AND p.tipoComprador = :tipoComprador " +
-            "AND p.fechaPedido >= :fechaLimite ORDER BY p.fechaPedido DESC")
+    Long countByCompradorIdAndTipoComprador(Long compradorId, String tipoComprador);
+
+    Long countByCompradorIdAndTipoCompradorAndEstadoPago(Long compradorId, String tipoComprador, String estadoPago);
+
+    Optional<Pedido> findByNumeroPedido(String numeroPedido);
+
+    boolean existsByNumeroPedido(String numeroPedido);
+
+    @Query("SELECT SUM(p.total) FROM Pedido p WHERE p.compradorId = :compradorId AND p.tipoComprador = :tipoComprador AND p.estadoPago = 'PAGADO'")
+    BigDecimal calcularTotalGastado(@Param("compradorId") Long compradorId, @Param("tipoComprador") String tipoComprador);
+
+    @Query("SELECT p FROM Pedido p WHERE p.compradorId = :compradorId AND p.tipoComprador = :tipoComprador AND p.fechaPedido >= :fechaLimite ORDER BY p.fechaPedido DESC")
     List<Pedido> findPedidosRecientes(@Param("compradorId") Long compradorId,
                                       @Param("tipoComprador") String tipoComprador,
                                       @Param("fechaLimite") LocalDateTime fechaLimite);
 
-    // Contar pedidos de un usuario
-    Long countByCompradorIdAndTipoComprador(Long compradorId, String tipoComprador);
+    // ============ NUEVOS MÉTODOS USANDO EMAIL COMO IDENTIFICADOR ============
 
-    // Contar pedidos pagados de un usuario
-    Long countByCompradorIdAndTipoCompradorAndEstadoPago(Long compradorId, String tipoComprador, String estadoPago);
+    /**
+     * ✅ NUEVO: Buscar pedidos por email y tipo de comprador
+     */
+    List<Pedido> findByCompradorEmailAndTipoCompradorOrderByFechaPedidoDesc(String compradorEmail, String tipoComprador);
 
-    // Calcular total gastado por un usuario
-    @Query("SELECT COALESCE(SUM(p.total), 0) FROM Pedido p WHERE p.compradorId = :compradorId " +
-            "AND p.tipoComprador = :tipoComprador AND p.estadoPago = 'PAGADO'")
-    BigDecimal calcularTotalGastado(@Param("compradorId") Long compradorId,
-                                    @Param("tipoComprador") String tipoComprador);
+    /**
+     * ✅ NUEVO: Buscar pedidos pagados por email y tipo de comprador
+     */
+    List<Pedido> findByCompradorEmailAndTipoCompradorAndEstadoPagoOrderByFechaPedidoDesc(
+            String compradorEmail, String tipoComprador, String estadoPago);
 
-    // Verificar si existe un pedido con un número específico (para generar números únicos)
-    boolean existsByNumeroPedido(String numeroPedido);
+    /**
+     * ✅ NUEVO: Contar pedidos por email y tipo de comprador
+     */
+    Long countByCompradorEmailAndTipoComprador(String compradorEmail, String tipoComprador);
 
-    // Buscar todos los pedidos (para admin) ordenados por fecha
-    List<Pedido> findAllByOrderByFechaPedidoDesc();
+    /**
+     * ✅ NUEVO: Contar pedidos pagados por email y tipo de comprador
+     */
+    Long countByCompradorEmailAndTipoCompradorAndEstadoPago(String compradorEmail, String tipoComprador, String estadoPago);
 
-    // Buscar pedidos por rango de fechas
-    @Query("SELECT p FROM Pedido p WHERE p.fechaPedido BETWEEN :fechaInicio AND :fechaFin ORDER BY p.fechaPedido DESC")
-    List<Pedido> findByFechaPedidoBetween(@Param("fechaInicio") LocalDateTime fechaInicio,
-                                          @Param("fechaFin") LocalDateTime fechaFin);
+    /**
+     * ✅ NUEVO: Calcular total gastado por email y tipo de comprador
+     */
+    @Query("SELECT SUM(p.total) FROM Pedido p WHERE p.compradorEmail = :compradorEmail AND p.tipoComprador = :tipoComprador AND p.estadoPago = 'PAGADO'")
+    BigDecimal calcularTotalGastadoPorEmail(@Param("compradorEmail") String compradorEmail, @Param("tipoComprador") String tipoComprador);
+
+    /**
+     * ✅ NUEVO: Buscar pedidos recientes por email y tipo de comprador
+     */
+    @Query("SELECT p FROM Pedido p WHERE p.compradorEmail = :compradorEmail AND p.tipoComprador = :tipoComprador AND p.fechaPedido >= :fechaLimite ORDER BY p.fechaPedido DESC")
+    List<Pedido> findPedidosRecientesPorEmail(@Param("compradorEmail") String compradorEmail,
+                                              @Param("tipoComprador") String tipoComprador,
+                                              @Param("fechaLimite") LocalDateTime fechaLimite);
+
+    /**
+     * ✅ NUEVO: Buscar pedido por email y número (para mayor seguridad)
+     */
+    @Query("SELECT p FROM Pedido p WHERE p.numeroPedido = :numeroPedido AND p.compradorEmail = :compradorEmail AND p.tipoComprador = :tipoComprador")
+    Optional<Pedido> findByNumeroPedidoAndCompradorEmailAndTipoComprador(
+            @Param("numeroPedido") String numeroPedido,
+            @Param("compradorEmail") String compradorEmail,
+            @Param("tipoComprador") String tipoComprador);
 }

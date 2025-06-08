@@ -326,4 +326,43 @@ public class PedidoService {
             return totalGastado;
         }
     }
+
+    /**
+     * ✅ NUEVO: Obtener historial de pedidos por email y tipo de usuario
+     */
+    public List<Pedido> obtenerHistorialPedidosPorEmail(String email, String tipoUsuario) {
+        return pedidoRepository.findByCompradorEmailAndTipoCompradorOrderByFechaPedidoDesc(
+                email, tipoUsuario);
+    }
+
+    /**
+     * ✅ NUEVO: Obtener solo pedidos pagados por email y tipo de usuario
+     */
+    public List<Pedido> obtenerPedidosPagadosPorEmail(String email, String tipoUsuario) {
+        return pedidoRepository.findByCompradorEmailAndTipoCompradorAndEstadoPagoOrderByFechaPedidoDesc(
+                email, tipoUsuario, "PAGADO");
+    }
+
+    /**
+     * ✅ NUEVO: Obtener estadísticas por email y tipo de usuario
+     */
+    public EstadisticasPedidos obtenerEstadisticasPorEmail(String email, String tipoUsuario) {
+        Long totalPedidos = pedidoRepository.countByCompradorEmailAndTipoComprador(email, tipoUsuario);
+        Long pedidosPagados = pedidoRepository.countByCompradorEmailAndTipoCompradorAndEstadoPago(
+                email, tipoUsuario, "PAGADO");
+        BigDecimal totalGastado = pedidoRepository.calcularTotalGastadoPorEmail(email, tipoUsuario);
+
+        return new EstadisticasPedidos(
+                totalPedidos.intValue(),
+                pedidosPagados.intValue(),
+                totalGastado);
+    }
+
+    /**
+     * ✅ NUEVO: Obtener pedidos recientes por email y tipo de usuario
+     */
+    public List<Pedido> obtenerPedidosRecientesPorEmail(String email, String tipoUsuario) {
+        LocalDateTime hace30Dias = LocalDateTime.now().minusDays(30);
+        return pedidoRepository.findPedidosRecientesPorEmail(email, tipoUsuario, hace30Dias);
+    }
 }

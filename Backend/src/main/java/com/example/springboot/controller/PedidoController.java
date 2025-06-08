@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -27,6 +28,9 @@ public class PedidoController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // ✅ ROLES PERMITIDOS PARA CREAR PEDIDOS
+    private static final List<String> ROLES_PERMITIDOS = Arrays.asList("COMPRADOR", "VENDEDOR", "ADMIN");
+
     private UserInfo obtenerInfoUsuarioDesdeToken(HttpServletRequest request) {
         try {
             String authHeader = request.getHeader("Authorization");
@@ -38,6 +42,12 @@ public class PedidoController {
             String email = jwtUtil.extractUsername(token);
             String role = jwtUtil.extractRole(token);
 
+            // ✅ VERIFICAR QUE EL ROL ES VÁLIDO PARA PEDIDOS
+            if (!ROLES_PERMITIDOS.contains(role)) {
+                throw new RuntimeException("Rol no autorizado para crear pedidos: " + role);
+            }
+
+            // ✅ CAMBIO: Obtener ID usando email y rol (por si acaso necesitamos el ID internamente)
             Long userId = carritoUniversalService.obtenerUsuarioIdPorEmailYTipo(email, role);
 
             return new UserInfo(userId, email, role);
@@ -47,43 +57,85 @@ public class PedidoController {
     }
 
     /**
-     * Crear pedido desde el carrito (simular pago)
+     * ✅ ACTUALIZADO: Crear pedido usando EMAIL como identificador único
      */
     @PostMapping("/crear")
     public ResponseEntity<?> crearPedido(
             @RequestBody PedidoService.CrearPedidoRequest request,
             HttpServletRequest httpRequest) {
         try {
+            System.out.println("🔧 DEBUG - Iniciando creación de pedido");
+            System.out.println("🔧 DEBUG - Request body: " + request);
+            System.out.println("🔧 DEBUG - compradorEmail: " + request.getCompradorEmail());
+            System.out.println("🔧 DEBUG - tipoComprador: " + request.getTipoComprador());
+
             UserInfo userInfo = obtenerInfoUsuarioDesdeToken(httpRequest);
 
-            // Verificar que el usuario coincide con el del request
-            if (!userInfo.getId().equals(request.getCompradorId()) ||
-                    !userInfo.getRole().equals(request.getTipoComprador())) {
+            System.out.println("🔧 DEBUG - Usuario del token: ID=" + userInfo.getId() +
+                    ", Email=" + userInfo.getEmail() +
+                    ", Role=" + userInfo.getRole());
+            System.out.println("🔧 DEBUG - Usuario del request: Email=" + request.getCompradorEmail() +
+                    ", Role=" + request.getTipoComprador());
+
+            // ✅ VERIFICACIÓN POR EMAIL: Verificar que el usuario coincide con el del request
+            if (!userInfo.getEmail().equals(request.getCompradorEmail())) {
+                System.out.println("❌ DEBUG - Email no coincide: token=" + userInfo.getEmail() +
+                        ", request=" + request.getCompradorEmail());
                 return ResponseEntity.badRequest()
-                        .body(Collections.singletonMap("mensaje", "Los datos del usuario no coinciden"));
+                        .body(Collections.singletonMap("mensaje",
+                                "El email del usuario no coincide. Token: " + userInfo.getEmail() +
+                                        ", Request: " + request.getCompradorEmail()));
             }
+
+            if (!userInfo.getRole().equals(request.getTipoComprador())) {
+                System.out.println("❌ DEBUG - Role no coincide: token=" + userInfo.getRole() +
+                        ", request=" + request.getTipoComprador());
+                return ResponseEntity.badRequest()
+                        .body(Collections.singletonMap("mensaje",
+                                "El rol del usuario no coincide. Token: " + userInfo.getRole() +
+                                        ", Request: " + request.getTipoComprador()));
+            }
+
+            // ✅ VERIFICACIÓN ADICIONAL: Asegurar que el rol está permitido
+            if (!ROLES_PERMITIDOS.contains(request.getTipoComprador())) {
+                System.out.println("❌ DEBUG - Rol no permitido: " + request.getTipoComprador());
+                return ResponseEntity.badRequest()
+                        .body(Collections.singletonMap("mensaje",
+                                "Rol no autorizado para crear pedidos: " + request.getTipoComprador() +
+                                        ". Roles permitidos: " + ROLES_PERMITIDOS));
+            }
+
+            System.out.println("✅ DEBUG - Validaciones pasadas, creando pedido...");
+
+            // ✅ AGREGAR ID AL REQUEST PARA COMPATIBILIDAD INTERNA
+            request.setCompradorId(userInfo.getId());
 
             // Crear el pedido
             Pedido pedido = pedidoService.crearPedidoSimulado(request);
 
+            System.out.println("✅ DEBUG - Pedido creado exitosamente: " + pedido.getNumeroPedido());
+
             return ResponseEntity.ok(Collections.singletonMap("pedido", pedido));
 
         } catch (Exception e) {
+            System.out.println("❌ DEBUG - Error creando pedido: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
                     .body(Collections.singletonMap("mensaje", "Error al crear pedido: " + e.getMessage()));
         }
     }
 
     /**
-     * Obtener historial de pedidos del usuario autenticado
+     * ✅ ACTUALIZADO: Obtener historial por email y rol
      */
     @GetMapping("/historial")
     public ResponseEntity<?> obtenerHistorial(HttpServletRequest request) {
         try {
             UserInfo userInfo = obtenerInfoUsuarioDesdeToken(request);
 
-            List<Pedido> pedidos = pedidoService.obtenerHistorialPedidos(
-                    userInfo.getId(), userInfo.getRole());
+            // ✅ CAMBIO: Buscar por email y rol en lugar de solo ID
+            List<Pedido> pedidos = pedidoService.obtenerHistorialPedidosPorEmail(
+                    userInfo.getEmail(), userInfo.getRole());
 
             return ResponseEntity.ok(Collections.singletonMap("pedidos", pedidos));
 
@@ -94,15 +146,15 @@ public class PedidoController {
     }
 
     /**
-     * Obtener pedidos pagados del usuario autenticado
+     * ✅ ACTUALIZADO: Obtener pedidos pagados por email y rol
      */
     @GetMapping("/pagados")
     public ResponseEntity<?> obtenerPedidosPagados(HttpServletRequest request) {
         try {
             UserInfo userInfo = obtenerInfoUsuarioDesdeToken(request);
 
-            List<Pedido> pedidos = pedidoService.obtenerPedidosPagados(
-                    userInfo.getId(), userInfo.getRole());
+            List<Pedido> pedidos = pedidoService.obtenerPedidosPagadosPorEmail(
+                    userInfo.getEmail(), userInfo.getRole());
 
             return ResponseEntity.ok(Collections.singletonMap("pedidos", pedidos));
 
@@ -113,7 +165,7 @@ public class PedidoController {
     }
 
     /**
-     * Obtener pedido específico por ID
+     * ✅ ACTUALIZADO: Obtener pedido específico por ID (mantener para compatibilidad)
      */
     @GetMapping("/{pedidoId}")
     public ResponseEntity<?> obtenerPedido(
@@ -130,8 +182,8 @@ public class PedidoController {
 
             Pedido pedido = pedidoOpt.get();
 
-            // Verificar que el pedido pertenece al usuario autenticado
-            if (!pedido.getCompradorId().equals(userInfo.getId()) ||
+            // ✅ VERIFICACIÓN POR EMAIL: Verificar que el pedido pertenece al usuario autenticado
+            if (!pedido.getCompradorEmail().equals(userInfo.getEmail()) ||
                     !pedido.getTipoComprador().equals(userInfo.getRole())) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("mensaje", "No tienes permisos para ver este pedido"));
@@ -146,7 +198,7 @@ public class PedidoController {
     }
 
     /**
-     * Obtener estadísticas de pedidos del usuario
+     * ✅ ACTUALIZADO: Obtener estadísticas por email y rol
      */
     @GetMapping("/estadisticas")
     public ResponseEntity<?> obtenerEstadisticas(HttpServletRequest request) {
@@ -154,7 +206,7 @@ public class PedidoController {
             UserInfo userInfo = obtenerInfoUsuarioDesdeToken(request);
 
             PedidoService.EstadisticasPedidos estadisticas =
-                    pedidoService.obtenerEstadisticas(userInfo.getId(), userInfo.getRole());
+                    pedidoService.obtenerEstadisticasPorEmail(userInfo.getEmail(), userInfo.getRole());
 
             return ResponseEntity.ok(Collections.singletonMap("estadisticas", estadisticas));
 
@@ -165,15 +217,15 @@ public class PedidoController {
     }
 
     /**
-     * Obtener pedidos recientes (últimos 30 días)
+     * ✅ ACTUALIZADO: Obtener pedidos recientes por email y rol
      */
     @GetMapping("/recientes")
     public ResponseEntity<?> obtenerPedidosRecientes(HttpServletRequest request) {
         try {
             UserInfo userInfo = obtenerInfoUsuarioDesdeToken(request);
 
-            List<Pedido> pedidos = pedidoService.obtenerPedidosRecientes(
-                    userInfo.getId(), userInfo.getRole());
+            List<Pedido> pedidos = pedidoService.obtenerPedidosRecientesPorEmail(
+                    userInfo.getEmail(), userInfo.getRole());
 
             return ResponseEntity.ok(Collections.singletonMap("pedidos", pedidos));
 
@@ -184,7 +236,7 @@ public class PedidoController {
     }
 
     /**
-     * Buscar pedido por número
+     * ✅ ACTUALIZADO: Buscar pedido por número (verificación por email)
      */
     @GetMapping("/buscar/{numeroPedido}")
     public ResponseEntity<?> buscarPorNumero(
@@ -201,8 +253,8 @@ public class PedidoController {
 
             Pedido pedido = pedidoOpt.get();
 
-            // Verificar que el pedido pertenece al usuario autenticado
-            if (!pedido.getCompradorId().equals(userInfo.getId()) ||
+            // ✅ VERIFICACIÓN POR EMAIL: Verificar que el pedido pertenece al usuario autenticado
+            if (!pedido.getCompradorEmail().equals(userInfo.getEmail()) ||
                     !pedido.getTipoComprador().equals(userInfo.getRole())) {
                 return ResponseEntity.badRequest()
                         .body(Collections.singletonMap("mensaje", "No tienes permisos para ver este pedido"));
