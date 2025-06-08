@@ -33,6 +33,8 @@ public class LocalidadService {
         localidadRepository.deleteById(id);
     }
 
+    public List<Localidad> getProvinciasConVendedores(){return localidadRepository.findconvendedores();}
+
     public Localidad getProvinciaByNombre(String nombre) {
         return localidadRepository.findByNombre(nombre);
     }

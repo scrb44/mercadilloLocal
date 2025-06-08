@@ -33,4 +33,7 @@ public class CategoriaService {
     public void eliminarCategoria(Long id) {
         categoriaRepo.deleteById(id);
     }
+    public List<Categoria> categoriasConProductos(long localidadId) {
+        return categoriaRepo.categoriasConProductosEnLocalidad(localidadId);
+    }
 }

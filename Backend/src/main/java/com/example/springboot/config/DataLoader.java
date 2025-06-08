@@ -62,6 +62,21 @@ public class DataLoader {
                 malaga.setNombre("Málaga");
                 malaga = localidadRepo.save(malaga);
             }
+            Localidad fuengirola = new Localidad();
+            fuengirola.setNombre("fuengirola");
+            localidadRepo.save(fuengirola);
+
+            Localidad ojen = new Localidad();
+            ojen.setNombre("ojen");
+            localidadRepo.save(ojen);
+
+            Localidad istan = new Localidad();
+            istan.setNombre("istan");
+            localidadRepo.save(istan);
+
+            Localidad coin = new Localidad();
+            coin.setNombre("coin");
+            localidadRepo.save(coin);
 
             // Vendedor Tasca Malagueña
             Vendedor vendedorTasca = vendedorRepo.findByUsuario("TascaMalaquena");
@@ -77,7 +92,17 @@ public class DataLoader {
                 vendedorTasca.setLocalidad(malaga);
                 vendedorTasca = vendedorRepo.save(vendedorTasca);
                 System.out.println("🛍️ Vendedor 'TascaMalaquena' creado.");
-            }
+            }/*
+            Vendedor vendedorPaco = new Vendedor();
+            vendedorPaco.setNombre("Tasca Fuengirola");
+            vendedorPaco.setUsuario("TascaMalaquena");
+            vendedorPaco.setEmail("tascamalaga@gmail.com");
+            vendedorPaco.setTelf("644545467");
+            vendedorPaco.setVerificado(true);
+            vendedorPaco.setPassword(passwordEncoder.encode("123456")); // Usa encoder si es necesario
+            vendedorPaco.setImagen("https://ejemplo.com/tasca.jpg");
+            vendedorPaco.setLocalidad(fuengirola);
+            vendedorRepo.save(vendedorPaco);*/
 
             // Lista de productos
             List<Producto> productos = List.of(
