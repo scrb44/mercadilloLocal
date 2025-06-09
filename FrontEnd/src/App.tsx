@@ -1,10 +1,11 @@
-// src/App.tsx - OPTIMIZADO PARA CARGA INICIAL RÁPIDA
+// src/App.tsx - ROLLBACK a estructura que funcionaba + PaymentProvider solo en checkout
 
 import { useEffect, lazy, Suspense } from "react";
 import axios from "axios";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { UserProvider, CartProvider, useUser } from "./contexts";
+import { UserProvider, useUser, CartProvider } from "./contexts";
 import { MunicipioProvider } from "./contexts/municipioContext";
+import { VendorProductsProvider } from "./contexts/vendorProductsContext";
 
 // Guards y Error Handling
 import MunicipioGuard from "./componentes/municipioGuard";
@@ -13,7 +14,7 @@ import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 // Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
 import MunicipioSelector from "./pages/municipioSelector";
-import WhoWeAre from "./pages/whoWeAre"; // Importa tu componente "Quiénes Somos"
+import WhoWeAre from "./pages/whoWeAre";
 
 // Lazy loading para páginas no críticas
 const CategoryProducts = lazy(() => import("./pages/categoryProducts"));
@@ -23,6 +24,12 @@ const Login = lazy(() => import("./pages/login"));
 const Register = lazy(() => import("./pages/register"));
 const Perfil = lazy(() => import("./pages/perfil"));
 const Checkout = lazy(() => import("./pages/checkout"));
+const MisCompras = lazy(() => import("./pages/misCompras"));
+
+// Lazy loading para páginas de vendedores
+const VendorProducts = lazy(() => import("./pages/vendorProducts"));
+const CreateProduct = lazy(() => import("./pages/createProduct"));
+const EditProduct = lazy(() => import("./pages/editProduct"));
 
 // Componente de loading optimizado
 const PageSuspense = ({ children }: { children: React.ReactNode }) => (
@@ -57,17 +64,24 @@ const PageSuspense = ({ children }: { children: React.ReactNode }) => (
     </Suspense>
 );
 
-// Lazy loading para PaymentProvider solo cuando se necesite
-const LazyPaymentProvider = lazy(() =>
-    import("./contexts/paymentContext").then((module) => ({
-        default: ({ children }: { children: React.ReactNode }) => (
-            <module.PaymentProvider>{children}</module.PaymentProvider>
-        ),
-    }))
-);
-
 function AppContent() {
     const { user, isAuthenticated } = useUser();
+
+    useEffect(() => {
+        // CSS para la animación de loading
+        const style = document.createElement("style");
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -79,260 +93,233 @@ function AppContent() {
     }, [user]);
 
     return (
-        <div className="App">
-            <Routes>
-                {/* Ruta especial para selección de municipio (sin guard) */}
-                <Route
-                    path="/seleccionar-municipio"
-                    element={<MunicipioSelector />}
-                />
-
-                {/* Todas las demás rutas protegidas por MunicipioGuard */}
-                {isAuthenticated && user ? (
-                    // Usuario autenticado - con carrito y pagos lazy
-                    <Route
-                        path="/*"
-                        element={
-                            <MunicipioGuard>
-                                <CartProvider userId={user.id}>
-                                    <Routes>
-                                        <Route path="/" element={<Home />} />
-                                         <Route path="/quienes-somos" element={<WhoWeAre />} />
-                                        <Route
-                                            path="/categoria/:categoryId"
-                                            element={
-                                                <PageSuspense>
-                                                    <CategoryProducts />
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/producto/:productId"
-                                            element={
-                                                <PageSuspense>
-                                                    <ProductDetail />
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/perfil"
-                                            element={
-                                                <PageSuspense>
-                                                    <Perfil />
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/carrito"
-                                            element={
-                                                <PageSuspense>
-                                                    <Cart />
-                                                </PageSuspense>
-                                            }
-                                        />
-
-                                        {/* RUTAS DE PAGO CON LAZY LOADING */}
-                                        <Route
-                                            path="/checkout"
-                                            element={
-                                                <PageSuspense>
-                                                    <Suspense
-                                                        fallback={
-                                                            <div>
-                                                                Cargando sistema
-                                                                de pagos...
-                                                            </div>
-                                                        }
-                                                    >
-                                                        <LazyPaymentProvider>
-                                                            <Checkout />
-                                                        </LazyPaymentProvider>
-                                                    </Suspense>
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/pago"
-                                            element={
-                                                <PageSuspense>
-                                                    <Suspense
-                                                        fallback={
-                                                            <div>
-                                                                Cargando sistema
-                                                                de pagos...
-                                                            </div>
-                                                        }
-                                                    >
-                                                        <LazyPaymentProvider>
-                                                            <Checkout />
-                                                        </LazyPaymentProvider>
-                                                    </Suspense>
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/pago/confirmacion"
-                                            element={
-                                                <PageSuspense>
-                                                    <Suspense
-                                                        fallback={
-                                                            <div>
-                                                                Cargando
-                                                                confirmación...
-                                                            </div>
-                                                        }
-                                                    >
-                                                        <LazyPaymentProvider>
-                                                            <Checkout />
-                                                        </LazyPaymentProvider>
-                                                    </Suspense>
-                                                </PageSuspense>
-                                            }
-                                        />
-
-                                        <Route
-                                            path="/login"
-                                            element={
-                                                <PageSuspense>
-                                                    <Login />
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/registro"
-                                            element={
-                                                <PageSuspense>
-                                                    <Register />
-                                                </PageSuspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="*"
-                                            element={<NotFoundPage />}
-                                        />
-                                    </Routes>
-                                </CartProvider>
-                            </MunicipioGuard>
-                        }
-                    />
-                ) : (
-                    // Usuario no autenticado - sin carrito ni pagos
-                    <>
+        <MunicipioProvider>
+            <BrowserRouter>
+                <ErrorBoundary>
+                    <Routes>
+                        {/* Ruta especial para selección de municipio (sin guard) */}
                         <Route
-                            path="/"
-                            element={
-                                <MunicipioGuard>
-                                    <Home />
-                                </MunicipioGuard>
-                            }
-                        />
-                        <Route
-              path="/quienes-somos"
-              element={
-                <MunicipioGuard>
-                  <WhoWeAre />
-                </MunicipioGuard>
-              }
-            />
-                        <Route
-                            path="/categoria/:categoryId"
-                            element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <CategoryProducts />
-                                    </PageSuspense>
-                                </MunicipioGuard>
-                            }
-                        />
-                        <Route
-                            path="/producto/:productId"
-                            element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <ProductDetail />
-                                    </PageSuspense>
-                                </MunicipioGuard>
-                            }
-                        />
-                        <Route
-                            path="/carrito"
-                            element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Cart />
-                                    </PageSuspense>
-                                </MunicipioGuard>
-                            }
+                            path="/seleccionar-municipio"
+                            element={<MunicipioSelector />}
                         />
 
-                        {/* Redirigir checkout a login si no está autenticado */}
-                        <Route
-                            path="/checkout"
-                            element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Login />
-                                    </PageSuspense>
-                                </MunicipioGuard>
-                            }
-                        />
-                        <Route
-                            path="/pago"
-                            element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Login />
-                                    </PageSuspense>
-                                </MunicipioGuard>
-                            }
-                        />
-
+                        {/* Rutas públicas */}
                         <Route
                             path="/login"
                             element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Login />
-                                    </PageSuspense>
-                                </MunicipioGuard>
+                                <PageSuspense>
+                                    <Login />
+                                </PageSuspense>
                             }
                         />
                         <Route
                             path="/registro"
                             element={
-                                <MunicipioGuard>
-                                    <PageSuspense>
-                                        <Register />
-                                    </PageSuspense>
-                                </MunicipioGuard>
+                                <PageSuspense>
+                                    <Register />
+                                </PageSuspense>
                             }
                         />
-                        <Route
-                            path="*"
-                            element={
-                                <MunicipioGuard>
-                                    <NotFoundPage />
-                                </MunicipioGuard>
-                            }
-                        />
-                    </>
-                )}
-            </Routes>
-        </div>
+
+                        {/* ✅ RUTAS CON CART - Solo para usuarios autenticados */}
+                        {isAuthenticated && user ? (
+                            <Route
+                                path="/*"
+                                element={
+                                    <MunicipioGuard>
+                                        <CartProvider user={user}>
+                                            <VendorProductsProvider>
+                                                <Routes>
+                                                    <Route
+                                                        path="/"
+                                                        element={<Home />}
+                                                    />
+                                                    <Route
+                                                        path="/quienes-somos"
+                                                        element={<WhoWeAre />}
+                                                    />
+                                                    <Route
+                                                        path="/categoria/:categoryId"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <CategoryProducts />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="/producto/:productId"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <ProductDetail />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="/perfil"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <Perfil />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="/carrito"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <Cart />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+
+                                                    {/* ✅ CHECKOUT con PaymentProvider propio */}
+                                                    <Route
+                                                        path="/checkout"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <Checkout />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+
+                                                    <Route
+                                                        path="/mis-compras"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <MisCompras />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+
+                                                    {/* Rutas de vendedores */}
+                                                    <Route
+                                                        path="/mis-productos"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <VendorProducts />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="/subir-producto"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <CreateProduct />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="/editar-producto/:productId"
+                                                        element={
+                                                            <PageSuspense>
+                                                                <EditProduct />
+                                                            </PageSuspense>
+                                                        }
+                                                    />
+                                                    <Route
+                                                        path="*"
+                                                        element={
+                                                            <NotFoundPage />
+                                                        }
+                                                    />
+                                                </Routes>
+                                            </VendorProductsProvider>
+                                        </CartProvider>
+                                    </MunicipioGuard>
+                                }
+                            />
+                        ) : (
+                            // ✅ RUTAS SIN CART - Para usuarios no autenticados
+                            <>
+                                <Route
+                                    path="/"
+                                    element={
+                                        <MunicipioGuard>
+                                            <Home />
+                                        </MunicipioGuard>
+                                    }
+                                />
+                                <Route
+                                    path="/quienes-somos"
+                                    element={
+                                        <MunicipioGuard>
+                                            <WhoWeAre />
+                                        </MunicipioGuard>
+                                    }
+                                />
+                                <Route
+                                    path="/categoria/:categoryId"
+                                    element={
+                                        <MunicipioGuard>
+                                            <PageSuspense>
+                                                <CategoryProducts />
+                                            </PageSuspense>
+                                        </MunicipioGuard>
+                                    }
+                                />
+                                <Route
+                                    path="/producto/:productId"
+                                    element={
+                                        <MunicipioGuard>
+                                            <PageSuspense>
+                                                <ProductDetail />
+                                            </PageSuspense>
+                                        </MunicipioGuard>
+                                    }
+                                />
+
+                                {/* ✅ Carrito para no autenticados - mostrar que necesitan login */}
+                                <Route
+                                    path="/carrito"
+                                    element={
+                                        <MunicipioGuard>
+                                            <PageSuspense>
+                                                <Cart />
+                                            </PageSuspense>
+                                        </MunicipioGuard>
+                                    }
+                                />
+
+                                <Route path="*" element={<NotFoundPage />} />
+                            </>
+                        )}
+                    </Routes>
+                </ErrorBoundary>
+            </BrowserRouter>
+        </MunicipioProvider>
     );
 }
 
+// ✅ Componente principal de la aplicación
 function App() {
+    useEffect(() => {
+        // Configurar interceptor de Axios para manejar errores globalmente
+        const responseInterceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                // Manejar errores de autenticación globalmente
+                if (error.response?.status === 401) {
+                    localStorage.removeItem("token");
+                    delete axios.defaults.headers.common["Authorization"];
+
+                    // Solo redirigir si no estamos ya en login
+                    if (!window.location.pathname.includes("/login")) {
+                        window.location.href = "/login";
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // Limpiar interceptor al desmontar
+        return () => {
+            axios.interceptors.response.eject(responseInterceptor);
+        };
+    }, []);
+
     return (
-        <MunicipioProvider>
-            <ErrorBoundary>
-                <UserProvider>
-                    <BrowserRouter>
-                        <AppContent />
-                    </BrowserRouter>
-                </UserProvider>
-            </ErrorBoundary>
-        </MunicipioProvider>
+        <UserProvider>
+            <AppContent />
+        </UserProvider>
     );
 }
 

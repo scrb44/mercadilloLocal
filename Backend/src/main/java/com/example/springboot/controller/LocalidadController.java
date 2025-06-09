@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/provincias")
+@RequestMapping("/api/localidad")
 @CrossOrigin(origins = "*")
 public class LocalidadController {
 
+    @Autowired
     private final LocalidadService localidadService;
 
-    @Autowired
     public LocalidadController(LocalidadService localidadService) {
         this.localidadService = localidadService;
     }
@@ -21,6 +21,11 @@ public class LocalidadController {
     @GetMapping
     public List<Localidad> getAll() {
         return localidadService.getAllProvincias();
+    }
+
+    @GetMapping("/con-vendedores")
+    public List<Localidad> getConVendedores() {
+        return localidadService.getProvinciasConVendedores();
     }
 
     @GetMapping("/{id}")

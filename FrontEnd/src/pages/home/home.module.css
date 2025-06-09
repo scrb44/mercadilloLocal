@@ -27,6 +27,94 @@
     min-height: 20px;
 }
 
+.horizontalScroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 10px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.horizontalScroll::-webkit-scrollbar {
+    height: 8px;
+}
+
+.horizontalScroll::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 100, 0.2);
+    border-radius: 4px;
+}
+
+.horizontalScroll > * {
+    flex: 0 0 calc((100% - 32px) / 3); /* 3 elementos visibles con margen */
+    scroll-snap-align: start;
+}
+
+.welcomeContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+    animation: fadeSlideUp 1.2s ease-out both;
+}
+
+.welcomeText {
+    flex: 1 1 300px;
+    text-align: left;
+}
+
+.welcomeImageWrapper {
+    flex: 1 1 300px;
+    animation: imageEntrance 1.6s ease-out both;
+    transform-origin: bottom right;
+}
+
+.welcomeImage {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    transition: transform 0.4s ease;
+    animation: floatY 6s ease-in-out infinite;
+}
+
+/* Animación para entrada suave del contenido */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animación específica para imagen */
+@keyframes imageEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes floatY {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
 /* ============ CLASES PARA EVITAR FLASH ============ */
 .hidden {
     opacity: 0;
@@ -391,4 +479,150 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+}
+
+/* ============ ESTADOS DE ERROR Y VACÍO ============ */
+.errorState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: rgba(254, 202, 202, 0.1);
+    border: 2px dashed #fca5a5;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.errorState p {
+    color: #dc2626;
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+}
+
+.errorState button {
+    padding: 8px 16px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.errorState button:hover {
+    background: #b91c1c;
+}
+
+.loadingState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: rgba(59, 130, 246, 0.05);
+    border: 2px solid rgba(59, 130, 246, 0.2);
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.loadingState p {
+    color: #3b82f6;
+    margin: 0;
+    font-size: 1rem;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background: rgba(156, 163, 175, 0.1);
+    border: 2px dashed #9ca3af;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.emptyState p {
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+}
+
+.emptyStateHint {
+    font-size: 0.9rem !important;
+    color: #9ca3af !important;
+    margin: 0 !important;
+}
+
+/* ============ INFORMACIÓN DE LOCALIDAD ============ */
+.localidadInfo {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0 24px 0;
+}
+
+.localidadBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    animation: slideInFromTop 0.5s ease-out;
+}
+
+/* ============ ANIMACIONES ============ */
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+    .errorState,
+    .loadingState,
+    .emptyState {
+        padding: 24px 16px;
+        margin: 16px 0;
+    }
+
+    .errorState p,
+    .loadingState p,
+    .emptyState p {
+        font-size: 0.9rem;
+    }
+
+    .localidadBadge {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .emptyStateHint {
+        font-size: 0.8rem !important;
+    }
 }

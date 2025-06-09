@@ -14,8 +14,6 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
     const { user, isAuthenticated } = useUser();
     const cart = isAuthenticated ? useCart() : null;
 
-    console.log("📦 Product recibido en ProductCard:", product);
-
     const handleAddToCart = async (e: React.MouseEvent) => {
         // Prevenir que el click propague al Link
         e.preventDefault();
@@ -30,7 +28,6 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
         try {
             await cart.addItem(product, 1);
-            console.log("✅ Producto añadido al carrito:", product.name);
 
             // Llamar callback si se proporciona
             if (onAddToCart) {
@@ -41,8 +38,6 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
             alert("Error al añadir producto al carrito");
         }
     };
-    console.log("Hola");
-console.log(product);
     return (
         <Link
             to={`/producto/${product.id}`}
@@ -67,8 +62,10 @@ console.log(product);
                     </p>
                     <p className={classes.productPrice}>€{product.price}</p>
                     <p className={classes.productVendor}>
-           Vendedor: {product.vendedor?.nombre || "Sin especificar prodcut card"}
-                 </p>
+                        Vendedor:{" "}
+                        {product.vendedor?.nombre ||
+                            "Sin especificar prodcut card"}
+                    </p>
                 </div>
                 <div className={classes.productActions}>
                     {isAuthenticated ? (

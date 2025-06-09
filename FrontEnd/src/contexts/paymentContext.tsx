@@ -1,4 +1,4 @@
-// src/contexts/paymentContext.tsx - Contexto para manejar el proceso de pago
+// src/contexts/paymentContext.tsx - Versión simplificada sin dependencias de hooks
 
 import React, {
     createContext,
@@ -14,10 +14,15 @@ import {
     type PaymentItem,
     type BillingInfo,
     type PaymentSummary,
+    type UserPaymentData, // ✅ AGREGADO
     PAYMENT_STEPS,
 } from "../types/paymentTypes";
-import { paymentService, paymentUtils } from "../services/paymentService";
-import { useCart } from "./cartContext";
+import { paymentUtils } from "../services/paymentService";
+import {
+    pedidosService,
+    type CrearPedidoRequest,
+    type ProductoPedido,
+} from "../services/pedidosService";
 
 // ============ ESTADO INICIAL ============
 
@@ -98,7 +103,7 @@ function paymentReducer(
 
 // ============ CONTEXT ============
 
-const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
+const PaymentContext = createContext<PaymentContextType | null>(null);
 
 // ============ PROVIDER ============
 
@@ -106,13 +111,38 @@ interface PaymentProviderProps {
     children: ReactNode;
 }
 
-export const PaymentProvider: React.FC<PaymentProviderProps> = ({
-    children,
-}) => {
+export function PaymentProvider({ children }: PaymentProviderProps) {
     const [state, dispatch] = useReducer(paymentReducer, initialState);
-    const cart = useCart();
 
-    // ============ NAVEGACIÓN ENTRE PASOS ============
+    // ============ UTILIDADES ============
+
+    const convertToPaymentItems = useCallback(
+        (cartItems: PaymentItem[]): PaymentItem[] => {
+            return cartItems.map((item) => ({
+                product: item.product,
+                quantity: item.quantity,
+                unitPrice: item.product.price,
+                totalPrice: item.product.price * item.quantity,
+                vendor: item.product.vendedor,
+            }));
+        },
+        []
+    );
+
+    const convertToProductoPedido = useCallback(
+        (paymentItems: PaymentItem[]): ProductoPedido[] => {
+            return paymentItems.map((item) => ({
+                id: item.product.id,
+                nombre: item.product.name,
+                precio: item.product.price,
+                cantidad: item.quantity,
+                imagen: item.product.img?.[0] || undefined,
+            }));
+        },
+        []
+    );
+
+    // ============ ACCIONES ============
 
     const goToStep = useCallback((step: PaymentStep) => {
         dispatch({ type: "SET_STEP", payload: step });
@@ -121,71 +151,49 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({
     const nextStep = useCallback(() => {
         const currentIndex = PAYMENT_STEPS.indexOf(state.currentStep);
         if (currentIndex < PAYMENT_STEPS.length - 1) {
-            const nextStep = PAYMENT_STEPS[currentIndex + 1];
-            dispatch({ type: "SET_STEP", payload: nextStep });
+            dispatch({
+                type: "SET_STEP",
+                payload: PAYMENT_STEPS[currentIndex + 1],
+            });
         }
     }, [state.currentStep]);
 
     const previousStep = useCallback(() => {
         const currentIndex = PAYMENT_STEPS.indexOf(state.currentStep);
         if (currentIndex > 0) {
-            const prevStep = PAYMENT_STEPS[currentIndex - 1];
-            dispatch({ type: "SET_STEP", payload: prevStep });
+            dispatch({
+                type: "SET_STEP",
+                payload: PAYMENT_STEPS[currentIndex - 1],
+            });
         }
     }, [state.currentStep]);
 
-    // ============ INICIALIZACIÓN DEL PAGO ============
-
     const initializePayment = useCallback(
-        (cartItems?: PaymentItem[]) => {
+        (cartItems: PaymentItem[]) => {
             try {
-                console.log("🔧 initializePayment llamado con:", {
-                    cartItemsProvided: !!cartItems,
-                    cartItemsLength: cartItems?.length,
-                    contextCartItems: cart.items.length,
-                });
+                // Convertir los items del carrito al formato correcto
+                const paymentItems = convertToPaymentItems(cartItems);
 
-                // Convertir items del carrito a PaymentItems si no se proporcionan
-                const items =
-                    cartItems ||
-                    cart.items.map((item) => ({
-                        product: item.product,
-                        quantity: item.quantity,
-                        unitPrice: item.product.price,
-                        totalPrice: item.product.price * item.quantity,
-                        vendor: item.product.vendedor,
-                    }));
-
-                console.log("🔧 Items para el pago:", items);
-
-                if (items.length === 0) {
-                    dispatch({
-                        type: "SET_ERROR",
-                        payload: "No hay productos en el carrito",
-                    });
-                    return;
-                }
-
+                // Crear el resumen de pago
                 const paymentSummary =
-                    paymentUtils.calculatePaymentSummary(items);
-                console.log("🔧 Payment summary calculado:", paymentSummary);
+                    paymentUtils.calculatePaymentSummary(paymentItems);
 
                 dispatch({
                     type: "INITIALIZE_PAYMENT",
                     payload: paymentSummary,
                 });
-            } catch (error: any) {
-                console.error("❌ Error en initializePayment:", error);
+            } catch (error) {
+                console.error("❌ Error inicializando pago:", error);
                 dispatch({
                     type: "SET_ERROR",
-                    payload: error.message || "Error inicializando el pago",
+                    payload:
+                        "Error inicializando el pago: " +
+                        (error as Error).message,
                 });
             }
         },
-        [cart.items]
+        [convertToPaymentItems]
     );
-
-    // ============ GESTIÓN DE DATOS ============
 
     const updateBillingInfo = useCallback((info: BillingInfo) => {
         dispatch({ type: "SET_BILLING_INFO", payload: info });
@@ -195,98 +203,92 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({
         dispatch({ type: "SELECT_PAYMENT_METHOD", payload: methodId });
     }, []);
 
-    const setError = useCallback((error: string | null) => {
-        dispatch({ type: "SET_ERROR", payload: error });
-    }, []);
-
-    // ============ PROCESAMIENTO DEL PAGO ============
-
-    const processPayment = useCallback(async () => {
-        if (
-            !state.paymentSummary ||
-            !state.billingInfo ||
-            !state.selectedPaymentMethod
-        ) {
-            dispatch({
-                type: "SET_ERROR",
-                payload: "Faltan datos para procesar el pago",
-            });
-            return;
-        }
-
-        dispatch({ type: "SET_PROCESSING", payload: true });
-
-        try {
-            // Crear PaymentIntents para cada vendedor
-            const response = await paymentService.createPaymentIntents(
-                state.paymentSummary,
-                state.billingInfo
-            );
-
-            // En un caso real, aquí procesarías cada PaymentIntent con Stripe
-            // Por ahora, simularemos que todos los pagos son exitosos
-            console.log("🔧 PaymentIntents creados (simulado):", response);
-
-            // Simular procesamiento de pagos
-            const paymentResults = response.paymentIntents.map((intent) => ({
-                vendorId: intent.vendorId,
-                paymentIntentId: intent.paymentIntentId,
-                status: "succeeded",
-            }));
-
-            // Confirmar pagos con el backend
-            const confirmResponse = await paymentService.confirmPayments(
-                response.orderId,
-                paymentResults
-            );
-
-            if (confirmResponse.success) {
-                // Marcar como completado ANTES de limpiar el carrito
+    // ✅ CORREGIDO: processPayment ahora tiene el tipo correcto
+    const processPayment = useCallback(
+        async (userData: UserPaymentData) => {
+            if (!state.paymentSummary || !state.billingInfo) {
                 dispatch({
-                    type: "SET_COMPLETED",
-                    payload: { orderId: confirmResponse.orderId },
+                    type: "SET_ERROR",
+                    payload: "Faltan datos para procesar el pago",
+                });
+                return null;
+            }
+
+            dispatch({ type: "SET_PROCESSING", payload: true });
+
+            try {
+                // ✅ VALIDACIÓN: Asegurar que tenemos email
+                if (!userData.email || typeof userData.email !== "string") {
+                    throw new Error(
+                        `Email del usuario no es válido: ${userData.email}`
+                    );
+                }
+
+                // Obtener todos los items del resumen de pago
+                const allItems: PaymentItem[] = [];
+                state.paymentSummary.vendorGroups.forEach((group) => {
+                    allItems.push(...group.items);
                 });
 
-                // Limpiar carrito después del pago exitoso (pero mantenemos el contexto de pago)
-                await cart.clearCart();
+                // Convertir los items de pago a productos de pedido
+                const productos = convertToProductoPedido(allItems);
 
-                console.log(
-                    "✅ Pago completado exitosamente. Orden:",
-                    confirmResponse.orderId
+                // Preparar la request para crear el pedido
+                const pedidoRequest: CrearPedidoRequest = {
+                    total: state.paymentSummary.totalAmount,
+                    tipoComprador: userData.role,
+                    compradorId: 0, // ✅ TEMPORAL: Mantener por compatibilidad, pero no se usará
+                    compradorNombre: userData.nombre,
+                    compradorEmail: userData.email, // ✅ PRINCIPAL: Email como identificador único
+                    cantidadProductos: state.paymentSummary.totalItems,
+                    direccionEntrega:
+                        state.billingInfo.shippingAddress.address1,
+                    ciudadEntrega: state.billingInfo.shippingAddress.city,
+                    codigoPostalEntrega:
+                        state.billingInfo.shippingAddress.postalCode,
+                    telefonoEntrega: state.billingInfo.phone,
+                    productos: productos,
+                };
+
+                // ✅ DEBUGGING: Verificar token antes de enviar
+                await pedidosService.debugToken();
+
+                // Llamar al servicio de pedidos para crear el pedido
+                const pedidoCreado = await pedidosService.crearPedido(
+                    pedidoRequest
                 );
-            } else {
-                throw new Error(
-                    confirmResponse.message || "Error confirmando el pago"
-                );
+
+                // Marcar como completado
+                dispatch({
+                    type: "SET_COMPLETED",
+                    payload: { orderId: pedidoCreado.numeroPedido },
+                });
+
+                return pedidoCreado;
+            } catch (error) {
+                console.error("❌ Error procesando pago:", error);
+                dispatch({
+                    type: "SET_ERROR",
+                    payload:
+                        (error as Error).message || "Error procesando el pago",
+                });
+                return null;
             }
-        } catch (error: any) {
-            dispatch({
-                type: "SET_ERROR",
-                payload: error.message || "Error procesando el pago",
-            });
-        }
-    }, [
-        state.paymentSummary,
-        state.billingInfo,
-        state.selectedPaymentMethod,
-        cart,
-    ]);
-
-    // ============ CONFIRMACIÓN ESPECÍFICA DE STRIPE ============
-
-    const confirmPayment = useCallback(
-        async (paymentData: any) => {
-            // Esta función se usaría cuando integremos Stripe Elements completamente
-            // Por ahora, redirige a processPayment
-            await processPayment();
         },
-        [processPayment]
+        [state.paymentSummary, state.billingInfo, convertToProductoPedido]
     );
 
-    // ============ RESET ============
+    const confirmPayment = useCallback(async (paymentData: any) => {
+        // Esta función se mantiene para compatibilidad
+        return null;
+    }, []);
 
     const reset = useCallback(() => {
         dispatch({ type: "RESET" });
+    }, []);
+
+    const setError = useCallback((error: string | null) => {
+        dispatch({ type: "SET_ERROR", payload: error });
     }, []);
 
     // ============ VALOR DEL CONTEXTO ============
@@ -310,16 +312,16 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({
             {children}
         </PaymentContext.Provider>
     );
-};
+}
 
 // ============ HOOK ============
 
-export const usePayment = (): PaymentContextType => {
+export function usePayment(): PaymentContextType {
     const context = useContext(PaymentContext);
-    if (context === undefined) {
-        throw new Error("usePayment must be used within a PaymentProvider");
+    if (!context) {
+        throw new Error("usePayment debe usarse dentro de PaymentProvider");
     }
     return context;
-};
+}
 
 export default PaymentContext;

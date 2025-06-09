@@ -45,7 +45,7 @@ export interface ApiCategory {
     imagen: string | null;
     categoriaPadre: ApiCategory | null;
     subcategorias: ApiCategory[];
-    productos?: ApiProduct[]; // Opcional, dependiendo del endpoint
+    productos?: ApiProduct[];
 }
 
 export interface ApiCart {

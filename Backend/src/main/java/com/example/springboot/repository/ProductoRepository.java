@@ -7,5 +7,4 @@ import com.example.springboot.model.Producto;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     Producto findByNombre(String nombre);
-
-}
+ }

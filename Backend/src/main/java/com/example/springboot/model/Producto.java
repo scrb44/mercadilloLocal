@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,14 +20,17 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String descripcion;
     private BigDecimal precio;
     private String nombre;
+
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String imagen;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "productos")
-    private List<Comprador> compradores;  // Relación muchos a muchos con Comprador
+    private List<Comprador> compradores  = new ArrayList<>(); // Relación muchos a muchos con Comprador
 
     @ManyToMany
     @JoinTable(

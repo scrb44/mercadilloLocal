@@ -1,4 +1,4 @@
-// src/contexts/municipioContext.tsx - OPTIMIZADO PARA EVITAR RE-RENDERS
+// src/contexts/municipioContext.tsx - ACTUALIZADO para cargar desde API
 
 import React, {
     createContext,
@@ -9,6 +9,7 @@ import React, {
     useMemo,
     type ReactNode,
 } from "react";
+import { getAllLocalidades } from "../services/localidadesService";
 
 // ============ INTERFACES ============
 export interface MunicipioInterface {
@@ -26,131 +27,144 @@ interface MunicipioContextType {
     clearMunicipio: () => void;
     hasMunicipio: boolean;
     isReady: boolean;
+    refetchMunicipios: () => Promise<void>;
 }
 
-// ============ DATOS DE MUNICIPIOS DE MÁLAGA (MEMO) ============
-const MUNICIPIOS_MALAGA: MunicipioInterface[] = [
-    { id: 1, nombre: "Málaga", provincia: "Málaga" },
-    { id: 2, nombre: "Marbella", provincia: "Málaga" },
-    { id: 3, nombre: "Fuengirola", provincia: "Málaga" },
-    { id: 4, nombre: "Torremolinos", provincia: "Málaga" },
-    { id: 5, nombre: "Benalmádena", provincia: "Málaga" },
-    { id: 6, nombre: "Estepona", provincia: "Málaga" },
-    { id: 7, nombre: "Mijas", provincia: "Málaga" },
-    { id: 8, nombre: "Vélez-Málaga", provincia: "Málaga" },
-    { id: 9, nombre: "Antequera", provincia: "Málaga" },
-    { id: 10, nombre: "Ronda", provincia: "Málaga" },
-    { id: 11, nombre: "Nerja", provincia: "Málaga" },
-    { id: 12, nombre: "Rincón de la Victoria", provincia: "Málaga" },
-    { id: 13, nombre: "Coín", provincia: "Málaga" },
-    { id: 14, nombre: "Alhaurín de la Torre", provincia: "Málaga" },
-    { id: 15, nombre: "Alhaurín el Grande", provincia: "Málaga" },
-    { id: 16, nombre: "Cártama", provincia: "Málaga" },
-    { id: 17, nombre: "Manilva", provincia: "Málaga" },
-    { id: 18, nombre: "Casares", provincia: "Málaga" },
-    { id: 19, nombre: "Ojén", provincia: "Málaga" },
-    { id: 20, nombre: "Istán", provincia: "Málaga" },
-];
-
-// ============ CACHE OPTIMIZADO ============
-const CACHE_KEY = "mercadillo-municipio-selected";
-
-function getMunicipioFromCache(): MunicipioInterface | null {
-    try {
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-            const parsed = JSON.parse(cached);
-            if (parsed && parsed.id && parsed.nombre && parsed.provincia) {
-                return parsed;
-            }
-        }
-    } catch (error) {
-        console.warn("Error leyendo municipio del cache:", error);
-        try {
-            localStorage.removeItem(CACHE_KEY);
-        } catch (e) {
-            // Ignore
-        }
-    }
-    return null;
-}
-
-function saveMunicipioToCache(municipio: MunicipioInterface): void {
-    try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(municipio));
-    } catch (error) {
-        console.warn("Error guardando municipio en cache:", error);
-    }
-}
-
-function clearMunicipioFromCache(): void {
-    try {
-        localStorage.removeItem(CACHE_KEY);
-    } catch (error) {
-        console.warn("Error limpiando municipio del cache:", error);
-    }
-}
-
-// ============ CONTEXT ============
+// ============ CONTEXTO ============
 const MunicipioContext = createContext<MunicipioContextType | undefined>(
     undefined
 );
 
-// ============ PROVIDER OPTIMIZADO ============
+// ============ CONSTANTES ============
+const STORAGE_KEY = "mercadillo-municipio";
+
+// ============ PROVIDER ============
 interface MunicipioProviderProps {
     children: ReactNode;
 }
 
-export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
-    children,
-}) => {
+export function MunicipioProvider({ children }: MunicipioProviderProps) {
+    // Estados principales
     const [municipio, setMunicipioState] = useState<MunicipioInterface | null>(
-        () => {
-            // Inicialización inmediata desde cache
-            return getMunicipioFromCache();
-        }
+        null
     );
-
-    const [loading, setLoading] = useState(false); // Cambiado: sin loading inicial
-    const [isReady, setIsReady] = useState(true); // Cambiado: inmediatamente listo
+    const [municipios, setMunicipios] = useState<MunicipioInterface[]>([]);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // ============ FUNCIONES MEMORIZADAS ============
-    const setMunicipio = useCallback((newMunicipio: MunicipioInterface) => {
-        setMunicipioState(newMunicipio);
-        saveMunicipioToCache(newMunicipio);
-        setError(null);
+    // ============ FUNCIONES DE MUNICIPIOS ============
+
+    /**
+     * Carga las localidades desde la API
+     */
+    const loadMunicipios = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // Cargar desde la API
+            const localidades = await getAllLocalidades();
+            setMunicipios(localidades);
+        } catch (err: any) {
+            setError(err.message || "Error al cargar las localidades");
+
+            // En caso de error, usar datos por defecto (opcional)
+            // setMunicipios(MUNICIPIOS_MALAGA_FALLBACK);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
+    /**
+     * Función pública para recargar municipios
+     */
+    const refetchMunicipios = useCallback(async () => {
+        await loadMunicipios();
+    }, [loadMunicipios]);
+
+    // ============ FUNCIONES DE MUNICIPIO SELECCIONADO ============
+
+    /**
+     * Establece el municipio seleccionado y lo guarda en localStorage
+     */
+    const setMunicipio = useCallback((municipio: MunicipioInterface) => {
+        setMunicipioState(municipio);
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(municipio));
+        } catch (error) {
+            console.warn(
+                "⚠️ Error guardando municipio en localStorage:",
+                error
+            );
+        }
+    }, []);
+
+    /**
+     * Limpia el municipio seleccionado
+     */
     const clearMunicipio = useCallback(() => {
         setMunicipioState(null);
-        clearMunicipioFromCache();
-        setError(null);
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+        } catch (error) {
+            console.warn(
+                "⚠️ Error limpiando municipio de localStorage:",
+                error
+            );
+        }
     }, []);
 
-    // ============ VALORES COMPUTADOS MEMOIZADOS ============
-    const hasMunicipio = useMemo(() => municipio !== null, [municipio]);
+    // ============ EFECTOS ============
 
-    // ============ VALOR DEL CONTEXT MEMOIZADO ============
-    const contextValue = useMemo<MunicipioContextType>(
+    /**
+     * Efecto inicial: cargar municipios de la API y municipio guardado del localStorage
+     */
+    useEffect(() => {
+        // Cargar municipio guardado del localStorage
+        try {
+            const savedMunicipio = localStorage.getItem(STORAGE_KEY);
+            if (savedMunicipio) {
+                const parsedMunicipio = JSON.parse(savedMunicipio);
+                setMunicipioState(parsedMunicipio);
+            }
+        } catch (error) {
+            console.warn(
+                "⚠️ Error cargando municipio desde localStorage:",
+                error
+            );
+        }
+
+        // Cargar municipios desde la API
+        loadMunicipios();
+    }, [loadMunicipios]);
+
+    // ============ VALORES COMPUTADOS ============
+    const hasMunicipio = useMemo(() => municipio !== null, [municipio]);
+    const isReady = useMemo(() => !loading && !error, [loading, error]);
+
+    // ============ VALOR DEL CONTEXTO ============
+    const contextValue = useMemo(
         () => ({
             municipio,
-            municipios: MUNICIPIOS_MALAGA, // Lista estática, no necesita estado
+            municipios,
             loading,
             error,
             setMunicipio,
             clearMunicipio,
             hasMunicipio,
             isReady,
+            refetchMunicipios,
         }),
         [
             municipio,
+            municipios,
             loading,
             error,
             setMunicipio,
             clearMunicipio,
             hasMunicipio,
             isReady,
+            refetchMunicipios,
         ]
     );
 
@@ -159,15 +173,15 @@ export const MunicipioProvider: React.FC<MunicipioProviderProps> = ({
             {children}
         </MunicipioContext.Provider>
     );
-};
+}
 
-// ============ HOOK OPTIMIZADO ============
-export const useMunicipio = (): MunicipioContextType => {
+// ============ HOOK ============
+export function useMunicipio() {
     const context = useContext(MunicipioContext);
     if (context === undefined) {
         throw new Error("useMunicipio must be used within a MunicipioProvider");
     }
     return context;
-};
+}
 
 export default MunicipioContext;

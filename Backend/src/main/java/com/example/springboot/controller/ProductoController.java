@@ -2,19 +2,32 @@ package com.example.springboot.controller;
 
 import com.example.springboot.model.Producto;
 import com.example.springboot.service.ProductoService;
+import com.example.springboot.security.JwtUtil;
+import com.example.springboot.service.VendedorService;
+import com.example.springboot.model.Vendedor;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/productos")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/producto")
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class ProductoController {
 
     private final ProductoService productoService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private VendedorService vendedorService;
 
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
@@ -42,18 +55,120 @@ public class ProductoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Producto> obtenerProducto(@PathVariable Long id) {
-        Producto producto = productoService.getProducto(id);
-        if (producto != null) {
-            return ResponseEntity.ok(producto);
-        } else {
+        try {
+            Producto producto = productoService.getProducto(id);
+            if (producto != null) {
+                return ResponseEntity.ok(producto);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<Producto> agregarProducto(@RequestBody Producto producto) {
-        Producto nuevoProducto = productoService.agregarProducto(producto);
-        return ResponseEntity.ok(nuevoProducto);
+    public ResponseEntity<?> agregarProducto(@RequestBody Producto producto, HttpServletRequest request) {
+        try {
+            // Verificar que hay autenticación básica
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("mensaje", "Token requerido"));
+            }
+
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);
+
+            // Verificar que es vendedor
+            if (!"VENDEDOR".equals(role)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Collections.singletonMap("mensaje", "Solo vendedores pueden crear productos"));
+            }
+
+            // 🔧 BUSCAR VENDEDOR POR EMAIL Y ASIGNARLO AL PRODUCTO
+            Vendedor vendedor = vendedorService.buscarPorEmail(email);
+            if (vendedor == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Collections.singletonMap("mensaje", "Vendedor no encontrado"));
+            }
+
+            // Asignar el vendedor al producto
+            producto.setVendedor(vendedor);
+
+            // Crear el producto
+            Producto nuevoProducto = productoService.agregarProducto(producto);
+
+            return ResponseEntity.ok(nuevoProducto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("mensaje", "Error interno del servidor: " + e.getMessage()));
+        }
+    }
+
+    // 🔧 MÉTODO PUT CORREGIDO
+    @PutMapping("/{id}")
+    public ResponseEntity<?> actualizarProducto(
+            @PathVariable Long id,
+            @RequestBody Producto producto,
+            HttpServletRequest request) {
+
+        try {
+            // Verificar token de autorización
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Collections.singletonMap("mensaje", "Token requerido"));
+            }
+
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractUsername(token);
+            String role = jwtUtil.extractRole(token);
+
+            System.out.println("🔧 Usuario del token: " + email + ", Rol: " + role);
+
+            if (!"VENDEDOR".equals(role)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Collections.singletonMap("mensaje", "Solo vendedores pueden actualizar productos"));
+            }
+
+            // Verificar que el producto existe
+            Producto productoExistente = productoService.getProducto(id);
+            if (productoExistente == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Verificar que el producto pertenece al vendedor
+            if (productoExistente.getVendedor() == null ||
+                    !email.equals(productoExistente.getVendedor().getEmail())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Collections.singletonMap("mensaje", "No tienes permisos para actualizar este producto"));
+            }
+
+            // Actualizar solo los campos permitidos, manteniendo el vendedor original
+            productoExistente.setNombre(producto.getNombre());
+            productoExistente.setDescripcion(producto.getDescripcion());
+            productoExistente.setPrecio(producto.getPrecio());
+            productoExistente.setImagen(producto.getImagen());
+
+            // Actualizar categorías si se proporcionan
+            if (producto.getCategorias() != null) {
+                productoExistente.setCategorias(producto.getCategorias());
+            }
+
+            // Guardar producto actualizado
+            Producto productoActualizado = productoService.actualizarProducto(productoExistente);
+
+            return ResponseEntity.ok(productoActualizado);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("mensaje", "Error interno del servidor: " + e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
@@ -61,6 +176,4 @@ public class ProductoController {
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

@@ -95,6 +95,31 @@
     transform: translateY(-1px);
 }
 
+/* ✅ NUEVO: Enlace especial para "Mis Compras" */
+.page-header__purchases-link {
+    color: #7c3aed;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: rgba(124, 58, 237, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.page-header__purchases-link:hover {
+    color: #6d28d9;
+    background: rgba(124, 58, 237, 0.2);
+    border-color: rgba(124, 58, 237, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+}
+
 /* Enlace especial para vendedores */
 .page-header__vendor-link {
     color: #059669;
@@ -278,7 +303,8 @@
         order: -1; /* Mostrar el municipio primero en móvil */
     }
 
-    .page-header__vendor-link {
+    .page-header__vendor-link,
+    .page-header__purchases-link {
         font-size: 0.9rem;
         padding: 6px 10px;
     }
@@ -309,7 +335,8 @@
         justify-content: center;
     }
 
-    .page-header__vendor-link {
+    .page-header__vendor-link,
+    .page-header__purchases-link {
         width: 100%;
         justify-content: center;
     }

@@ -1,4 +1,4 @@
-// src/types/paymentTypes.ts - Tipos específicos para pagos
+// src/types/paymentTypes.ts - Tipos específicos para pagos ACTUALIZADOS
 
 import { type ProductInterface, type VendedorInterface } from "./types";
 
@@ -94,7 +94,15 @@ export interface PaymentState {
     orderId?: string;
 }
 
-// Contexto del proceso de pago
+// ✅ TIPOS PARA LOS DATOS DEL USUARIO
+export interface UserPaymentData {
+    id: number;
+    role: string;
+    nombre: string;
+    email: string;
+}
+
+// Contexto del proceso de pago - ✅ ACTUALIZADO
 export interface PaymentContextType {
     state: PaymentState;
 
@@ -108,9 +116,9 @@ export interface PaymentContextType {
     updateBillingInfo: (info: BillingInfo) => void;
     selectPaymentMethod: (methodId: string) => void;
 
-    // Procesamiento
-    processPayment: () => Promise<void>;
-    confirmPayment: (paymentData: any) => Promise<void>;
+    // ✅ ACTUALIZADO: processPayment ahora recibe userData y retorna el pedido creado o null
+    processPayment: (userData: UserPaymentData) => Promise<any | null>;
+    confirmPayment: (paymentData: any) => Promise<any | null>;
 
     // Utilidades
     reset: () => void;
@@ -208,7 +216,7 @@ export interface UsePaymentReturn {
         previousStep: () => void;
         updateBillingInfo: (info: BillingInfo) => void;
         selectPaymentMethod: (methodId: string) => void;
-        processPayment: () => Promise<void>;
+        processPayment: (userData: UserPaymentData) => Promise<any | null>;
         reset: () => void;
     };
 }

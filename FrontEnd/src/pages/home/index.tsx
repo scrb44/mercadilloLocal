@@ -1,7 +1,9 @@
-// src/pages/home/index.tsx - SIN FLASH/REPINTADO
+// src/pages/home/index.tsx - ACTUALIZADO con filtro de localidad
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import mercadilloService from "../../services";
+import { categoryService } from "../../services/categoriesService";
+import { productsService } from "../../services/productService";
+import { useMunicipio } from "../../contexts/municipioContext";
 import {
     type CategoryInterface,
     type ProductInterface,
@@ -13,6 +15,9 @@ import MunicipioIndicator from "../../componentes/municipioIndicator";
 import classes from "./home.module.css";
 
 function Home() {
+    // ============ HOOKS ============
+    const { municipio } = useMunicipio();
+
     // ============ ESTADO LOCAL ============
     const [categoriasPrincipales, setCategoriasPrincipales] = useState<
         CategoryInterface[]
@@ -30,88 +35,107 @@ function Home() {
     const [showProducts, setShowProducts] = useState(false);
     const hasInitialized = useRef(false);
 
-    // ============ CARGA INICIAL SIN FLASH ============
-    useEffect(() => {
-        // Evitar doble ejecución en modo desarrollo
-        if (hasInitialized.current) return;
-        hasInitialized.current = true;
+    // ============ CARGA DE CATEGORÍAS CON LOCALIDAD ============
+    const loadCategories = useCallback(async () => {
+        try {
+            setCategoriesLoading(true);
+            setCategoriesError(null);
 
-        const loadInitialData = async () => {
-            try {
-                setCategoriesLoading(true);
-                setCategoriesError(null);
+            let allCategories: CategoryInterface[];
 
-                // Cargar categorías principales
-                const allCategories = await mercadilloService.getCategories();
-                const mainCategories = allCategories.filter(
-                    (cat) => !cat.fatherId
+            // Si hay municipio seleccionado, usar filtro de localidad
+            if (municipio?.id) {
+                allCategories = await categoryService.getCategoriesByLocalidad(
+                    municipio.id
                 );
-
-                // Actualizar estado de una vez para evitar re-renders
-                setCategoriasPrincipales(mainCategories);
-                setCategoriesLoading(false);
-                setInitialLoadComplete(true);
-
-                // Pequeño delay antes de mostrar productos para suavizar la transición
-                setTimeout(() => {
-                    setShowProducts(true);
-                    loadPopularProducts();
-                }, 200);
-            } catch (err: any) {
-                setCategoriesError(err.message || "Error al cargar categorías");
-                setCategoriesLoading(false);
-                setInitialLoadComplete(true);
+            } else {
+                allCategories = await categoryService.getAllCategories();
             }
-        };
 
-        loadInitialData();
-    }, []); // Sin dependencias para evitar re-ejecuciones
+            // Filtrar solo categorías principales (sin padre)
+            const mainCategories = allCategories.filter((cat) => !cat.fatherId);
 
+            setCategoriasPrincipales(mainCategories);
+        } catch (err: any) {
+            console.error("❌ Error cargando categorías:", err);
+            setCategoriesError(err.message || "Error al cargar categorías");
+        } finally {
+            setCategoriesLoading(false);
+        }
+    }, [municipio?.id, municipio?.nombre]);
+
+    // ============ CARGA DE PRODUCTOS CON LOCALIDAD ============
     const loadPopularProducts = useCallback(async () => {
         try {
             setProductsLoading(true);
             setProductsError(null);
 
-            const allProducts = await mercadilloService.getProducts();
+            let allProducts: ProductInterface[];
+
+            // Si hay municipio seleccionado, usar filtro de localidad
+            if (municipio?.id) {
+                allProducts = await productsService.getProductsByLocalidad(
+                    municipio.id
+                );
+            } else {
+                allProducts = await productsService.getProducts();
+            }
+
+            // Tomar los primeros 6 como "populares"
             const popularProducts = allProducts.slice(0, 6);
             setProductosPopulares(popularProducts);
         } catch (err: any) {
+            console.error("❌ Error cargando productos:", err);
             setProductsError(
                 err.message || "Error al cargar productos populares"
             );
         } finally {
             setProductsLoading(false);
         }
-    }, []);
+    }, [municipio?.id, municipio?.nombre]);
+
+    // ============ CARGA INICIAL ============
+    useEffect(() => {
+        // Resetear el flag cuando cambia el municipio
+        hasInitialized.current = false;
+        setInitialLoadComplete(false);
+        setShowProducts(false);
+    }, [municipio?.id]);
+
+    useEffect(() => {
+        // Evitar doble ejecución en modo desarrollo
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
+
+        const loadInitialData = async () => {
+            // Cargar categorías primero
+            await loadCategories();
+            setInitialLoadComplete(true);
+
+            // Pequeño delay antes de mostrar productos para suavizar la transición
+            setTimeout(() => {
+                setShowProducts(true);
+                loadPopularProducts();
+            }, 200);
+        };
+
+        loadInitialData();
+    }, [loadCategories, loadPopularProducts]);
 
     // ============ HANDLERS ============
     const handleCategoriesRetry = useCallback(() => {
-        setCategoriesError(null);
-        setCategoriesLoading(true);
-
-        mercadilloService
-            .getCategories()
-            .then((allCategories) => {
-                const mainCategories = allCategories.filter(
-                    (cat) => !cat.fatherId
-                );
-                setCategoriasPrincipales(mainCategories);
-            })
-            .catch((err) =>
-                setCategoriesError(err.message || "Error al cargar categorías")
-            )
-            .finally(() => setCategoriesLoading(false));
-    }, []);
+        loadCategories();
+    }, [loadCategories]);
 
     const handleProductsRetry = useCallback(() => {
         loadPopularProducts();
     }, [loadPopularProducts]);
 
     const handleAddToCart = useCallback((product: ProductInterface) => {
-        console.log("Producto añadido desde Home:", product.name);
+        // TODO: Implementar añadir al carrito
     }, []);
 
-    // ============ RENDER CON FADE-IN PROGRESIVO ============
+    // ============ RENDER CON INFORMACIÓN DE LOCALIDAD ============
     return (
         <div className={classes.home}>
             <Header />
@@ -122,22 +146,37 @@ function Home() {
                     <div
                         className={`${classes.welcomeSection} ${classes.fadeInInitial}`}
                     >
-                        <h1 className={classes.welcomeTitle}>
-                            Bienvenido a Mercadillo Local
-                        </h1>
-                        <p className={classes.welcomeSubtitle}>
-                            Explora productos y tiendas cerca de ti
-                        </p>
+                        <div className={classes.welcomeContent}>
+                            <div className={classes.welcomeText}>
+                                <h1 className={classes.welcomeTitle}>
+                                    {municipio
+                                        ? `Bienvenido a Mercadillo Local en ${municipio.nombre}`
+                                        : "Bienvenido a Mercadillo Local"}
+                                </h1>
+                                <p className={classes.welcomeSubtitle}>
+                                    {municipio
+                                        ? `Explora productos y tiendas de ${municipio.nombre}, ${municipio.provincia}`
+                                        : "Selecciona tu municipio para ver productos cerca de ti"}
+                                </p>
 
-                        {/* Indicador de municipio en banner */}
-                        <MunicipioIndicator
-                            style="banner"
-                            size="large"
-                            showChangeButton={true}
-                        />
+                                <MunicipioIndicator
+                                    style="banner"
+                                    size="large"
+                                    showChangeButton={true}
+                                />
+                            </div>
+
+                            <div className={classes.welcomeImageWrapper}>
+                                <img
+                                    src="https://sh-assets.holidu.com/imagecache/blog-photos/16902_Fill_670_0.jpg"
+                                    alt="Mercado local"
+                                    className={classes.welcomeImage}
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Sección de categorías - fade in cuando esté lista */}
+                    {/* Sección de categorías */}
                     <section
                         className={`${classes.categoriesSection} ${
                             initialLoadComplete
@@ -147,20 +186,57 @@ function Home() {
                     >
                         <div className={classes.sectionHeader}>
                             <h2 className={classes.sectionTitle}>
-                                Categorías Principales
+                                {municipio
+                                    ? `Categorías en ${municipio.nombre}`
+                                    : "Categorías Principales"}
                             </h2>
                             <p className={classes.sectionSubtitle}>
-                                Encuentra productos organizados por categorías
+                                {municipio
+                                    ? `Encuentra productos disponibles en ${municipio.nombre}`
+                                    : "Encuentra productos organizados por categorías"}
                             </p>
                         </div>
 
-                        <CategoryList
-                            categories={categoriasPrincipales}
-                            loading={categoriesLoading}
-                            error={categoriesError}
-                            onRetry={handleCategoriesRetry}
-                            showSubcategories={false}
-                        />
+                        {categoriesError ? (
+                            <div className={classes.errorState}>
+                                <p>❌ {categoriesError}</p>
+                                <button onClick={handleCategoriesRetry}>
+                                    Reintentar
+                                </button>
+                            </div>
+                        ) : categoriesLoading ? (
+                            <div className={classes.loadingState}>
+                                <p>Cargando categorías...</p>
+                            </div>
+                        ) : categoriasPrincipales.length === 0 ? (
+                            <div className={classes.emptyState}>
+                                <p>
+                                    {municipio
+                                        ? `No hay categorías disponibles en ${municipio.nombre}`
+                                        : "No hay categorías disponibles"}
+                                </p>
+                                {municipio && (
+                                    <p className={classes.emptyStateHint}>
+                                        Intenta seleccionar otro municipio o
+                                        verifica que haya productos en esta
+                                        zona.
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className={classes.horizontalScroll}>
+                                {categoriasPrincipales.map((categoria) => (
+                                    <CategoryList
+                                        key={categoria.id}
+                                        categories={[categoria]}
+                                        loading={false}
+                                        error={null}
+                                        onRetry={() => {}}
+                                        showSubcategories={false}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </section>
 
                     {/* Sección de productos - fade in progresivo */}
@@ -173,42 +249,51 @@ function Home() {
                     >
                         <div className={classes.sectionHeader}>
                             <h2 className={classes.sectionTitle}>
-                                Productos Más Vendidos
+                                {municipio
+                                    ? `Productos Destacados en ${municipio.nombre}`
+                                    : "Productos Más Vendidos"}
                             </h2>
                             <p className={classes.sectionSubtitle}>
-                                Los favoritos de tu zona
+                                {municipio
+                                    ? `Los favoritos de ${municipio.nombre}`
+                                    : "Los favoritos de tu zona"}
                             </p>
                         </div>
 
-                        {/* Mostrar placeholder solo si no hay productos y no hay error */}
-                        {!productsLoading &&
-                        productosPopulares.length === 0 &&
-                        !productsError ? (
-                            <div className={classes.productsPlaceholder}>
-                                <div className={classes.placeholderGrid}>
-                                    {[...Array(6)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={classes.placeholderCard}
-                                        >
-                                            <div
-                                                className={
-                                                    classes.placeholderImage
-                                                }
-                                            ></div>
-                                            <div
-                                                className={
-                                                    classes.placeholderText
-                                                }
-                                            ></div>
-                                            <div
-                                                className={
-                                                    classes.placeholderPrice
-                                                }
-                                            ></div>
-                                        </div>
-                                    ))}
+                        {/* Info sobre la localidad */}
+                        {municipio && (
+                            <div className={classes.localidadInfo}>
+                                <div className={classes.localidadBadge}>
+                                    📍 Mostrando productos de {municipio.nombre}
+                                    , {municipio.provincia}
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Estados de productos */}
+                        {productsError ? (
+                            <div className={classes.errorState}>
+                                <p>❌ {productsError}</p>
+                                <button onClick={handleProductsRetry}>
+                                    Reintentar
+                                </button>
+                            </div>
+                        ) : !productsLoading &&
+                          productosPopulares.length === 0 &&
+                          !productsError ? (
+                            <div className={classes.emptyState}>
+                                <p>
+                                    {municipio
+                                        ? `No hay productos disponibles en ${municipio.nombre}`
+                                        : "No hay productos disponibles"}
+                                </p>
+                                {municipio && (
+                                    <p className={classes.emptyStateHint}>
+                                        Intenta seleccionar otro municipio o
+                                        verifica que haya vendedores en esta
+                                        zona.
+                                    </p>
+                                )}
                             </div>
                         ) : (
                             <ProductList

@@ -1,4 +1,4 @@
-// src/types/types.ts - ACTUALIZADO con campos de vendedor
+// src/types/types.ts - ACTUALIZADO con SearchFiltersWithLocalidad
 
 // ============ INTERFACES DE DOMINIO ============
 export interface VendedorInterface {
@@ -21,6 +21,12 @@ export interface CategoryInterface {
     fatherId?: number;
 }
 
+export interface Localidad {
+    id: number;
+    nombre: string;
+    provincia: string | null;
+}
+
 export interface ProductInterface {
     id: number;
     name: string;
@@ -30,6 +36,7 @@ export interface ProductInterface {
     price: number;
     categories: CategoryInterface[];
     vendedor: VendedorInterface;
+    municipality: Localidad;
 }
 
 // ============ NUEVOS: INTERFACES PARA CRUD DE PRODUCTOS ============
@@ -163,12 +170,18 @@ export interface UserContextType {
     logout: () => void;
 }
 
+// ✅ ACTUALIZADO: Interfaces de filtros de búsqueda
 export interface SearchFiltersInterface {
     category?: number;
     vendor?: number;
     minPrice?: number;
     maxPrice?: number;
     query?: string;
+}
+
+// ✅ NUEVO: Interface extendida con localidad
+export interface SearchFiltersWithLocalidad extends SearchFiltersInterface {
+    localidad?: number;
 }
 
 // ============ INTERFACES DE API ACTUALIZADAS ============
@@ -232,34 +245,11 @@ export interface UseProductsReturn {
     retry: () => void;
 }
 
-export interface UseProductReturn {
-    producto: ProductInterface | null;
-    loading: boolean;
-    error: string | null;
-    retry: () => void;
-}
-
-export interface UseFormReturn<T> {
-    values: T;
-    errors: Partial<Record<keyof T, string>>;
-    handleChange: (name: keyof T, value: any) => void;
-    validate: () => boolean;
-    reset: () => void;
-    setErrors: (errors: Partial<Record<keyof T, string>>) => void;
-}
-
-// Hook específico para gestión de productos del vendedor
-export interface UseVendorProductsReturn {
-    products: ProductInterface[];
-    loading: boolean;
-    creating: boolean;
-    updating: boolean;
-    deleting: boolean;
-    error: string | null;
-
-    createProduct: (data: ProductFormData) => Promise<void>;
-    updateProduct: (id: number, data: ProductFormData) => Promise<void>;
-    deleteProduct: (id: number) => Promise<void>;
-    loadProducts: () => Promise<void>;
-    reset: () => void;
+// ✅ NUEVO: Hook para productos con filtros de localidad
+export interface UseProductsWithLocalidadReturn extends UseProductsReturn {
+    loadProductsByLocalidad: (
+        localidadId: number,
+        filters?: Omit<SearchFiltersWithLocalidad, "localidad">
+    ) => Promise<void>;
+    currentLocalidad: number | null;
 }

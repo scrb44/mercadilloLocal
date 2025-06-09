@@ -1,22 +1,25 @@
-// src/constants/index.ts - Constantes de la aplicación
+// src/constants/index.ts - Constantes de la aplicación COMPLETO
 
-// URLs y endpoints
+// URLs y endpoints - EXACTOS según el backend Spring Boot
 export const API_BASE_URL = "http://localhost:8080";
 
 export const ENDPOINTS = {
-    PRODUCTS: "/api/productos",
-    CATEGORIES: "/api/Categoria",
-    VENDORS: "/api/vendedores",
-    CART: "/api/carrito",
+    PRODUCTS: "/api/producto",
+    CATEGORIES: "/api/categoria",
+    VENDORS: "/api/vendedor", // CORREGIDO: era "vendedores" pero el backend usa "vendedor"
+    CART: "/api/carrito", // EXACTO según CarritoController
     AUTH: "/api/auth",
     USER: "/api/usuario",
-    PAYMENTS: "/api/payments", // NUEVO: Endpoints de pago
+    PAYMENTS: "/api/payments", // Para futuro uso
+    PEDIDOS: "/api/pedidos", // ✅ NUEVO: Para gestión de pedidos
+    LOCALIDADES: "/api/localidad/con-vendedores",
 } as const;
 
 // Rutas de la aplicación
 export const ROUTES = {
     HOME: "/",
-    WHO_WE_ARE: "/quienes-somos", 
+    WHO_WE_ARE: "/quienes-somos",
+    MUNICIPALITY_SELECTOR: "/seleccionar-municipio",
     LOGIN: "/login",
     REGISTER: "/registro",
     CART: "/carrito",
@@ -24,10 +27,15 @@ export const ROUTES = {
     PRODUCT: "/producto",
     PROFILE: "/perfil",
     ORDERS: "/pedidos",
-    CHECKOUT: "/checkout", // NUEVO
-    PAYMENT: "/pago", // NUEVO
-    PAYMENT_CONFIRMATION: "/pago/confirmacion", // NUEVO
-    VENDOR_PRODUCTS: "/mis-productos", // NUEVO: Ruta para gestión de productos de vendedores
+    MIS_COMPRAS: "/mis-compras", // ✅ NUEVO: Ruta para historial de compras
+    CHECKOUT: "/checkout",
+    PAYMENT: "/pago",
+    PAYMENT_CONFIRMATION: "/pago/confirmacion",
+
+    // Rutas de vendedores
+    VENDOR_PRODUCTS: "/mis-productos",
+    CREATE_PRODUCT: "/subir-producto",
+    EDIT_PRODUCT: "/editar-producto",
 } as const;
 
 // Configuración de cache
@@ -48,18 +56,32 @@ export const CACHE_PREFIXES = {
     SEARCH: "mercadillo-search-",
 } as const;
 
-// Mensajes de error
+// Mensajes de error - ACTUALIZADOS
 export const ERROR_MESSAGES = {
     GENERIC: "Ha ocurrido un error inesperado",
     NETWORK: "Error de conexión. Verifica tu internet",
     UNAUTHORIZED: "Debes iniciar sesión para continuar",
+    SESSION_EXPIRED: "Tu sesión ha expirado. Inicia sesión nuevamente",
+    FORBIDDEN: "No tienes permisos para realizar esta acción",
     NOT_FOUND: "El recurso solicitado no fue encontrado",
     VALIDATION: "Los datos ingresados no son válidos",
     SERVER: "Error en el servidor. Intenta más tarde",
-    VENDOR_ONLY: "Solo los vendedores pueden acceder a esta página", // NUEVO
+    VENDOR_ONLY: "Solo los vendedores pueden acceder a esta página",
+
+    // Errores específicos del carrito
+    CART_LOAD_ERROR: "Error al cargar el carrito",
+    CART_ADD_ERROR: "Error al añadir producto al carrito",
+    CART_REMOVE_ERROR: "Error al eliminar producto del carrito",
+    CART_UPDATE_ERROR: "Error al actualizar cantidad",
+    CART_CLEAR_ERROR: "Error al vaciar el carrito",
+
+    // ✅ NUEVOS: Errores específicos de pedidos
+    ORDER_CREATE_ERROR: "Error al crear el pedido",
+    ORDER_LOAD_ERROR: "Error al cargar pedidos",
+    ORDER_NOT_FOUND: "Pedido no encontrado",
 } as const;
 
-// Mensajes de éxito
+// Mensajes de éxito - ACTUALIZADOS
 export const SUCCESS_MESSAGES = {
     PRODUCT_ADDED: "Producto añadido al carrito",
     PRODUCT_REMOVED: "Producto eliminado del carrito",
@@ -67,9 +89,14 @@ export const SUCCESS_MESSAGES = {
     LOGIN_SUCCESS: "Sesión iniciada correctamente",
     REGISTER_SUCCESS: "Cuenta creada exitosamente",
     PROFILE_UPDATED: "Perfil actualizado correctamente",
-    PRODUCT_CREATED: "Producto creado exitosamente", // NUEVO
-    PRODUCT_UPDATED: "Producto actualizado correctamente", // NUEVO
-    PRODUCT_DELETED: "Producto eliminado correctamente", // NUEVO
+    PRODUCT_CREATED: "Producto creado exitosamente",
+    PRODUCT_UPDATED: "Producto actualizado correctamente",
+    PRODUCT_DELETED: "Producto eliminado correctamente",
+    QUANTITY_UPDATED: "Cantidad actualizada correctamente",
+
+    // ✅ NUEVOS: Mensajes de éxito para pedidos
+    ORDER_CREATED: "¡Pedido realizado exitosamente!",
+    PAYMENT_SUCCESS: "Pago procesado correctamente",
 } as const;
 
 // Configuración de la aplicación
@@ -85,11 +112,11 @@ export const APP_CONFIG = {
     DEBOUNCE_DELAY: 500,
 } as const;
 
-// Roles de usuario
+// Roles de usuario - EXACTOS según el backend
 export const USER_ROLES = {
-    USER: "user",
-    VENDOR: "VENDEDOR", // Actualizado para coincidir con el backend
-    ADMIN: "admin",
+    COMPRADOR: "COMPRADOR", // EXACTO según backend
+    VENDEDOR: "VENDEDOR", // EXACTO según backend
+    ADMIN: "ADMIN", // EXACTO según backend
 } as const;
 
 // Estados de pedido
@@ -99,6 +126,11 @@ export const ORDER_STATUS = {
     SHIPPED: "shipped",
     DELIVERED: "delivered",
     CANCELLED: "cancelled",
+
+    // ✅ NUEVOS: Estados específicos de pago
+    PAGADO: "PAGADO",
+    PENDIENTE: "PENDIENTE",
+    FALLIDO: "FALLIDO",
 } as const;
 
 // Métodos de pago
@@ -124,16 +156,16 @@ export const ANIMATIONS = {
     SLOW: 500,
 } as const;
 
-// Configuración de productos
+// Configuración de productos - AJUSTADA según backend
 export const PRODUCT_CONFIG = {
     MIN_PRICE: 0.01,
     MAX_PRICE: 99999.99,
     MAX_IMAGES: 10,
-    MAX_NAME_LENGTH: 100,
-    MAX_DESCRIPTION_LENGTH: 1000,
-    MIN_NAME_LENGTH: 3, // NUEVO
-    MIN_DESCRIPTION_LENGTH: 10, // NUEVO
-    MAX_CATEGORIES: 5, // NUEVO
+    MAX_NAME_LENGTH: 100, // Según campo 'nombre' en Producto.java
+    MAX_DESCRIPTION_LENGTH: 1000, // Según campo 'descripcion' en Producto.java
+    MIN_NAME_LENGTH: 3,
+    MIN_DESCRIPTION_LENGTH: 10,
+    MAX_CATEGORIES: 5,
 } as const;
 
 // Patrones de validación
@@ -185,13 +217,23 @@ export const buildRoute = (
     return finalRoute;
 };
 
-// variable con la url del placeholder
+// Variable con la url del placeholder
 export const PlaceholderURL =
     "https://dn721900.ca.archive.org/0/items/placeholder-image_202006/placeholder-image.jpg";
 
 // Función helper para verificar si un usuario es vendedor
 export const isVendor = (userRole?: string): boolean => {
-    return userRole === USER_ROLES.VENDOR;
+    return userRole === USER_ROLES.VENDEDOR;
+};
+
+// Función helper para verificar si un usuario es comprador
+export const isComprador = (userRole?: string): boolean => {
+    return userRole === USER_ROLES.COMPRADOR;
+};
+
+// Función helper para verificar si un usuario es admin
+export const isAdmin = (userRole?: string): boolean => {
+    return userRole === USER_ROLES.ADMIN;
 };
 
 // Función helper para generar breadcrumbs dinámicos
@@ -206,12 +248,17 @@ export const generateBreadcrumbs = (currentPath: string) => {
         // Mapear segmentos a nombres legibles
         const segmentNames: Record<string, string> = {
             "mis-productos": "Mis Productos",
+            "subir-producto": "Crear Producto",
+            "editar-producto": "Editar Producto",
+            "mis-compras": "Mis Compras", // ✅ NUEVO
             perfil: "Mi Perfil",
             carrito: "Carrito",
             categoria: "Categoría",
             producto: "Producto",
             checkout: "Finalizar Compra",
             pago: "Pago",
+            "seleccionar-municipio": "Seleccionar Municipio",
+            "quienes-somos": "Quiénes Somos",
         };
 
         const name =

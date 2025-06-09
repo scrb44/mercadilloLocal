@@ -1,4 +1,5 @@
-// src/services/productService.ts - PRIORIZA API REAL
+// src/services/productService.ts - ACTUALIZADO para incluir localidad
+
 import { createApiClient } from "./api";
 import { ENDPOINTS } from "../constants";
 import {
@@ -6,59 +7,63 @@ import {
     getCachedProduct,
     cacheSearchResults,
     getCachedSearchResults,
+    removeItem,
 } from "./cache";
 import { MOCK_PRODUCTS } from "./mockData";
 import {
     type ProductInterface,
     type SearchFiltersInterface,
 } from "../types/types";
-import { type ApiProduct } from "../types/apiTypes";
 import {
     adaptApiProduct,
-    adaptApiProducts,
     adaptValidApiProducts,
+    type ApiProduct,
 } from "../adapters";
 
 const apiClient = createApiClient();
 
-export const productsService = {
-    async getProduct(
-        id: number,
-        useCache: boolean = true
-    ): Promise<ProductInterface> {
-        if (useCache) {
-            const cached = getCachedProduct<ProductInterface>(id);
-            if (cached) return cached;
-        }
+// 🔧 Funciones helper para cache usando las funciones existentes
+const invalidateProductCache = (productId: number): void => {
+    removeItem(`mercadillo-product-${productId}`);
+};
 
+const isProductCacheStale = (
+    productId: number,
+    maxAge: number = 1000 * 60 * 15
+): boolean => {
+    const cached = getCachedProduct<ProductInterface>(productId);
+    if (!cached) return true;
+    // Si existe en cache y no ha expirado, no está stale
+    return false;
+};
+
+export interface SearchFiltersWithLocalidad extends SearchFiltersInterface {
+    localidad?: number; // Agregar filtro de localidad
+}
+
+export const productsService = {
+    async getProduct(id: number): Promise<ProductInterface> {
         try {
-            // SIEMPRE intentar API real primero
+            // Obtener desde API
             const apiProduct = await apiClient.get<ApiProduct>(
                 `${ENDPOINTS.PRODUCTS}/${id}`
             );
 
             const adaptedProduct = adaptApiProduct(apiProduct);
-            cacheProduct(id, adaptedProduct);
+
             return adaptedProduct;
         } catch (error: any) {
             console.warn(`🔧 API falló para producto ${id}:`, error.message);
 
             // SOLO usar mock si la API definitivamente no está disponible
-            // Y SOLO para IDs que realmente existen en el mock
             if (error.status === 404) {
-                // Si el producto no existe en la API, buscar en mock
                 const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
                 if (mockProduct) {
-                    console.log(`📦 Usando producto mock para ID ${id}`);
                     return mockProduct;
                 }
             } else if (error.message?.includes("fetch")) {
-                // Si hay problema de red, usar mock temporalmente
                 const mockProduct = MOCK_PRODUCTS.find((p) => p.id === id);
                 if (mockProduct) {
-                    console.log(
-                        `🌐 API no disponible, usando mock para ID ${id}`
-                    );
                     return mockProduct;
                 }
             }
@@ -69,8 +74,13 @@ export const productsService = {
         }
     },
 
+    // 🔧 Nuevo método específico para editing que siempre trae datos frescos
+    async getProductForEditing(id: number): Promise<ProductInterface> {
+        return productsService.getProduct(id);
+    },
+
     async getProducts(
-        filters?: SearchFiltersInterface,
+        filters?: SearchFiltersWithLocalidad,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
         try {
@@ -79,19 +89,38 @@ export const productsService = {
             if (useCache) {
                 const cached =
                     getCachedSearchResults<ProductInterface[]>(cacheKey);
-                if (cached) return cached;
+                if (cached) {
+                    return cached;
+                }
             }
 
+            // 🔧 ACTUALIZADO: Incluir parámetro de localidad
             const params = new URLSearchParams();
-            if (filters?.category)
-                params.append("category", filters.category.toString());
-            if (filters?.vendor)
-                params.append("vendor", filters.vendor.toString());
-            if (filters?.minPrice)
+
+            if (filters?.category) {
+                params.append("categoria", filters.category.toString());
+            }
+
+            if (filters?.vendor) {
+                params.append("vendedor", filters.vendor.toString());
+            }
+
+            if (filters?.minPrice) {
                 params.append("minPrice", filters.minPrice.toString());
-            if (filters?.maxPrice)
+            }
+
+            if (filters?.maxPrice) {
                 params.append("maxPrice", filters.maxPrice.toString());
-            if (filters?.query) params.append("q", filters.query);
+            }
+
+            if (filters?.query) {
+                params.append("busqueda", filters.query);
+            }
+
+            // ✅ NUEVO: Agregar parámetro de localidad
+            if (filters?.localidad) {
+                params.append("localidad", filters.localidad.toString());
+            }
 
             const url = `${ENDPOINTS.PRODUCTS}${
                 params.toString() ? "?" + params.toString() : ""
@@ -99,6 +128,7 @@ export const productsService = {
 
             // PRIORIZAR API real
             const apiProducts = await apiClient.get<ApiProduct[]>(url);
+
             const adaptedProducts = adaptValidApiProducts(apiProducts);
 
             cacheSearchResults(cacheKey, adaptedProducts);
@@ -107,12 +137,24 @@ export const productsService = {
             console.warn(
                 "🔧 API de productos no disponible, usando datos de ejemplo"
             );
+            console.warn("Error:", error.message);
 
-            let filteredProducts = MOCK_PRODUCTS;
+            let filteredProducts = [...MOCK_PRODUCTS]; // Clonar array
+
+            // Filtrar por categoría primero
+            if (filters?.category) {
+                filteredProducts = filteredProducts.filter((product) => {
+                    const hasCategory = product.categories.some(
+                        (cat) => cat.id === filters.category
+                    );
+                    return hasCategory;
+                });
+            }
 
             // Filtrar por búsqueda si hay query
-            if (filters?.query) {
+            if (filters?.query && filters.query.trim()) {
                 const query = filters.query.toLowerCase();
+
                 filteredProducts = filteredProducts.filter(
                     (p) =>
                         p.name.toLowerCase().includes(query) ||
@@ -120,12 +162,31 @@ export const productsService = {
                 );
             }
 
-            // Filtrar por categoría si se especifica
-            if (filters?.category) {
-                filteredProducts = filteredProducts.filter((product) =>
-                    product.categories.some(
-                        (cat) => cat.id === filters.category
-                    )
+            // Filtrar por vendor si se especifica
+            if (filters?.vendor) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.vendedor?.id === filters.vendor
+                );
+            }
+
+            // Filtrar por precio mínimo
+            if (filters?.minPrice) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.price >= filters.minPrice!
+                );
+            }
+
+            // Filtrar por precio máximo
+            if (filters?.maxPrice) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.price <= filters.maxPrice!
+                );
+            }
+
+            // ✅ NUEVO: Filtrar por localidad en mock data
+            if (filters?.localidad) {
+                filteredProducts = filteredProducts.filter(
+                    (product) => product.municipality?.id === filters.localidad
                 );
             }
 
@@ -135,8 +196,26 @@ export const productsService = {
 
     async searchProducts(
         query: string,
+        localidad?: number,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
-        return this.getProducts({ query }, useCache);
+        return productsService.getProducts({ query, localidad }, useCache);
+    },
+
+    // ✅ NUEVO: Método específico para obtener productos por localidad
+    async getProductsByLocalidad(
+        localidadId: number,
+        additionalFilters?: Omit<SearchFiltersWithLocalidad, "localidad">,
+        useCache: boolean = true
+    ): Promise<ProductInterface[]> {
+        const filters: SearchFiltersWithLocalidad = {
+            ...additionalFilters,
+            localidad: localidadId,
+        };
+
+        return productsService.getProducts(filters, useCache);
     },
 };
+
+// Exportar también como default para compatibilidad
+export default productsService;

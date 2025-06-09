@@ -1,10 +1,13 @@
-// src/pages/checkout/index.tsx - VERSIÓN ARREGLADA
+// src/pages/checkout/index.tsx - CON VALIDACIÓN DE ROL
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
-import { usePayment } from "../../contexts/paymentContext";
-import { type PaymentItem } from "../../types/paymentTypes";
+import { PaymentProvider, usePayment } from "../../contexts/paymentContext";
+import {
+    type PaymentItem,
+    type UserPaymentData,
+} from "../../types/paymentTypes";
 import { Header, Footer, SimpleBreadcrumb } from "../../componentes";
 import CheckoutSteps from "../../componentes/checkout/checkoutSteps";
 import CartSummary from "../../componentes/checkout/cartSummary";
@@ -13,67 +16,28 @@ import PaymentForm from "../../componentes/checkout/paymentForm";
 import ConfirmationPage from "../../componentes/checkout/confirmationPage";
 import classes from "./checkout.module.css";
 
-function Checkout() {
+// ✅ COMPONENTE INTERNO que usa el PaymentProvider
+function CheckoutContent() {
     const navigate = useNavigate();
-    const { isAuthenticated } = useUser();
+    const { isAuthenticated, user } = useUser();
+    const cart = useCart();
+    const payment = usePayment();
 
-    // Verificación de cart más segura
-    let cart = null;
-    try {
-        cart = isAuthenticated ? useCart() : null;
-    } catch (error) {
-        console.error("❌ Error obteniendo cart:", error);
-    }
-
-    // Verificación de payment más segura
-    let payment = null;
-    try {
-        payment = usePayment();
-    } catch (error) {
-        console.error("❌ Error obteniendo payment context:", error);
-        return (
-            <div className={classes.checkout}>
-                <Header />
-                <div className={classes.container}>
-                    <div className={classes.errorState}>
-                        <h2>❌ Error de configuración</h2>
-                        <p>El contexto de pagos no está disponible.</p>
-                        <p>
-                            Asegúrate de que PaymentProvider esté envolviendo
-                            esta página en App.tsx
-                        </p>
-                        <button
-                            onClick={() => navigate("/carrito")}
-                            className={classes.backButton}
-                        >
-                            ← Volver al carrito
-                        </button>
-                    </div>
-                </div>
-                <Footer />
-            </div>
-        );
-    }
-
-    // ============ DEBUG ============
-    console.log("🔧 Checkout Debug:", {
-        isAuthenticated,
-        hasCart: !!cart,
-        cartItems: cart?.items?.length || 0,
-        hasPayment: !!payment,
-        paymentState: payment?.state?.currentStep || "undefined",
-        paymentSummary: !!payment?.state?.paymentSummary,
-    });
+    // ============ VALIDACIÓN DE ROL ============
+    const rolesPermitidos = ["COMPRADOR", "VENDEDOR", "ADMIN"];
+    const puedeComprar = user?.role && rolesPermitidos.includes(user.role);
 
     // ============ EFECTOS ============
     useEffect(() => {
-        console.log("🔧 Checkout useEffect ejecutándose...");
-
         // Redirigir si no está autenticado
-        if (!isAuthenticated) {
-            console.log("❌ Usuario no autenticado, redirigiendo...");
+        if (!isAuthenticated || !user) {
             navigate("/login?redirect=/checkout");
             return;
+        }
+
+        // ✅ NUEVA VALIDACIÓN: Solo roles permitidos pueden hacer checkout
+        if (!puedeComprar) {
+            return; // No redirigimos, mostramos mensaje
         }
 
         // Verificar que cart existe
@@ -83,31 +47,21 @@ function Checkout() {
             return;
         }
 
-        // Verificar que payment existe
-        if (!payment) {
-            console.error("❌ Payment context no disponible");
-            return;
-        }
-
         // Redirigir si el carrito está vacío (excepto si ya estamos en confirmación o el pago está completado)
         if (
             cart.items.length === 0 &&
             payment.state.currentStep !== "confirmation" &&
             !payment.state.completed
         ) {
-            console.log(
-                "❌ Carrito vacío y no hay pago completado, redirigiendo..."
-            );
             navigate("/carrito");
             return;
         }
 
         // Inicializar el pago si no está inicializado
         if (!payment.state.paymentSummary && cart.items.length > 0) {
-            console.log("✅ Inicializando pago...");
             try {
                 // Convertir items del carrito al formato PaymentItem
-                const paymentItems = cart.items.map((item) => ({
+                const paymentItems: PaymentItem[] = cart.items.map((item) => ({
                     product: item.product,
                     quantity: item.quantity,
                     unitPrice: item.product.price,
@@ -117,7 +71,6 @@ function Checkout() {
 
                 // Pasar los items convertidos al initializePayment
                 payment.initializePayment(paymentItems);
-                console.log("✅ Pago inicializado correctamente");
             } catch (error) {
                 console.error("❌ Error inicializando pago:", error);
                 payment.setError(
@@ -125,38 +78,20 @@ function Checkout() {
                 );
             }
         }
-    }, [isAuthenticated, cart?.items?.length, payment, navigate]);
+    }, [
+        isAuthenticated,
+        user,
+        puedeComprar,
+        cart?.items?.length,
+        payment,
+        navigate,
+    ]);
 
     // ============ HANDLERS ============
+
     const handleStepChange = (step: any) => {
-        if (payment) {
+        if (payment?.goToStep) {
             payment.goToStep(step);
-        }
-    };
-
-    const handleContinueToPayment = () => {
-        if (!payment) return;
-
-        if (!payment.state.billingInfo) {
-            payment.setError("Por favor, complete la información de envío");
-            return;
-        }
-        payment.nextStep();
-    };
-
-    const handleBackToShipping = () => {
-        if (payment) {
-            payment.previousStep();
-        }
-    };
-
-    const handleProcessPayment = async () => {
-        if (!payment) return;
-
-        try {
-            await payment.processPayment();
-        } catch (error: any) {
-            payment.setError(error.message || "Error procesando el pago");
         }
     };
 
@@ -164,24 +99,97 @@ function Checkout() {
         navigate("/carrito");
     };
 
-    // ============ RENDER CONDICIONAL PARA ERRORES ============
+    const handleContinueToPayment = () => {
+        // Validar información de envío antes de continuar
+        if (!payment?.state.billingInfo) {
+            payment?.setError("Por favor, completa la información de envío");
+            return;
+        }
 
-    if (!isAuthenticated) {
+        const billingInfo = payment.state.billingInfo;
+
+        // Validaciones básicas
+        if (!billingInfo.email || !billingInfo.shippingAddress.fullName) {
+            payment?.setError(
+                "Por favor, completa todos los campos requeridos"
+            );
+            return;
+        }
+
+        if (
+            !billingInfo.shippingAddress.address1 ||
+            !billingInfo.shippingAddress.city
+        ) {
+            payment?.setError("Por favor, completa la dirección de envío");
+            return;
+        }
+
+        payment?.nextStep();
+    };
+
+    const handleBackToShipping = () => {
+        payment?.previousStep();
+    };
+
+    const handleProcessPayment = async () => {
+        if (!payment?.state.selectedPaymentMethod) {
+            payment?.setError("Por favor, selecciona un método de pago");
+            return;
+        }
+
+        if (!user) {
+            payment?.setError("Error: Usuario no autenticado");
+            return;
+        }
+
+        // ✅ VALIDACIÓN ADICIONAL: Verificar que puede comprar
+        if (!puedeComprar) {
+            payment?.setError(
+                "Tu rol no está autorizado para realizar pedidos"
+            );
+            return;
+        }
+
+        try {
+            // ✅ USAR ROL REAL DEL USUARIO
+            const userData: UserPaymentData = {
+                id: user.id,
+                role: user.role, // ✅ USAR EL ROL REAL (puede ser COMPRADOR, VENDEDOR o ADMIN)
+                nombre: user.nombre,
+                email: user.email,
+            };
+
+            // Procesar el pago
+            const pedidoCreado = await payment.processPayment(userData);
+
+            if (pedidoCreado) {
+                // ✅ LIMPIAR CARRITO DESPUÉS DEL PAGO EXITOSO
+                try {
+                    await cart.clearCart();
+                } catch (clearError) {
+                    console.warn("⚠️ Error limpiando carrito:", clearError);
+                    // No fallar por esto, el pago ya fue exitoso
+                }
+            }
+        } catch (error) {
+            console.error("❌ Error procesando pago:", error);
+            payment?.setError(
+                "Error procesando el pago: " + (error as Error).message
+            );
+        }
+    };
+
+    // ============ VALIDACIONES ============
+
+    // Si no está autenticado, mostrar pantalla de carga mientras redirige
+    if (!isAuthenticated || !user) {
         return (
             <div className={classes.checkout}>
                 <Header />
                 <div className={classes.container}>
-                    <div className={classes.loginPrompt}>
-                        <h2>🔐 Inicia sesión para continuar</h2>
-                        <p>Necesitas una cuenta para proceder con el pago</p>
-                        <button
-                            onClick={() =>
-                                navigate("/login?redirect=/checkout")
-                            }
-                            className={classes.primaryButton}
-                        >
-                            Ir al login
-                        </button>
+                    <div className={classes.loadingState}>
+                        <div className={classes.loadingSpinner}></div>
+                        <p>Verificando autenticación...</p>
                     </div>
                 </div>
                 <Footer />
@@ -189,35 +197,65 @@ function Checkout() {
         );
     }
 
+    // ✅ ACTUALIZADO: Si no puede comprar, mostrar mensaje específico
+    if (!puedeComprar) {
+        return (
+            <div className={classes.checkout}>
+                <Header />
+                <div className={classes.container}>
+                    <div className={classes.errorState}>
+                        <h2>🛒 Checkout no disponible</h2>
+                        <p>
+                            Tu rol actual <strong>({user.role})</strong> no está
+                            autorizado para realizar pedidos.
+                        </p>
+                        <div className={classes.suggestions}>
+                            <h3>Roles autorizados para comprar:</h3>
+                            <ul>
+                                <li>
+                                    <strong>COMPRADOR</strong> - Usuarios
+                                    regulares
+                                </li>
+                                <li>
+                                    <strong>VENDEDOR</strong> - Pueden comprar
+                                    productos de otros vendedores
+                                </li>
+                                <li>
+                                    <strong>ADMIN</strong> - Administradores del
+                                    sistema
+                                </li>
+                            </ul>
+                        </div>
+                        <div className={classes.actions}>
+                            <button
+                                onClick={() => navigate("/carrito")}
+                                className={classes.backButton}
+                            >
+                                ← Volver al carrito
+                            </button>
+                            <button
+                                onClick={() => navigate("/register")}
+                                className={classes.primaryButton}
+                            >
+                                Crear cuenta autorizada
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
+
+    // Si no hay cart context, mostrar error
     if (!cart) {
         return (
             <div className={classes.checkout}>
                 <Header />
                 <div className={classes.container}>
                     <div className={classes.errorState}>
-                        <h2>❌ Error del carrito</h2>
-                        <p>No se pudo cargar la información del carrito</p>
-                        <button
-                            onClick={() => navigate("/carrito")}
-                            className={classes.backButton}
-                        >
-                            ← Volver al carrito
-                        </button>
-                    </div>
-                </div>
-                <Footer />
-            </div>
-        );
-    }
-
-    if (!payment) {
-        return (
-            <div className={classes.checkout}>
-                <Header />
-                <div className={classes.container}>
-                    <div className={classes.errorState}>
-                        <h2>❌ Error de configuración</h2>
-                        <p>El sistema de pagos no está disponible</p>
+                        <h2>❌ Error del sistema</h2>
+                        <p>El carrito no está disponible.</p>
                         <button
                             onClick={() => navigate("/carrito")}
                             className={classes.backButton}
@@ -281,6 +319,17 @@ function Checkout() {
                     </div>
                 )}
 
+                {/* Banner de éxito para pago completado */}
+                {payment.state.completed && payment.state.orderId && (
+                    <div className={classes.successBanner}>
+                        <span className={classes.successIcon}>✅</span>
+                        <span className={classes.successText}>
+                            ¡Pago completado! Número de pedido:{" "}
+                            {payment.state.orderId}
+                        </span>
+                    </div>
+                )}
+
                 {/* Contenido principal */}
                 <div className={classes.checkoutContent}>
                     <div className={classes.mainContent}>
@@ -335,136 +384,128 @@ function Checkout() {
                         )}
                     </div>
 
-                    {/* Sidebar con resumen (solo en pasos shipping y payment) */}
-                    {(payment.state.currentStep === "shipping" ||
-                        payment.state.currentStep === "payment") &&
-                        payment.state.paymentSummary && (
-                            <div className={classes.sidebar}>
-                                <div className={classes.orderSummary}>
-                                    <h3 className={classes.summaryTitle}>
-                                        Resumen del pedido
-                                    </h3>
+                    {/* Sidebar con resumen - solo mostrar si no estamos en confirmación */}
+                    {payment.state.currentStep !== "confirmation" && (
+                        <div className={classes.sidebar}>
+                            <div className={classes.orderSummary}>
+                                <h3 className={classes.sidebarTitle}>
+                                    Resumen del pedido
+                                </h3>
 
-                                    {/* Productos por vendedor */}
-                                    {payment.state.paymentSummary.vendorGroups.map(
-                                        (group, index) => (
-                                            <div
-                                                key={group.vendor.id}
-                                                className={classes.vendorGroup}
-                                            >
-                                                <h4
+                                {payment.state.paymentSummary && (
+                                    <>
+                                        {/* Items por vendedor */}
+                                        {payment.state.paymentSummary.vendorGroups.map(
+                                            (group) => (
+                                                <div
+                                                    key={group.vendor.id}
                                                     className={
-                                                        classes.vendorName
+                                                        classes.vendorGroup
                                                     }
                                                 >
-                                                    📦 {group.vendor.name}
-                                                </h4>
-                                                {group.items.map((item) => (
-                                                    <div
-                                                        key={item.product.id}
+                                                    <h4
                                                         className={
-                                                            classes.summaryItem
+                                                            classes.vendorName
                                                         }
                                                     >
-                                                        <span
+                                                        🏪 {group.vendor.name}
+                                                    </h4>
+                                                    {group.items.map((item) => (
+                                                        <div
+                                                            key={
+                                                                item.product.id
+                                                            }
                                                             className={
-                                                                classes.itemName
+                                                                classes.summaryItem
                                                             }
                                                         >
-                                                            {item.quantity}x{" "}
-                                                            {item.product.name}
-                                                        </span>
-                                                        <span
-                                                            className={
-                                                                classes.itemPrice
-                                                            }
-                                                        >
-                                                            €
-                                                            {item.totalPrice.toFixed(
-                                                                2
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                                <div
-                                                    className={
-                                                        classes.vendorSubtotal
-                                                    }
-                                                >
-                                                    <span>
-                                                        Subtotal vendedor:
-                                                    </span>
-                                                    <span>
-                                                        €
-                                                        {group.vendorAmount.toFixed(
-                                                            2
-                                                        )}
-                                                    </span>
+                                                            <span
+                                                                className={
+                                                                    classes.itemName
+                                                                }
+                                                            >
+                                                                {
+                                                                    item.product
+                                                                        .name
+                                                                }{" "}
+                                                                x{item.quantity}
+                                                            </span>
+                                                            <span
+                                                                className={
+                                                                    classes.itemPrice
+                                                                }
+                                                            >
+                                                                {item.totalPrice.toFixed(
+                                                                    2
+                                                                )}
+                                                                €
+                                                            </span>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                                <div
-                                                    className={
-                                                        classes.platformFee
-                                                    }
-                                                >
-                                                    <span>
-                                                        Comisión plataforma:
-                                                    </span>
-                                                    <span>
-                                                        €
-                                                        {group.platformFee.toFixed(
-                                                            2
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        )
-                                    )}
+                                            )
+                                        )}
 
-                                    {/* Totales */}
-                                    <div className={classes.summaryTotals}>
-                                        <div className={classes.summaryRow}>
-                                            <span>Subtotal:</span>
-                                            <span>
-                                                €
-                                                {payment.state.paymentSummary.subtotal.toFixed(
-                                                    2
-                                                )}
-                                            </span>
+                                        {/* Totales */}
+                                        <div className={classes.totals}>
+                                            <div className={classes.totalRow}>
+                                                <span>Subtotal:</span>
+                                                <span>
+                                                    {payment.state.paymentSummary.subtotal.toFixed(
+                                                        2
+                                                    )}
+                                                    €
+                                                </span>
+                                            </div>
+                                            <div className={classes.totalRow}>
+                                                <span>Envío:</span>
+                                                <span>
+                                                    {payment.state.paymentSummary.shippingCost.toFixed(
+                                                        2
+                                                    )}
+                                                    €
+                                                </span>
+                                            </div>
+                                            <div className={classes.totalRow}>
+                                                <span>Comisiones:</span>
+                                                <span>
+                                                    {payment.state.paymentSummary.totalPlatformFees.toFixed(
+                                                        2
+                                                    )}
+                                                    €
+                                                </span>
+                                            </div>
+                                            <div
+                                                className={`${classes.totalRow} ${classes.finalTotal}`}
+                                            >
+                                                <span>Total:</span>
+                                                <span>
+                                                    {payment.state.paymentSummary.totalAmount.toFixed(
+                                                        2
+                                                    )}
+                                                    €
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className={classes.summaryRow}>
-                                            <span>Envío:</span>
-                                            <span>
-                                                {payment.state.paymentSummary
-                                                    .shippingCost === 0
-                                                    ? "Gratis"
-                                                    : `€${payment.state.paymentSummary.shippingCost.toFixed(
-                                                          2
-                                                      )}`}
-                                            </span>
-                                        </div>
-                                        <div
-                                            className={classes.summaryDivider}
-                                        ></div>
-                                        <div
-                                            className={`${classes.summaryRow} ${classes.totalRow}`}
-                                        >
-                                            <span>Total:</span>
-                                            <span>
-                                                €
-                                                {payment.state.paymentSummary.totalAmount.toFixed(
-                                                    2
-                                                )}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                    </>
+                                )}
                             </div>
-                        )}
+                        </div>
+                    )}
                 </div>
             </div>
 
             <Footer />
         </div>
+    );
+}
+
+// ✅ COMPONENTE PRINCIPAL que envuelve con PaymentProvider
+function Checkout() {
+    return (
+        <PaymentProvider>
+            <CheckoutContent />
+        </PaymentProvider>
     );
 }
 

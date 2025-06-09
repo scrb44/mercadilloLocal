@@ -1,4 +1,4 @@
-// src/componentes/header/index.tsx - ACTUALIZADO CON ENLACE PARA VENDEDORES
+// src/componentes/header/index.tsx - ACTUALIZADO CON ENLACE MIS COMPRAS
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import MunicipioIndicator from "../municipioIndicator";
@@ -38,12 +38,14 @@ function Header() {
                 </div>
 
                 <ul className={classes["page-header__list"]}>
-<li>
-  <Link to="/quienes-somos" className={classes["page-header__link"]}>
-    ¿Quiénes somos?
-  </Link>
-</li>
-
+                    <li>
+                        <Link
+                            to="/quienes-somos"
+                            className={classes["page-header__link"]}
+                        >
+                            ¿Quiénes somos?
+                        </Link>
+                    </li>
 
                     {/* Enlace PERFIL solo si está autenticado */}
                     {isAuthenticated && (
@@ -53,6 +55,21 @@ function Header() {
                                 className={classes["page-header__link"]}
                             >
                                 Mi perfil
+                            </Link>
+                        </li>
+                    )}
+
+                    {/* ✅ NUEVO: Enlace MIS COMPRAS solo si está autenticado */}
+                    {isAuthenticated && (
+                        <li>
+                            <Link
+                                to="/mis-compras"
+                                className={
+                                    classes["page-header__purchases-link"]
+                                }
+                                title="Ver historial de compras"
+                            >
+                                📋 Mis Compras
                             </Link>
                         </li>
                     )}

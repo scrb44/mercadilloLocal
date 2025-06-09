@@ -1,6 +1,6 @@
-// src/services/index.ts
+// src/services/index.ts - ACTUALIZADO
 import { productsService } from "./productService";
-import { categoriesService } from "./categoryService";
+import { categoryService } from "./categoriesService";
 import { cartService } from "./cartService";
 import { createApiClient } from "./api";
 
@@ -8,12 +8,17 @@ import { createApiClient } from "./api";
 export const mercadilloService = {
     // Productos
     getProduct: productsService.getProduct,
+    getProductById: productsService.getProduct, // Alias para consistencia
     getProducts: productsService.getProducts,
     searchProducts: productsService.searchProducts,
+    getProductsByLocalidad: productsService.getProductsByLocalidad,
 
     // Categorías
-    getCategory: categoriesService.getCategory,
-    getCategories: categoriesService.getCategories,
+    getCategory: categoryService.getCategoryById,
+    getCategoryById: categoryService.getCategoryById,
+    getCategories: categoryService.getAllCategories,
+    getAllCategories: categoryService.getAllCategories,
+    getCategoriesByLocalidad: categoryService.getCategoriesByLocalidad,
 
     // Carrito
     getCart: cartService.getCart,
@@ -30,9 +35,9 @@ export const mercadilloService = {
     clearLocalCache: cartService.clearLocalCache,
 };
 
-// Exportar servicios individuales por si alguien los quiere usar por separado
+// Exportar servicios individuales
 export { productsService } from "./productService";
-export { categoriesService } from "./categoryService";
+export { categoryService } from "./categoriesService";
 export { cartService } from "./cartService";
 
 // Exportar por defecto el servicio principal

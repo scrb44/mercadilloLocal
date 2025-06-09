@@ -4,6 +4,7 @@ import {
     type ProductInterface,
     type VendedorInterface,
     type CategoryInterface,
+    type Localidad,
 } from "../types/types";
 import { type ApiProduct } from "../types/apiTypes";
 
@@ -18,7 +19,9 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
         price: apiProduct.precio,
         img: apiProduct.imagen
             ? [apiProduct.imagen]
-            : ["https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg"],
+            : [
+                  "https://www.shutterstock.com/image-illustration/image-not-found-grayscale-photo-260nw-2425909941.jpg",
+              ],
         video: [], // La API no devuelve videos por ahora
 
         // Aquí adaptamos el vendedor real que viene del backend
@@ -28,6 +31,20 @@ export function adaptApiProduct(apiProduct: ApiProduct): ProductInterface {
         categories: apiProduct.categorias
             ? apiProduct.categorias.map(adaptApiCategory)
             : createDefaultCategories(),
+        municipality: adaptApiMunicipality(apiProduct.vendedor?.localidad),
+    };
+}
+
+/**
+ * Adaptador para localidad/municipio
+ */
+function adaptApiMunicipality(apiLocalidad: any): Localidad {
+    if (!apiLocalidad) return createDefaultMunicipality();
+
+    return {
+        id: apiLocalidad.id,
+        nombre: apiLocalidad.nombre,
+        provincia: apiLocalidad.provincia || null,
     };
 }
 
@@ -39,6 +56,8 @@ function adaptApiVendor(apiVendor: any): VendedorInterface {
 
     return {
         id: apiVendor.id,
+        name: apiVendor.nombre || apiVendor.name,
+        img: apiVendor.imagen || apiVendor.img || "",
         nombre: apiVendor.nombre,
         imagen: apiVendor.imagen || "",
         email: apiVendor.email,
@@ -57,7 +76,20 @@ function adaptApiCategory(apiCategory: any): CategoryInterface {
         id: apiCategory.id,
         name: apiCategory.nombre,
         img: apiCategory.imagen || "",
-        fatherId: apiCategory.categoriaPadre ? apiCategory.categoriaPadre.id : undefined,
+        fatherId: apiCategory.categoriaPadre
+            ? apiCategory.categoriaPadre.id
+            : undefined,
+    };
+}
+
+/**
+ * Valores por defecto para municipio (cuando no hay)
+ */
+function createDefaultMunicipality(): Localidad {
+    return {
+        id: 0,
+        nombre: "Sin especificar",
+        provincia: null,
     };
 }
 
@@ -67,8 +99,15 @@ function adaptApiCategory(apiCategory: any): CategoryInterface {
 function createDefaultVendor(): VendedorInterface {
     return {
         id: 0,
-        nombre: "Sin especificar!",
+        name: "Sin especificar",
+        img: "",
+        nombre: "Sin especificar",
         imagen: "",
+        email: undefined,
+        usuario: undefined,
+        verificado: undefined,
+        localidad: undefined,
+        telf: undefined,
     };
 }
 
