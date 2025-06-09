@@ -624,8 +624,8 @@ img {
     display: inline-flex;
     align-items: center;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    color: white;
+    background: linear-gradient(135deg, #f6ae3b, #ffffff);
+    color: rgb(0, 0, 0);
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;

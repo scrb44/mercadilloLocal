@@ -191,7 +191,7 @@
 }
 
 .forgotLink {
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -199,7 +199,7 @@
 }
 
 .forgotLink:hover {
-    color: #1d4ed8;
+    color: #8d730c;
     text-decoration: underline;
 }
 
@@ -219,7 +219,7 @@
     gap: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(143, 89, 8, 0.9);;
 }
 
 .submitButton:hover:not(:disabled) {
@@ -231,7 +231,7 @@
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 2px 8px rgba(143, 89, 8, 0.9);
 }
 
 .spinner {
@@ -268,14 +268,14 @@
 }
 
 .registerLink {
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
 .registerLink:hover {
-    color: #1d4ed8;
+    color: rgba(107, 69, 12, 0.9);
     text-decoration: underline;
 }
 
