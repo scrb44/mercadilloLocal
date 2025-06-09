@@ -4,8 +4,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
-    padding-top: 100px; /* Espacio para el header fijo */
+    position: relative; /* Espacio para el header fijo */
 }
 
 .container {
@@ -162,10 +161,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .categoryProducts {
-        padding-top: 120px;
-    }
-
+    
     .container {
         padding: 0 16px;
     }
@@ -205,9 +201,6 @@
 }
 
 @media (max-width: 480px) {
-    .categoryProducts {
-        padding-top: 140px;
-    }
 
     .subcategoriesSection {
         padding: 16px;
