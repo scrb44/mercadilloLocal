@@ -44,7 +44,7 @@
 .loginTitle {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: #37361f;
     margin: 0 0 12px 0;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
 }
@@ -191,7 +191,7 @@
 }
 
 .forgotLink {
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -199,13 +199,13 @@
 }
 
 .forgotLink:hover {
-    color: #1d4ed8;
+    color: #8d730c;
     text-decoration: underline;
 }
 
 .submitButton {
     padding: 16px 24px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, rgba(235, 169, 37, 0.8), rgba(235, 169, 37, 0.8));
     color: white;
     border: none;
     border-radius: 12px;
@@ -219,19 +219,19 @@
     gap: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(143, 89, 8, 0.9);;
 }
 
 .submitButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 6px 16px rgba(235, 219, 37, 0.4);
 }
 
 .submitButton:disabled {
     opacity: 0.7;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 2px 8px rgba(143, 89, 8, 0.9);
 }
 
 .spinner {
@@ -268,14 +268,14 @@
 }
 
 .registerLink {
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
 .registerLink:hover {
-    color: #1d4ed8;
+    color: rgba(107, 69, 12, 0.9);
     text-decoration: underline;
 }
 

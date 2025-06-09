@@ -4,8 +4,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
-    padding-top: 100px; /* Espacio para el header fijo */
+    position: relative;/* Espacio para el header fijo */
 }
 
     .profileContainer {
