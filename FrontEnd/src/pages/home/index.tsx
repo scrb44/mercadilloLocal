@@ -142,7 +142,7 @@ function Home() {
             <section className={classes.heroSection}>
   <div className={classes.heroBackground}>
     <img
-      src="https://mercadillos.org/wp-content/uploads/2024/04/mercadillo-muelle-uno.jpg.webp"
+      src="https://imagenes.20minutos.es/files/image_1920_1080/uploads/imagenes/2023/10/31/calle-larios-malaga.jpeg"
       alt="Mercado local"
       className={classes.heroImage}
     />

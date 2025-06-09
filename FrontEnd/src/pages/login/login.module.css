@@ -44,7 +44,7 @@
 .loginTitle {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #1f2937;
+    color: #37361f;
     margin: 0 0 12px 0;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
 }
@@ -205,7 +205,7 @@
 
 .submitButton {
     padding: 16px 24px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, rgba(235, 169, 37, 0.8), rgba(235, 169, 37, 0.8));
     color: white;
     border: none;
     border-radius: 12px;
@@ -224,7 +224,7 @@
 
 .submitButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 6px 16px rgba(235, 219, 37, 0.4);
 }
 
 .submitButton:disabled {

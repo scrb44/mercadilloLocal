@@ -14,7 +14,7 @@
     align-items: center;
     padding: 16px 0;
     /* Efecto cristal */
-    background:beige;
+    background:bisque;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -190,7 +190,7 @@
 }
 
 .page-header__login {
-    background: rgba(37, 99, 235, 0.8);
+    background: rgba(235, 169, 37, 0.8);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     color: white;
@@ -206,7 +206,7 @@
 }
 
 .page-header__login:hover {
-    background: rgba(29, 78, 216, 0.9);
+    background: rgba(143, 89, 8, 0.9);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     color: white;
