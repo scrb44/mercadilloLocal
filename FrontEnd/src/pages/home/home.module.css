@@ -4,8 +4,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
-    padding-top: 100px; /* Espacio para el header fijo */
+    position: sticky; /* Espacio para el header fijo */
 }
 
 .container {
@@ -355,7 +354,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .home {
-        padding-top: 120px;
+        position: sticky;
     }
 
     .container {
@@ -411,9 +410,6 @@
 }
 
 @media (max-width: 480px) {
-    .home {
-        padding-top: 140px;
-    }
 
     .welcomeSection {
         padding: 20px 12px;

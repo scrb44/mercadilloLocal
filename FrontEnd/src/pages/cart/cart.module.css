@@ -4,8 +4,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
-    padding-top: 100px; /* Espacio para el header fijo */
+    position: relative; /* Espacio para el header fijo */
 }
 
 .container {
@@ -327,9 +326,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .cart {
-        padding-top: 120px;
-    }
 
     .container {
         padding: 16px;
@@ -363,9 +359,6 @@
 }
 
 @media (max-width: 480px) {
-    .cart {
-        padding-top: 140px;
-    }
 
     .cartHeader {
         padding: 16px;
