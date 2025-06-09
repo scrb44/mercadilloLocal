@@ -73,7 +73,7 @@
 .productPrice {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);;
     margin: 8px 0 0 0;
 }
 
@@ -107,12 +107,12 @@
 }
 
 .addButton.authenticated {
-    background-color: #2563eb;
-    color: white;
+    background-color: bisque;
+    color: black;
 }
 
 .addButton.authenticated:hover:not(:disabled) {
-    background-color: #1d4ed8;
+    background-color: rgba(143, 89, 8, 0.9);;
     transform: translateY(-1px);
 }
 

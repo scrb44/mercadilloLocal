@@ -139,42 +139,40 @@ function Home() {
     return (
         <div className={classes.home}>
             <Header />
+            <section className={classes.heroSection}>
+  <div className={classes.heroBackground}>
+    <img
+      src="https://imagenes.20minutos.es/files/image_1920_1080/uploads/imagenes/2023/10/31/calle-larios-malaga.jpeg"
+      alt="Mercado local"
+      className={classes.heroImage}
+    />
+    <div className={classes.heroOverlay}></div>
+  </div>
 
+  <div className={classes.heroContent}>
+    <h1 className={classes.heroTitle}>
+      {municipio
+        ? `Bienvenido a Mercadillo Local en ${municipio.nombre}`
+        : "Bienvenido a Mercadillo Local"}
+    </h1>
+    <p className={classes.heroSubtitle}>
+      {municipio
+        ? `Explora productos y tiendas de ${municipio.nombre}, ${municipio.provincia}`
+        : "Selecciona tu municipio para ver productos cerca de ti"}
+    </p>
+
+    <MunicipioIndicator
+      style="banner"
+      size="large"
+      showChangeButton={true}
+    />
+  </div>
+</section>
             <div className={classes.container}>
                 <main className={classes.main}>
                     {/* Sección de bienvenida - siempre visible */}
-                    <div
-                        className={`${classes.welcomeSection} ${classes.fadeInInitial}`}
-                    >
-                        <div className={classes.welcomeContent}>
-                            <div className={classes.welcomeText}>
-                                <h1 className={classes.welcomeTitle}>
-                                    {municipio
-                                        ? `Bienvenido a Mercadillo Local en ${municipio.nombre}`
-                                        : "Bienvenido a Mercadillo Local"}
-                                </h1>
-                                <p className={classes.welcomeSubtitle}>
-                                    {municipio
-                                        ? `Explora productos y tiendas de ${municipio.nombre}, ${municipio.provincia}`
-                                        : "Selecciona tu municipio para ver productos cerca de ti"}
-                                </p>
 
-                                <MunicipioIndicator
-                                    style="banner"
-                                    size="large"
-                                    showChangeButton={true}
-                                />
-                            </div>
 
-                            <div className={classes.welcomeImageWrapper}>
-                                <img
-                                    src="https://sh-assets.holidu.com/imagecache/blog-photos/16902_Fill_670_0.jpg"
-                                    alt="Mercado local"
-                                    className={classes.welcomeImage}
-                                />
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Sección de categorías */}
                     <section

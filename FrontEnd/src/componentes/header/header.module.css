@@ -7,21 +7,18 @@
     left: 0;
     right: 0;
     width: 100%;
-
     /* Contenido centrado */
     display: flex;
     flex-flow: row;
     justify-content: center;
     align-items: center;
     padding: 16px 0;
-
     /* Efecto cristal */
-    background: rgba(255, 255, 255, 0.15);
+    background:bisque;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-
     z-index: 100;
 }
 
@@ -89,9 +86,9 @@
 }
 
 .page-header__link:hover {
-    color: #2563eb;
-    background: rgba(37, 99, 235, 0.1);
-    border-color: rgba(37, 99, 235, 0.2);
+    color: rgba(255, 253, 250, 0.9);
+    background: rgba(143, 89, 8, 0.9);;
+    border-color: rgba(143, 89, 8, 0.9);;
     transform: translateY(-1px);
 }
 
@@ -193,7 +190,7 @@
 }
 
 .page-header__login {
-    background: rgba(37, 99, 235, 0.8);
+    background: rgba(235, 169, 37, 0.8);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     color: white;
@@ -209,7 +206,7 @@
 }
 
 .page-header__login:hover {
-    background: rgba(29, 78, 216, 0.9);
+    background: rgba(143, 89, 8, 0.9);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     color: white;
@@ -234,16 +231,16 @@
 }
 
 .page-header__cart:hover {
-    color: #2563eb;
-    border-color: rgba(37, 99, 235, 0.4);
-    background: rgba(37, 99, 235, 0.1);
+    color: rgba(143, 89, 8, 0.9);;
+    border-color: rgba(143, 89, 8, 0.9);
+    background: rgba(254, 223, 176, 0.9);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .cart-total {
     font-size: 0.85rem;
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);
     font-weight: 600;
 }
 
