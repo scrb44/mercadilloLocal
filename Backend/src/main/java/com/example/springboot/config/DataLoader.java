@@ -97,17 +97,22 @@ public class DataLoader {
                 vendedorTasca.setLocalidad(malaga);
                 vendedorTasca = vendedorRepo.save(vendedorTasca);
                 System.out.println("🛍️ Vendedor 'TascaMalaquena' creado.");
-            }/*
-            Vendedor vendedorPaco = new Vendedor();
-            vendedorPaco.setNombre("Tasca Fuengirola");
-            vendedorPaco.setUsuario("TascaMalaquena");
-            vendedorPaco.setEmail("tascamalaga@gmail.com");
-            vendedorPaco.setTelf("644545467");
-            vendedorPaco.setVerificado(true);
-            vendedorPaco.setPassword(passwordEncoder.encode("123456")); // Usa encoder si es necesario
-            vendedorPaco.setImagen("https://ejemplo.com/tasca.jpg");
-            vendedorPaco.setLocalidad(fuengirola);
-            vendedorRepo.save(vendedorPaco);*/
+            }
+
+            Vendedor vendedorTiendaTradicialAlPeso = vendedorRepo.findByUsuario("TiendaTradicialAlPeso");
+            if (vendedorTiendaTradicialAlPeso == null) {
+                vendedorTiendaTradicialAlPeso = new Vendedor();
+                vendedorTiendaTradicialAlPeso.setNombre("Tienda Tradicial Al Peso");
+                vendedorTiendaTradicialAlPeso.setUsuario("Tienda Tradicial");
+                vendedorTiendaTradicialAlPeso.setEmail("tradicional@gmail.com");
+                vendedorTiendaTradicialAlPeso.setTelf("644549465");
+                vendedorTiendaTradicialAlPeso.setVerificado(true);
+                vendedorTiendaTradicialAlPeso.setPassword(passwordEncoder.encode("123456")); // Usa PasswordEncoder en producción
+                vendedorTiendaTradicialAlPeso.setImagen("https://ejemplo.com/tasca.jpg");
+                vendedorTiendaTradicialAlPeso.setLocalidad(malaga);
+                vendedorTiendaTradicialAlPeso = vendedorRepo.save(vendedorTiendaTradicialAlPeso);
+                System.out.println("🛍️ Vendedor 'vendedorTiendaTradicialAlPeso' creado.");
+            }
 
             // Lista de productos
             List<Producto> productos = List.of(
@@ -125,7 +130,7 @@ public class DataLoader {
 
                     new Producto(null, "Lentejas pardinas a granel", new BigDecimal("1.80"), "Lentejas pardinas a granel",
                             "https://ecosdelatierra.es/wp-content/uploads/2021/01/Lenteja-Pardina-Bio-500gr-1024x1024.jpg",
-                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTiendaTradicialAlPeso),
 
                     new Producto(null, "Garbanzos ecológicos en saco de tela", new BigDecimal("2.20"), "Garbanzos ecológicos en saco de tela",
                             "https://tienda.verdebioleta.com/img/media/products/216717/imggran.JPG?t=1531156996",
@@ -137,15 +142,15 @@ public class DataLoader {
 
                     new Producto(null, "Chorizo curado de elaboración propia", new BigDecimal("5.50"), "Chorizo curado de elaboración propia",
                             "https://www.embutidosmaribel.com/wp-content/uploads/2013/04/IMG_6831.jpeg",
-                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTiendaTradicialAlPeso),
 
                     new Producto(null, "Salchichón ibérico artesanal", new BigDecimal("5.00"), "Salchichón ibérico artesanal",
                             "https://tentuiberico.es/130-thickbox_default/salchichon-casero-herradura.jpg",
-                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTiendaTradicialAlPeso),
 
                     new Producto(null, "Morcilla de cebolla local", new BigDecimal("4.75"), "Morcilla de cebolla local",
                             "https://munoaalimentacion.com/cdn/shop/files/MORCILLA_CEBOLLA_ORMAIZTEGI.jpg?v=1724927744",
-                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTiendaTradicialAlPeso),
 
                     new Producto(null, "Cerveza Victoria", new BigDecimal("1.50"), "Cerveza",
                             "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQMIJXqWcCuJSz32U-eG2SCvZ5dajZm2N-rLQ7gyX77XqtKOYi8hSB8dMzmTy8j2ZxZOBX0W8hI_1axJ4l4s54ehvmwFujlt_4yBFbz2G4RmRMiuHFNzu1XnA",
@@ -181,7 +186,7 @@ public class DataLoader {
 
                     new Producto(null, "Polvorones hechos a mano", new BigDecimal("4.10"), "Polvorones hechos a mano",
                             "https://m.media-amazon.com/images/I/51f3FU8uf2L._AC_UF1000,1000_QL80_.jpg",
-                            null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
+                            null, List.of(categorias.get("Ultramarinos")), vendedorTiendaTradicialAlPeso),
 
                     new Producto(null, "Turrón de almendra artesanal", new BigDecimal("5.25"), "Turrón de almendra artesanal",
                             "https://www.vicens.com/cdnassets//Blando-500g_2023-3.jpg",
