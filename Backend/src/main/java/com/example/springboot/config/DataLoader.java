@@ -187,6 +187,14 @@ public class DataLoader {
                             "https://www.vicens.com/cdnassets//Blando-500g_2023-3.jpg",
                             null, List.of(categorias.get("Ultramarinos")), vendedorTasca),
 
+                    new Producto(null, "Vestido floral", new BigDecimal("15.75"), "Vestido para primavera, de algodón",
+                            "https://m.media-amazon.com/images/I/71fc85EerCL._AC_UY1000_.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorTasca),
+
+                    new Producto(null, "Martillo bellota", new BigDecimal("6.75"), "Martillo de mango de madera",
+                            "https://www.ferrokey.eu/media/catalog/product/cache/fd00e0b96a1c32b265511e0d53330673/1/3/13987.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorTasca),
+
                     new Producto(null, "Cartulinas texturizadas hechas con papel reciclado", new BigDecimal("1.80"), "Cartulinas texturizadas hechas con papel reciclado",
                             "https://ritarita.es/wp-content/uploads/2023/08/carta-de-colores-cartulina-texturizada2.jpg",
                             null, List.of(categorias.get("Papelerías")), vendedorTasca)

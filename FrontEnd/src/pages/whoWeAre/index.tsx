@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Header from '../../componentes/header';
+import Footer from "../../componentes/footer";
 import styles from './WhoWeAre.module.css';
 
 interface Herramienta {
@@ -77,6 +78,7 @@ const WhoWeAre: React.FC = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   );
 };
