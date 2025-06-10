@@ -120,7 +120,7 @@
 
 .removeButton {
     padding: 6px 12px;
-    background: rgba(220, 38, 38, 0.8);
+    background: rgba(235, 169, 37, 0.8);
     color: white;
     border: none;
     border-radius: 8px;
@@ -133,7 +133,7 @@
 }
 
 .removeButton:hover:not(:disabled) {
-    background: rgba(185, 28, 28, 0.9);
+    background: rgba(143, 89, 8, 0.9);
     transform: translateY(-1px);
 }
 
