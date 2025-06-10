@@ -2,7 +2,7 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
-import { SimpleBreadcrumb, CartItem, Footer, Header } from "../../componentes";
+import { CartItem, Footer, Header } from "../../componentes";
 
 import classes from "./Cart.module.css";
 
@@ -69,8 +69,6 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Carrito" />
-
                     <div className={classes.unauthenticatedState}>
                         <h1 className={classes.title}>Tu Carrito</h1>
                         <div className={classes.loginPrompt}>
@@ -93,8 +91,6 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Carrito" />
-
                     <div className={classes.errorState}>
                         <p>Error al cargar el carrito</p>
                         <Link to="/" className={classes.backLink}>
@@ -112,8 +108,6 @@ function Cart() {
             <div className={classes.cart}>
                 <Header />
                 <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Carrito" />
-
                     <div className={classes.loadingState}>
                         <div className={classes.loadingSpinner}></div>
                         <p>Cargando carrito...</p>
@@ -130,8 +124,6 @@ function Cart() {
             <Header />
 
             <div className={classes.container}>
-                <SimpleBreadcrumb pageName="Mi Carrito" />
-
                 <div className={classes.cartHeader}>
                     <h1 className={classes.title}>Tu Carrito</h1>
                     <div className={classes.cartSummary}>

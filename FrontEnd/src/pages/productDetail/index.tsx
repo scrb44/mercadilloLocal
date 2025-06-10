@@ -3,12 +3,7 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import { useProduct } from "../../hooks";
-import {
-    ProductBreadcrumb,
-    ProductGallery,
-    Footer,
-    Header,
-} from "../../componentes";
+import { ProductGallery, Footer, Header } from "../../componentes";
 
 import classes from "./productDetail.module.css";
 
@@ -33,7 +28,6 @@ function ProductDetail() {
 
         try {
             await cart.addItem(producto, quantity);
-            alert(`${quantity} ${producto.name}(s) añadido(s) al carrito`);
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert("Error al añadir producto al carrito");
@@ -130,9 +124,6 @@ function ProductDetail() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb del producto */}
-                <ProductBreadcrumb product={producto} />
-
                 {/* Contenido principal */}
                 <div className={classes.productContent}>
                     {/* Galería de imágenes - COMPONENTE MODULARIZADO */}

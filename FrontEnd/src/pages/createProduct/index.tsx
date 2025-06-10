@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts";
 import { useVendorProducts } from "../../contexts/vendorProductsContext";
 import mercadilloService from "../../services";
-import { Header, Footer, SimpleBreadcrumb } from "../../componentes";
+import { Header, Footer } from "../../componentes";
 import {
     type CategoryInterface,
     type ProductFormData,
@@ -286,12 +286,6 @@ function CreateProduct() {
             <Header />
 
             <div className={classes.container}>
-                <SimpleBreadcrumb
-                    pageName="Crear Producto"
-                    parentPath="/mis-productos"
-                    parentName="Mis Productos"
-                />
-
                 <div className={classes.pageHeader}>
                     <h1 className={classes.pageTitle}>
                         📦 Crear Nuevo Producto

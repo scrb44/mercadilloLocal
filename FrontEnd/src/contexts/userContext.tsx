@@ -1,5 +1,3 @@
-// src/contexts/userContext.tsx - CORREGIDO
-
 import axios from "axios";
 import React, {
     createContext,
@@ -13,7 +11,7 @@ import { type UserInterface, type LoginCredentials } from "../types/types";
 
 // ============ INTERFACES ============
 
-export interface UserContextType {
+interface UserContextType {
     user: UserInterface | null;
     isAuthenticated: boolean;
     loading: boolean;
@@ -40,7 +38,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     // ============ VERIFICAR TOKEN AL INICIAR ============
     useEffect(() => {
-        const initializeAuth = () => {
+        const initializeAuth = async () => {
             try {
                 const token = localStorage.getItem("token");
 
@@ -49,43 +47,40 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                     return;
                 }
 
-                // Verificar si el token es válido
                 try {
-                    const payload = JSON.parse(atob(token.split(".")[1]));
-                    const isExpired = payload.exp * 1000 < Date.now();
-
-                    if (isExpired) {
-                        localStorage.removeItem("token");
-                        delete axios.defaults.headers.common["Authorization"];
-                        setLoading(false);
-                        return;
-                    }
-
-                    // Token válido - construir usuario desde payload
-                    const userData: UserInterface = {
-                        id: payload.id || payload.userId || payload.sub,
-                        role: payload.role || payload.rol || "COMPRADOR",
-                        usuario:
-                            payload.usuario || payload.username || payload.sub,
-                        nombre: payload.nombre || payload.name || "",
-                        email: payload.email || payload.sub || "",
-                        token: token,
-                        verificado: payload.verificado || false,
-                        imagen: payload.imagen || "",
-                        localidad: payload.localidad || undefined,
-                    };
-
-                    setUser(userData);
+                    // Configurar axios con el token
                     axios.defaults.headers.common[
                         "Authorization"
                     ] = `Bearer ${token}`;
-                } catch (tokenError) {
-                    console.warn("⚠️ Token inválido:", tokenError);
+
+                    // Hacer petición al endpoint de perfil para obtener datos completos
+                    const response = await axios.get(
+                        "http://localhost:8080/api/auth/perfil"
+                    );
+
+                    // Mapear la respuesta del backend
+                    const userData: UserInterface = {
+                        id: response.data.id,
+                        role: response.data.rol,
+                        usuario: response.data.usuario,
+                        nombre: response.data.nombre,
+                        email: response.data.email,
+                        token: token,
+                        verificado: response.data.verificado || false,
+                        imagen: response.data.imagen || "",
+                        localidad: response.data.localidad || undefined,
+                    };
+
+                    setUser(userData);
+                } catch (error: any) {
+                    console.warn("⚠️ Token inválido o expirado, eliminando...");
                     localStorage.removeItem("token");
                     delete axios.defaults.headers.common["Authorization"];
                 }
-            } catch (error) {
-                console.error("❌ Error inicializando autenticación:", error);
+            } catch (error: any) {
+                console.warn("⚠️ Error inicializando autenticación:", error);
+                localStorage.removeItem("token");
+                delete axios.defaults.headers.common["Authorization"];
             } finally {
                 setLoading(false);
             }
@@ -94,8 +89,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         initializeAuth();
     }, []);
 
-    // ============ LOGIN ============
-    const login = async (credentials: LoginCredentials): Promise<void> => {
+    const login = async (credentials: LoginCredentials) => {
         try {
             setLoading(true);
             setError(null);
@@ -108,51 +102,47 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 }
             );
 
-            const { token, ...userData } = response.data;
+            // ✅ MAPEAR CORRECTAMENTE la respuesta del backend
+            const backendData = response.data;
 
-            if (!token) {
-                throw new Error("No se recibió token del servidor");
-            }
+            // Guardar token localmente
+            localStorage.setItem("token", backendData.token);
 
-            // Guardar token
-            localStorage.setItem("token", token);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+            // Configurar axios para futuras requests
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${backendData.token}`;
 
-            // Crear objeto de usuario
-            const userObject: UserInterface = {
-                id: userData.id,
-                role: userData.rol || userData.role || "COMPRADOR",
-                usuario: userData.usuario || userData.username,
-                nombre: userData.nombre || userData.name,
-                email: userData.email,
-                token: token,
-                verificado: userData.verificado || false,
-                imagen: userData.imagen || "",
-                localidad: userData.localidad || undefined,
+            // ✅ MAPEAR con los nombres correctos del backend
+            const userData: UserInterface = {
+                id: backendData.id,
+                role: backendData.rol, // ⚠️ IMPORTANTE: El backend usa "rol", no "role"
+                usuario: backendData.usuario,
+                nombre: backendData.nombre,
+                email: backendData.email,
+                token: backendData.token,
+                verificado: true, // Si hizo login exitoso, está verificado
+                imagen: backendData.imagen || "",
+                localidad: undefined, // Este campo no viene en la respuesta del login
             };
 
-            setUser(userObject);
+            setUser(userData);
         } catch (err: any) {
             console.error("❌ Error en login:", err);
 
-            let errorMessage = "Credenciales incorrectas";
-
             if (err.response?.data?.mensaje) {
-                errorMessage = err.response.data.mensaje;
+                setError(err.response.data.mensaje);
             } else if (err.response?.data?.message) {
-                errorMessage = err.response.data.message;
-            } else if (err.message) {
-                errorMessage = err.message;
+                setError(err.response.data.message);
+            } else {
+                setError("Credenciales incorrectas");
             }
-
-            setError(errorMessage);
-            throw new Error(errorMessage);
+            throw err;
         } finally {
             setLoading(false);
         }
     };
 
-    // ============ LOGOUT ============
     const logout = () => {
         // Limpiar estado local
         setUser(null);
@@ -165,14 +155,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         delete axios.defaults.headers.common["Authorization"];
 
         // Limpiar cache de servicios
-        try {
-            mercadilloService.clearLocalCache();
-        } catch (error) {
-            console.warn("Error limpiando cache:", error);
-        }
+        mercadilloService.clearLocalCache();
     };
 
-    // ============ VALOR DEL CONTEXTO ============
     const contextValue: UserContextType = {
         user,
         isAuthenticated,
@@ -191,6 +176,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 };
 
 // ============ HOOK ============
+
 export const useUser = (): UserContextType => {
     const context = useContext(UserContext);
     if (context === undefined) {

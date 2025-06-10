@@ -235,37 +235,3 @@ export const isComprador = (userRole?: string): boolean => {
 export const isAdmin = (userRole?: string): boolean => {
     return userRole === USER_ROLES.ADMIN;
 };
-
-// Función helper para generar breadcrumbs dinámicos
-export const generateBreadcrumbs = (currentPath: string) => {
-    const pathSegments = currentPath.split("/").filter(Boolean);
-    const breadcrumbs = [{ name: "Inicio", path: "/" }];
-
-    let currentRoute = "";
-    pathSegments.forEach((segment, index) => {
-        currentRoute += `/${segment}`;
-
-        // Mapear segmentos a nombres legibles
-        const segmentNames: Record<string, string> = {
-            "mis-productos": "Mis Productos",
-            "subir-producto": "Crear Producto",
-            "editar-producto": "Editar Producto",
-            "mis-compras": "Mis Compras", // ✅ NUEVO
-            perfil: "Mi Perfil",
-            carrito: "Carrito",
-            categoria: "Categoría",
-            producto: "Producto",
-            checkout: "Finalizar Compra",
-            pago: "Pago",
-            "seleccionar-municipio": "Seleccionar Municipio",
-            "quienes-somos": "Quiénes Somos",
-        };
-
-        const name =
-            segmentNames[segment] ||
-            segment.charAt(0).toUpperCase() + segment.slice(1);
-        breadcrumbs.push({ name, path: currentRoute });
-    });
-
-    return breadcrumbs;
-};

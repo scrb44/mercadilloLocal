@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts";
 import { useVendorProducts } from "../../contexts/vendorProductsContext";
-import { Header, Footer, SimpleBreadcrumb } from "../../componentes";
+import { Header, Footer } from "../../componentes";
 import { type ProductInterface } from "../../types/types";
 import classes from "./vendorProducts.module.css";
 
@@ -90,12 +90,6 @@ function VendorProducts() {
             <Header />
 
             <div className={classes.container}>
-                <SimpleBreadcrumb
-                    pageName="Mis Productos"
-                    parentPath="/"
-                    parentName="Inicio"
-                />
-
                 {/* Header de la página */}
                 <div className={classes.pageHeader}>
                     <div className={classes.headerContent}>

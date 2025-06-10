@@ -13,7 +13,6 @@
   font-weight: 700;
   color: #222;
   animation: slideDown 1s ease-in-out both;
-  padding: 50px;
 }
 
 .descripcion {
@@ -80,22 +79,29 @@
 /* ========== HERRAMIENTAS ========== */
 .herramientasGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 24px;
+  justify-content: center;
+  max-width: 800px;  /* Limita el ancho para que no se desparrame */
+  margin: 0 auto;     /* Centrado horizontal */
   margin-top: 20px;
   animation: fadeInUp 1.5s ease-in-out both;
 }
+
 
 .herramienta {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;  /* Asegura centrado vertical en caso de expansión */
+  text-align: center;
   background-color: #fafafa;
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 
 .herramienta:hover {
   transform: translateY(-6px);

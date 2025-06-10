@@ -120,15 +120,20 @@
 }
 
 .primaryButton {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, rgba(235, 169, 37, 0.8));
     color: white;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(143, 89, 8, 0.9);;
 }
 
 .primaryButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 6px 16px rgba(235, 169, 37, 0.8);
 }
+
+.primaryButton:hover{
+    background-color: rgba(143, 89, 8, 0.9);
+}
+
 
 .primaryButton:disabled {
     opacity: 0.6;
@@ -137,14 +142,15 @@
 }
 
 .secondaryButton {
-    background: rgba(107, 114, 128, 0.8);
+    background: rgba(245, 195, 94, 0.8);
     color: white;
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }
 
 .secondaryButton:hover:not(:disabled) {
-    background: rgba(75, 85, 99, 0.9);
+    background: 
+rgba(143, 89, 8, 0.9);
     transform: translateY(-1px);
 }
 

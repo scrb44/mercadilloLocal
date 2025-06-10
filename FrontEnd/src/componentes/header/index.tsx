@@ -1,4 +1,5 @@
-// src/componentes/header/index.tsx - ACTUALIZADO CON ENLACE MIS COMPRAS
+// src/componentes/header/index.tsx - ACTUALIZADO CON DROPDOWN
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import MunicipioIndicator from "../municipioIndicator";
@@ -7,6 +8,8 @@ import classes from "./header.module.css";
 function Header() {
     const navigate = useNavigate();
     const { user, isAuthenticated, logout } = useUser();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLLIElement>(null);
 
     const handleLogout = () => {
         logout();
@@ -18,6 +21,31 @@ function Header() {
 
     // Verificar si el usuario es vendedor
     const isVendor = user?.role === "VENDEDOR";
+
+    // Cerrar dropdown al hacer clic fuera
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
+    };
+
+    const closeDropdown = () => {
+        setDropdownOpen(false);
+    };
 
     return (
         <header className={classes["page-header"]}>
@@ -47,64 +75,68 @@ function Header() {
                         </Link>
                     </li>
 
-                    {/* Enlace PERFIL solo si está autenticado */}
-                    {isAuthenticated && (
-                        <li>
-                            <Link
-                                to="/perfil"
-                                className={classes["page-header__link"]}
-                            >
-                                Mi perfil
-                            </Link>
-                        </li>
-                    )}
-
-                    {/* ✅ NUEVO: Enlace MIS COMPRAS solo si está autenticado */}
-                    {isAuthenticated && (
-                        <li>
-                            <Link
-                                to="/mis-compras"
-                                className={
-                                    classes["page-header__purchases-link"]
-                                }
-                                title="Ver historial de compras"
-                            >
-                                📋 Mis Compras
-                            </Link>
-                        </li>
-                    )}
-
-                    {/* Enlace PARA VENDEDORES - solo si es vendedor */}
-                    {isAuthenticated && isVendor && (
-                        <li>
-                            <Link
-                                to="/mis-productos"
-                                className={classes["page-header__vendor-link"]}
-                                title="Gestiona tus productos"
-                            >
-                                📦 Mis Productos
-                            </Link>
-                        </li>
-                    )}
-
                     {isAuthenticated ? (
                         <>
-                            <li className={classes["page-header__user"]}>
-                                Hola, {user?.usuario}
-                                {isVendor && (
-                                    <span className={classes["vendor-badge"]}>
-                                        • Vendedor
-                                    </span>
-                                )}
-                            </li>
-                            <li>
+                            {/* Dropdown del usuario */}
+                            <li
+                                className={
+                                    classes["page-header__user-dropdown"]
+                                }
+                                ref={dropdownRef}
+                            >
                                 <button
-                                    className={classes["page-header__logout"]}
-                                    onClick={handleLogout}
-                                    aria-label="Cerrar sesión"
+                                    className={
+                                        classes["page-header__user-button"]
+                                    }
+                                    onClick={toggleDropdown}
+                                    aria-expanded={dropdownOpen}
+                                    aria-haspopup="true"
                                 >
-                                    Cerrar sesión
+                                    <span
+                                        className={
+                                            classes["page-header__user-text"]
+                                        }
+                                    >
+                                        Hola, {user?.nombre}
+                                    </span>
+                                    <span className={classes["dropdown-arrow"]}>
+                                        {dropdownOpen ? "▲" : "▼"}
+                                    </span>
                                 </button>
+
+                                {/* Menú desplegable */}
+                                {dropdownOpen && (
+                                    <div className={classes["dropdown-menu"]}>
+                                        <Link
+                                            to="/perfil"
+                                            className={classes["dropdown-item"]}
+                                            onClick={closeDropdown}
+                                        >
+                                            👤 Mi perfil
+                                        </Link>
+
+                                        <Link
+                                            to="/mis-compras"
+                                            className={classes["dropdown-item"]}
+                                            onClick={closeDropdown}
+                                        >
+                                            📋 Mis compras
+                                        </Link>
+
+                                        {/* Solo mostrar "Mis productos" si es vendedor */}
+                                        {isVendor && (
+                                            <Link
+                                                to="/mis-productos"
+                                                className={
+                                                    classes["dropdown-item"]
+                                                }
+                                                onClick={closeDropdown}
+                                            >
+                                                📦 Mis productos
+                                            </Link>
+                                        )}
+                                    </div>
+                                )}
                             </li>
 
                             <li>
@@ -138,6 +170,16 @@ function Header() {
                                         </span>
                                     )}
                                 </Link>
+                            </li>
+
+                            <li>
+                                <button
+                                    className={classes["page-header__logout"]}
+                                    onClick={handleLogout}
+                                    aria-label="Cerrar sesión"
+                                >
+                                    Cerrar sesión
+                                </button>
                             </li>
                         </>
                     ) : (
