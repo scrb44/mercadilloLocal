@@ -1,203 +1,119 @@
-/* src/componentes/categoryList/categoryList.module.css - MEJORADO CON SUBCATEGORÍAS */
+/* src/componentes/categoryList/categoryList.module.css - SIMPLIFICADO */
 
-.categoryListContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-}
-
-.categoryList {
+.categoryGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     padding: 20px 0;
 }
 
+/* ✅ NUEVO: Para scroll horizontal en el home - Reemplaza horizontalScroll del home.css */
+.categoryGrid.horizontal {
+    display: flex;
+    gap: 16px;
+    padding: 20px 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+}
+
+/* ✅ Scrollbar personalizada para el scroll horizontal */
+.categoryGrid.horizontal::-webkit-scrollbar {
+    height: 8px;
+}
+
+.categoryGrid.horizontal::-webkit-scrollbar-thumb {
+    background: rgba(143, 89, 8, 0.3);
+    border-radius: 4px;
+}
+
+.categoryGrid.horizontal::-webkit-scrollbar-thumb:hover {
+    background: rgba(143, 89, 8, 0.5);
+}
+
+.categoryGrid.horizontal .categoryCard {
+    flex: 0 0 280px; /* ✅ Ancho fijo óptimo para desktop */
+    scroll-snap-align: start;
+}
+
 .categoryCard {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    height: 200px;
     border-radius: 16px;
-    padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* ✅ Configuración de imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    /* ✅ Flexbox para centrar contenido */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+/* ✅ Overlay oscuro aplicado con ::before */
+.categoryCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.2) 50%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    z-index: 1;
+    transition: opacity 0.3s ease;
 }
 
 .categoryCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-    border-color: rgba(37, 99, 235, 0.4);
-    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
-.subcategoryCard {
-    height: 140px;
-    background: rgba(34, 197, 94, 0.1);
-    border-color: rgba(34, 197, 94, 0.2);
-}
-
-.subcategoryCard:hover {
-    background: rgba(34, 197, 94, 0.15);
-    border-color: rgba(34, 197, 94, 0.4);
-}
-
-.categoryContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    text-align: center;
-    width: 100%;
-    position: relative;
-}
-
-.categoryImage {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.categoryPlaceholder {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.categoryInfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
+.categoryCard:hover::before {
+    opacity: 0.8;
 }
 
 .categoryName {
     font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-weight: 700;
     margin: 0;
-    text-align: center;
-    line-height: 1.3;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-}
-
-.subcategoryName {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 0;
-    text-align: center;
-    line-height: 1.3;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-}
-
-.subcategoryCount {
-    font-size: 0.85rem;
-    color: #2563eb;
-    font-weight: 500;
-    background: rgba(37, 99, 235, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(37, 99, 235, 0.2);
-    padding: 4px 8px;
-    border-radius: 12px;
-    text-shadow: none;
-}
-
-.subcategoryIndicator {
-    font-size: 0.8rem;
-    color: #16a34a;
-    font-weight: 500;
-    background: rgba(34, 197, 94, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    padding: 4px 8px;
-    border-radius: 12px;
-    text-shadow: none;
-}
-
-.parentCategoryName {
-    font-size: 0.8rem;
-    color: #6b7280;
-    font-style: italic;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    line-height: 1.2;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
 }
 
 .categoryArrow {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 1.2rem;
-    color: #6b7280;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
     opacity: 0;
-    transition: all 0.2s ease;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 2;
 }
 
 .categoryCard:hover .categoryArrow {
     opacity: 1;
-    color: #2563eb;
-    transform: translateX(2px);
-}
-
-.subcategoryCard:hover .categoryArrow {
-    color: #16a34a;
-}
-
-/* Sección de subcategorías */
-.subcategoryHeader {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.subcategoryTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-}
-
-.subcategoriesSection {
-    background: rgba(34, 197, 94, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(34, 197, 94, 0.1);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-}
-
-.sectionTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 0 0 20px 0;
-    text-align: center;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-}
-
-.subcategoriesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
+    transform: translateY(0);
 }
 
 /* Estados de carga, error y vacío */
@@ -216,6 +132,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    gap: 16px;
 }
 
 /* Loading */
@@ -226,7 +143,6 @@
     border-top: 4px solid #2563eb;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 16px;
 }
 
 @keyframes spin {
@@ -238,35 +154,15 @@
     }
 }
 
-.loadingText {
-    font-size: 1.1rem;
-    color: #6b7280;
-    margin: 0;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
-}
-
 /* Error */
 .errorContainer {
     background: rgba(220, 38, 38, 0.05);
     border-color: rgba(220, 38, 38, 0.1);
-}
-
-.errorContent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    color: #dc2626;
 }
 
 .errorIcon {
     font-size: 2rem;
-}
-
-.errorText {
-    font-size: 1.1rem;
-    color: #dc2626;
-    margin: 0;
-    font-weight: 500;
 }
 
 .retryButton {
@@ -290,95 +186,71 @@
 /* Empty state */
 .emptyIcon {
     font-size: 3rem;
-    margin-bottom: 16px;
-}
-
-.emptyText {
-    font-size: 1.25rem;
-    color: #374151;
-    margin: 0;
-    font-weight: 600;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .categoryList {
+    .categoryGrid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 16px;
         padding: 16px 0;
     }
 
+    /* ✅ Para scroll horizontal en tablet */
+    .categoryGrid.horizontal {
+        gap: 14px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .categoryGrid.horizontal .categoryCard {
+        flex: 0 0 260px; /* ✅ Tamaño perfecto para tablet */
+        height: 180px;
+    }
+
     .categoryCard {
         height: 160px;
-        padding: 16px;
         border-radius: 12px;
     }
 
-    .subcategoryCard {
-        height: 120px;
-    }
-
-    .categoryImage,
-    .categoryPlaceholder {
-        width: 50px;
-        height: 50px;
-    }
-
-    .categoryName,
-    .subcategoryName {
+    .categoryName {
         font-size: 1.1rem;
     }
 
-    .subcategoriesGrid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 12px;
-    }
-
-    .subcategoriesSection {
-        padding: 20px;
-        border-radius: 16px;
-    }
-
-    .sectionTitle {
+    .categoryArrow {
         font-size: 1.3rem;
     }
 }
 
 @media (max-width: 480px) {
-    .categoryList {
+    .categoryGrid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
 
+    /* ✅ Para scroll horizontal en móvil - Tamaño perfecto para dedos */
+    .categoryGrid.horizontal {
+        gap: 12px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .categoryGrid.horizontal .categoryCard {
+        flex: 0 0 220px; /* ✅ Tamaño óptimo para móvil - fácil de tocar */
+        height: 160px;
+    }
+
     .categoryCard {
         height: 140px;
-        padding: 12px;
         border-radius: 10px;
     }
 
-    .subcategoryCard {
-        height: 100px;
-    }
-
-    .categoryImage,
-    .categoryPlaceholder {
-        width: 40px;
-        height: 40px;
-        font-size: 1.5rem;
-    }
-
-    .categoryName,
-    .subcategoryName {
+    .categoryName {
         font-size: 1rem;
+        line-height: 1.1;
     }
 
-    .subcategoriesGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .subcategoriesSection {
-        padding: 16px;
-        border-radius: 12px;
+    .categoryArrow {
+        font-size: 1.2rem;
     }
 }
