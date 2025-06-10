@@ -66,15 +66,6 @@ function Header() {
                 </div>
 
                 <ul className={classes["page-header__list"]}>
-                    <li>
-                        <Link
-                            to="/quienes-somos"
-                            className={classes["page-header__link"]}
-                        >
-                            ¿Quiénes somos?
-                        </Link>
-                    </li>
-
                     {isAuthenticated ? (
                         <>
                             {/* Dropdown del usuario */}
