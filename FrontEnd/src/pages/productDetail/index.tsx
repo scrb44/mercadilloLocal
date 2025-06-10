@@ -33,7 +33,6 @@ function ProductDetail() {
 
         try {
             await cart.addItem(producto, quantity);
-            alert(`${quantity} ${producto.name}(s) añadido(s) al carrito`);
         } catch (error) {
             console.error("Error adding to cart:", error);
             alert("Error al añadir producto al carrito");
@@ -45,6 +44,8 @@ function ProductDetail() {
             alert("Debes iniciar sesión para comprar");
             return;
         }
+
+        
 
         handleAddToCart().then(() => {
             navigate("/carrito");

@@ -4,6 +4,8 @@ import styles from "./perfil.module.css";
 import Header from "../../componentes/header";
 import { useNavigate } from "react-router-dom";
 import api from "../../security/axiosConfig";  // Importa tu axios configurado
+import Footer from "../../componentes/footer";
+
 
 const Perfil: React.FC = () => {
   const { user, setUser, isAuthenticated, logout } = useUser(); // Ojo con setUser si tienes
@@ -120,6 +122,7 @@ const Perfil: React.FC = () => {
           </div>
         </div>
       </div>
+       <Footer />
     </>
   );
 };
