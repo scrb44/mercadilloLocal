@@ -148,7 +148,7 @@
 .price {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
 }
 
@@ -317,7 +317,7 @@
 .totalValue {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #2563eb;
+    color: rgba(143, 89, 8, 0.9);
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
 }
 
@@ -340,18 +340,22 @@
 }
 
 .addToCartButton {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, rgba(235, 169, 37, 0.8));
     color: white;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(143, 89, 8, 0.9);
 }
 
 .addToCartButton:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 6px 16px rgba(143, 89, 8, 0.9);
+}
+
+.addToCartButton:hover{
+    background-color: rgba(143, 89, 8, 0.9);
 }
 
 .buyNowButton {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    background: linear-gradient(135deg, rgba(235, 169, 37, 0.8));
     color: white;
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
@@ -359,6 +363,10 @@
 .buyNowButton:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.buyNowButton:hover{
+    background-color: rgba(143, 89, 8, 0.9);
 }
 
 .actionButton:disabled {
