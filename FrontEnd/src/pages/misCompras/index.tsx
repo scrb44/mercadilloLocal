@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../../contexts";
-import { SimpleBreadcrumb, Footer, Header } from "../../componentes";
+import { Footer, Header } from "../../componentes";
 import {
     pedidosService,
     type PedidoAPI,
@@ -71,7 +71,6 @@ function MisCompras() {
             <div className={classes.page}>
                 <Header />
                 <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Mis Compras" />
                     <div className={classes.unauthenticated}>
                         <h1>Mis Compras</h1>
                         <p>
@@ -93,7 +92,6 @@ function MisCompras() {
             <div className={classes.page}>
                 <Header />
                 <div className={classes.container}>
-                    <SimpleBreadcrumb pageName="Mis Compras" />
                     <div className={classes.loading}>
                         <div className={classes.spinner}></div>
                         <p>Cargando tu historial de compras...</p>
@@ -110,8 +108,6 @@ function MisCompras() {
             <Header />
 
             <div className={classes.container}>
-                <SimpleBreadcrumb pageName="Mis Compras" />
-
                 <div className={classes.header}>
                     <h1 className={classes.title}>Mis Compras</h1>
                     <p className={classes.subtitle}>

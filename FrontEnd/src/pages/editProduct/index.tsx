@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../contexts";
 import { useVendorProducts } from "../../contexts/vendorProductsContext";
 import mercadilloService from "../../services";
-import { Header, Footer, SimpleBreadcrumb } from "../../componentes";
+import { Header, Footer } from "../../componentes";
 import {
     type CategoryInterface,
     type ProductFormData,
@@ -77,8 +77,7 @@ function EditProduct() {
 
                 // 🔧 USAR mercadilloService con useCache = false
                 const product = await mercadilloService.getProduct(
-                    Number(productId),
-                    false // useCache = false para forzar recarga desde API
+                    Number(productId)
                 );
 
                 setCurrentProduct(product);
@@ -379,12 +378,6 @@ function EditProduct() {
             <Header />
 
             <div className={classes.container}>
-                <SimpleBreadcrumb
-                    pageName={`Editar: ${currentProduct.name}`}
-                    parentPath="/mis-productos"
-                    parentName="Mis Productos"
-                />
-
                 <div className={classes.pageHeader}>
                     <h1 className={classes.pageTitle}>✏️ Editar Producto</h1>
                     <p className={classes.pageSubtitle}>

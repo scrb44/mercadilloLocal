@@ -3,12 +3,7 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useUser, useCart } from "../../contexts";
 import { useProduct } from "../../hooks";
-import {
-    ProductBreadcrumb,
-    ProductGallery,
-    Footer,
-    Header,
-} from "../../componentes";
+import { ProductGallery, Footer, Header } from "../../componentes";
 
 import classes from "./productDetail.module.css";
 
@@ -44,8 +39,6 @@ function ProductDetail() {
             alert("Debes iniciar sesión para comprar");
             return;
         }
-
-        
 
         handleAddToCart().then(() => {
             navigate("/carrito");
@@ -131,9 +124,6 @@ function ProductDetail() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb del producto */}
-                <ProductBreadcrumb product={producto} />
-
                 {/* Contenido principal */}
                 <div className={classes.productContent}>
                     {/* Galería de imágenes - COMPONENTE MODULARIZADO */}

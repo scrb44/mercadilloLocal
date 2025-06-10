@@ -8,7 +8,7 @@ import {
     type PaymentItem,
     type UserPaymentData,
 } from "../../types/paymentTypes";
-import { Header, Footer, SimpleBreadcrumb } from "../../componentes";
+import { Header, Footer } from "../../componentes";
 import CheckoutSteps from "../../componentes/checkout/checkoutSteps";
 import CartSummary from "../../componentes/checkout/cartSummary";
 import ShippingForm from "../../componentes/checkout/shippingForm";
@@ -290,13 +290,6 @@ function CheckoutContent() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb */}
-                <SimpleBreadcrumb
-                    pageName="Checkout"
-                    parentPath="/carrito"
-                    parentName="Carrito"
-                />
-
                 {/* Indicador de pasos */}
                 <CheckoutSteps
                     currentStep={payment.state.currentStep}
