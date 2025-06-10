@@ -12,7 +12,6 @@ import {
     Footer,
     Header,
     CategoryList,
-    CategoryBreadcrumb,
     CategoryHeader,
     ProductsSection,
 } from "../../componentes";
@@ -83,12 +82,6 @@ function CategoryProducts() {
             <Header />
 
             <div className={classes.container}>
-                {/* Breadcrumb */}
-                <CategoryBreadcrumb
-                    currentCategory={categoria}
-                    parentCategory={categoriaPadre}
-                />
-
                 {/* Header de categoría */}
                 {categoria && (
                     <CategoryHeader

@@ -25,14 +25,6 @@ export { default as MunicipioIndicator } from "./municipioIndicator";
 export { default as MunicipioGuard } from "./municipioGuard";
 export { default as ErrorBoundary, NotFoundPage } from "./errorBoundary";
 
-// Navegación - breadcrumb exporta múltiples componentes
-export {
-    default as Breadcrumb,
-    CategoryBreadcrumb,
-    ProductBreadcrumb,
-    SimpleBreadcrumb,
-} from "./breadcrumb";
-
 // NUEVOS: Componentes de checkout
 export { default as CheckoutSteps } from "./checkout/checkoutSteps";
 export { default as CartSummary } from "./checkout/cartSummary";
