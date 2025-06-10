@@ -1,4 +1,4 @@
-/* src/componentes/header/header.module.css - ACTUALIZADO CON MUNICIPIO Y VENDEDORES */
+/* src/componentes/header/header.module.css - ACTUALIZADO CON DROPDOWN */
 
 .page-header {
     /* Banda que ocupa REALMENTE todo el ancho */
@@ -14,7 +14,7 @@
     align-items: center;
     padding: 16px 0;
     /* Efecto cristal */
-    background:bisque;
+    background: bisque;
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -87,74 +87,102 @@
 
 .page-header__link:hover {
     color: rgba(255, 253, 250, 0.9);
-    background: rgba(143, 89, 8, 0.9);;
-    border-color: rgba(143, 89, 8, 0.9);;
+    background: rgba(143, 89, 8, 0.9);
+    border-color: rgba(143, 89, 8, 0.9);
     transform: translateY(-1px);
 }
 
-/* ✅ NUEVO: Enlace especial para "Mis Compras" */
-.page-header__purchases-link {
-    color: #7c3aed;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    background: rgba(124, 58, 237, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(124, 58, 237, 0.2);
+/* ✅ NUEVO: Dropdown del usuario */
+.page-header__user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.page-header__user-button {
     display: flex;
     align-items: center;
-    gap: 4px;
-}
-
-.page-header__purchases-link:hover {
-    color: #6d28d9;
-    background: rgba(124, 58, 237, 0.2);
-    border-color: rgba(124, 58, 237, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
-}
-
-/* Enlace especial para vendedores */
-.page-header__vendor-link {
-    color: #059669;
-    text-decoration: none;
-    font-weight: 600;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    background: rgba(5, 150, 105, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(5, 150, 105, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.page-header__vendor-link:hover {
-    color: #047857;
-    background: rgba(5, 150, 105, 0.2);
-    border-color: rgba(5, 150, 105, 0.3);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
-}
-
-.page-header__user {
+    gap: 8px;
     color: #374151;
-    font-weight: 500;
-    padding: 8px 12px;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
     border-radius: 8px;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.page-header__user-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.page-header__user-text {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.dropdown-arrow {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+    color: #6b7280;
+}
+
+/* Menú desplegable */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151;
+    text-decoration: none;
+    padding: 12px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background: rgba(143, 89, 8, 0.1);
+    color: rgba(143, 89, 8, 0.9);
 }
 
 /* Badge de vendedor */
@@ -231,7 +259,7 @@
 }
 
 .page-header__cart:hover {
-    color: rgba(143, 89, 8, 0.9);;
+    color: rgba(143, 89, 8, 0.9);
     border-color: rgba(143, 89, 8, 0.9);
     background: rgba(254, 223, 176, 0.9);
     transform: translateY(-2px);
@@ -300,15 +328,26 @@
         order: -1; /* Mostrar el municipio primero en móvil */
     }
 
-    .page-header__vendor-link,
-    .page-header__purchases-link {
+    .vendor-badge {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+
+    /* Dropdown en móvil */
+    .dropdown-menu {
+        right: auto;
+        left: 0;
+        min-width: 180px;
+    }
+
+    .page-header__user-button {
         font-size: 0.9rem;
         padding: 6px 10px;
     }
 
-    .vendor-badge {
-        font-size: 0.7rem;
-        padding: 1px 4px;
+    .dropdown-item {
+        padding: 10px 14px;
+        font-size: 0.9rem;
     }
 }
 
@@ -332,17 +371,26 @@
         justify-content: center;
     }
 
-    .page-header__vendor-link,
-    .page-header__purchases-link {
+    .page-header__user-dropdown {
+        width: 100%;
+    }
+
+    .page-header__user-button {
         width: 100%;
         justify-content: center;
+    }
+
+    .dropdown-menu {
+        left: 0;
+        right: 0;
+        min-width: 100%;
     }
 
     .page-header__logo h1 {
         font-size: 1.3rem;
     }
 
-    .page-header__user {
+    .page-header__user-text {
         flex-direction: column;
         text-align: center;
         gap: 2px;
