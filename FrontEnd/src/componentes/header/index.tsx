@@ -97,7 +97,7 @@ function Header() {
                                             classes["page-header__user-text"]
                                         }
                                     >
-                                        Hola, {user?.usuario}
+                                        Hola, {user?.nombre}
                                     </span>
                                     <span className={classes["dropdown-arrow"]}>
                                         {dropdownOpen ? "▲" : "▼"}
