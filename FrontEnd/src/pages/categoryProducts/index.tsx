@@ -1,7 +1,10 @@
-// src/pages/categoryProducts/index.tsx - MODULARIZADO
-import { useState, useCallback } from "react";
+// src/pages/categoryProducts/index.tsx - VERSIÓN SIMPLIFICADA
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { type SearchFiltersInterface } from "../../types/types";
+import {
+    type SearchFiltersInterface,
+    type ProductInterface,
+} from "../../types/types";
 
 // Hooks personalizados
 import { useCategory, useProducts } from "../../hooks";
@@ -20,7 +23,11 @@ import classes from "./CategoryProducts.module.css";
 
 function CategoryProducts() {
     const { categoryId } = useParams<{ categoryId: string }>();
+
+    // 🔧 SIMPLIFICADO: Solo mantenemos query para el hook original
     const [searchQuery, setSearchQuery] = useState<string>("");
+    const [additionalFilters, setAdditionalFilters] =
+        useState<SearchFiltersInterface>({});
 
     // Usar hooks personalizados
     const {
@@ -32,25 +39,71 @@ function CategoryProducts() {
         retry: retryCategory,
     } = useCategory(categoryId);
 
+    // 🔧 USAR HOOK ORIGINAL: Solo con query para que funcione automáticamente
     const {
-        productos,
+        productos: allProducts,
         loading: productsLoading,
         error: productsError,
         retry: retryProducts,
     } = useProducts(categoryId, searchQuery);
 
+    // 🔧 FILTRAR LOCALMENTE: Aplicar filtros adicionales después
+    const productos = useMemo(() => {
+        let filteredProducts = [...allProducts];
+
+        // Filtrar por precio mínimo
+        if (additionalFilters.minPrice && additionalFilters.minPrice > 0) {
+            filteredProducts = filteredProducts.filter(
+                (product) => product.price >= additionalFilters.minPrice!
+            );
+        }
+
+        // Filtrar por precio máximo
+        if (additionalFilters.maxPrice && additionalFilters.maxPrice > 0) {
+            filteredProducts = filteredProducts.filter(
+                (product) => product.price <= additionalFilters.maxPrice!
+            );
+        }
+
+        // Filtrar por nombre de vendedor
+        if (
+            additionalFilters.vendorName &&
+            additionalFilters.vendorName.trim()
+        ) {
+            const vendorQuery = additionalFilters.vendorName.toLowerCase();
+            filteredProducts = filteredProducts.filter((product) => {
+                const vendorName =
+                    product.vendedor?.name?.toLowerCase() ||
+                    product.vendedor?.nombre?.toLowerCase() ||
+                    "";
+                return vendorName.includes(vendorQuery);
+            });
+        }
+        return filteredProducts;
+    }, [allProducts, additionalFilters]);
+
     // ============ HANDLERS ============
     const handleFiltersChange = useCallback(
         (newFilters: SearchFiltersInterface) => {
-            setSearchQuery(newFilters.query || "");
+            // Separar query de otros filtros
+            const { query, ...otherFilters } = newFilters;
+
+            // Query va directo al hook para búsqueda automática
+            if (query !== searchQuery) {
+                setSearchQuery(query || "");
+            }
+
+            // Otros filtros se aplican localmente
+            setAdditionalFilters(otherFilters);
         },
-        []
+        [searchQuery]
     );
 
     const handleAddToCart = useCallback((product: any) => {}, []);
 
     const handleClearSearch = useCallback(() => {
         setSearchQuery("");
+        setAdditionalFilters({});
     }, []);
 
     const handleRetry = useCallback(() => {
@@ -92,7 +145,7 @@ function CategoryProducts() {
                     />
                 )}
 
-                {/* Subcategorías (solo si existen y no hay búsqueda) */}
+                {/* Subcategorías (solo si existen y no hay búsqueda activa) */}
                 {subcategorias.length > 0 && !searchQuery && (
                     <div className={classes.subcategoriesSection}>
                         <div className={classes.subcategoriesHeader}>
@@ -108,8 +161,7 @@ function CategoryProducts() {
                             categories={subcategorias}
                             loading={false}
                             error={null}
-                            showSubcategories={true}
-                            parentCategory={categoria}
+                            horizontal={false}
                         />
                     </div>
                 )}

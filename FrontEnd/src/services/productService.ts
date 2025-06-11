@@ -80,7 +80,7 @@ export const productsService = {
     },
 
     async getProducts(
-        filters?: SearchFiltersWithLocalidad,
+        filters?: SearchFiltersInterface,
         useCache: boolean = true
     ): Promise<ProductInterface[]> {
         try {
@@ -94,7 +94,7 @@ export const productsService = {
                 }
             }
 
-            // 🔧 ACTUALIZADO: Incluir parámetro de localidad
+            // 🔧 ACTUALIZADO: Construir parámetros incluyendo los nuevos filtros
             const params = new URLSearchParams();
 
             if (filters?.category) {
@@ -117,19 +117,35 @@ export const productsService = {
                 params.append("busqueda", filters.query);
             }
 
-            // ✅ NUEVO: Agregar parámetro de localidad
+            // 🔧 NUEVO: Parámetro de localidad automático
             if (filters?.localidad) {
                 params.append("localidad", filters.localidad.toString());
             }
+
+            // 🔧 NOTA: vendorName no se envía al backend (no lo soporta aún)
+            // Se manejará en el filtrado local del fallback
 
             const url = `${ENDPOINTS.PRODUCTS}${
                 params.toString() ? "?" + params.toString() : ""
             }`;
 
             // PRIORIZAR API real
-            const apiProducts = await apiClient.get<ApiProduct[]>(url);
+            let apiProducts = await apiClient.get<ApiProduct[]>(url);
+            let adaptedProducts = adaptValidApiProducts(apiProducts);
 
-            const adaptedProducts = adaptValidApiProducts(apiProducts);
+            // 🔧 NUEVO: Aplicar filtro de vendorName localmente si es necesario
+            if (filters?.vendorName && filters.vendorName.trim()) {
+                const vendorQuery = filters.vendorName.toLowerCase();
+
+                adaptedProducts = adaptedProducts.filter((product) => {
+                    const vendorName =
+                        product.vendedor?.name?.toLowerCase() ||
+                        product.vendedor?.nombre?.toLowerCase() ||
+                        "";
+                    const matches = vendorName.includes(vendorQuery);
+                    return matches;
+                });
+            }
 
             cacheSearchResults(cacheKey, adaptedProducts);
             return adaptedProducts;
@@ -154,7 +170,6 @@ export const productsService = {
             // Filtrar por búsqueda si hay query
             if (filters?.query && filters.query.trim()) {
                 const query = filters.query.toLowerCase();
-
                 filteredProducts = filteredProducts.filter(
                     (p) =>
                         p.name.toLowerCase().includes(query) ||
@@ -162,11 +177,26 @@ export const productsService = {
                 );
             }
 
-            // Filtrar por vendor si se especifica
+            // Filtrar por vendor ID si se especifica
             if (filters?.vendor) {
                 filteredProducts = filteredProducts.filter(
                     (product) => product.vendedor?.id === filters.vendor
                 );
+            }
+
+            // 🔧 MEJORADO: Filtrar por nombre de vendedor
+            if (filters?.vendorName && filters.vendorName.trim()) {
+                const vendorQuery = filters.vendorName.toLowerCase();
+
+                filteredProducts = filteredProducts.filter((product) => {
+                    const vendorName =
+                        product.vendedor?.name?.toLowerCase() ||
+                        product.vendedor?.nombre?.toLowerCase() ||
+                        "";
+                    const matches = vendorName.includes(vendorQuery);
+
+                    return matches;
+                });
             }
 
             // Filtrar por precio mínimo
@@ -183,17 +213,30 @@ export const productsService = {
                 );
             }
 
-            // ✅ NUEVO: Filtrar por localidad en mock data
+            // 🔧 NUEVO: Filtrar por localidad (usando datos mock)
             if (filters?.localidad) {
-                filteredProducts = filteredProducts.filter(
-                    (product) => product.municipality?.id === filters.localidad
-                );
+                filteredProducts = filteredProducts.filter((product) => {
+                    // Verificar si el producto tiene municipio
+                    if (product.municipality?.id === filters.localidad) {
+                        return true;
+                    }
+                    // Fallback: verificar localidad del vendedor (si es string)
+                    if (typeof product.vendedor?.localidad === "string") {
+                        return product.vendedor.localidad.includes(
+                            filters.localidad!.toString()
+                        );
+                    }
+                    // Fallback: verificar ID de localidad del vendedor
+                    if (typeof product.vendedor?.localidad === "number") {
+                        return product.vendedor.localidad === filters.localidad;
+                    }
+                    return false;
+                });
             }
 
             return filteredProducts;
         }
     },
-
     async searchProducts(
         query: string,
         localidad?: number,
