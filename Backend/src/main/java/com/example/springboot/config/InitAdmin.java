@@ -18,7 +18,7 @@ public class InitAdmin {
                 dori.setNombre("Doriana");
                 dori.setUsuario("dori");
                 dori.setEmail("dori@gmail.com");
-                dori.setPassword(passwordEncoder.encode("123456"));
+                dori.setPassword(passwordEncoder.encode("Ad123456."));
                 adminRepository.save(dori);
             }
             if (adminRepository.findByEmail("sofia@gmail.com") == null) {
@@ -26,7 +26,7 @@ public class InitAdmin {
                 sofia.setNombre("Sofía");
                 sofia.setUsuario("sofia");
                 sofia.setEmail("sofia@gmail.com");
-                sofia.setPassword(passwordEncoder.encode("123456"));
+                sofia.setPassword(passwordEncoder.encode("Ad123456."));
                 adminRepository.save(sofia);
             }
             if (adminRepository.findByEmail("santiago@gmail.com") == null) {
@@ -34,7 +34,7 @@ public class InitAdmin {
                 santiago.setNombre("Santiago");
                 santiago.setUsuario("santiago");
                 santiago.setEmail("santiago@gmail.com");
-                santiago.setPassword(passwordEncoder.encode("123456"));
+                santiago.setPassword(passwordEncoder.encode("Ad123456."));
                 adminRepository.save(santiago);
             }
         };

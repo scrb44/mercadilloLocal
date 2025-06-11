@@ -24,7 +24,7 @@ public class InitCompradores {
                 ana.setNombre("Ana Torres");
                 ana.setUsuario("ana123");
                 ana.setEmail("ana@gmail.com");
-                ana.setPassword(passwordEncoder.encode("123456"));
+                ana.setPassword(passwordEncoder.encode("Co123456."));
                 ana.setTelf("611222333");
 
                 Producto prod1 = productoRepository.findByNombre("Camiseta Verde");
@@ -42,7 +42,7 @@ public class InitCompradores {
                 lucas.setNombre("Lucas Díaz");
                 lucas.setUsuario("lucas456");
                 lucas.setEmail("lucas@gmail.com");
-                lucas.setPassword(passwordEncoder.encode("123456"));
+                lucas.setPassword(passwordEncoder.encode("Co123456."));
                 lucas.setTelf("444555666");
 
                 Producto prod3 = productoRepository.findByNombre("Gorra Negra");

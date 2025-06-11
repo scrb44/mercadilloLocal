@@ -92,7 +92,7 @@ public class DataLoader {
                 vendedorTasca.setEmail("tascamalaga@gmail.com");
                 vendedorTasca.setTelf("644545467");
                 vendedorTasca.setVerificado(true);
-                vendedorTasca.setPassword(passwordEncoder.encode("123456")); // Usa PasswordEncoder en producción
+                vendedorTasca.setPassword(passwordEncoder.encode("Ve123456."));
                 vendedorTasca.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTasca.setLocalidad(malaga);
                 vendedorTasca = vendedorRepo.save(vendedorTasca);
@@ -107,11 +107,26 @@ public class DataLoader {
                 vendedorTiendaTradicialAlPeso.setEmail("tradicional@gmail.com");
                 vendedorTiendaTradicialAlPeso.setTelf("644549465");
                 vendedorTiendaTradicialAlPeso.setVerificado(true);
-                vendedorTiendaTradicialAlPeso.setPassword(passwordEncoder.encode("123456")); // Usa PasswordEncoder en producción
+                vendedorTiendaTradicialAlPeso.setPassword(passwordEncoder.encode("Ve123456.")); // Usa PasswordEncoder en producción
                 vendedorTiendaTradicialAlPeso.setImagen("https://ejemplo.com/tasca.jpg");
                 vendedorTiendaTradicialAlPeso.setLocalidad(malaga);
                 vendedorTiendaTradicialAlPeso = vendedorRepo.save(vendedorTiendaTradicialAlPeso);
                 System.out.println("🛍️ Vendedor 'vendedorTiendaTradicialAlPeso' creado.");
+            }
+
+            Vendedor vendedorBodega = vendedorRepo.findByUsuario("Tienda Bodega");
+            if (vendedorBodega == null) {
+                vendedorBodega = new Vendedor();
+                vendedorBodega.setNombre("Tienda Bodega");
+                vendedorBodega.setUsuario("Tienda Bodega");
+                vendedorBodega.setEmail("bodega@gmail.com");
+                vendedorBodega.setTelf("644519965");
+                vendedorBodega.setVerificado(true);
+                vendedorBodega.setPassword(passwordEncoder.encode("Ve123456.")); // Usa PasswordEncoder en producción
+                vendedorBodega.setImagen("https://ejemplo.com/tasca.jpg");
+                vendedorBodega.setLocalidad(malaga);
+                vendedorBodega = vendedorRepo.save(vendedorBodega);
+                System.out.println("🛍️ Vendedor 'Bodega' creado.");
             }
 
             // Lista de productos
@@ -206,7 +221,7 @@ public class DataLoader {
                             null, List.of(categorias.get("Ropa")), vendedorTasca),
 
                     new Producto(null, "Pantalón de lino", new BigDecimal("18.90"), "Pantalón fresco ideal para verano, hecho a mano",
-                            "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTUgKlexjMlqoTaMD-1Vlrci6yf7-z1v2xqSTQ-muB_G4uMn5znwGh-gFy3tVIpRuulio-gg7yH5NYYy542P-cGoH5gW9F6Stx2ALy9987PUgkbEiYC5aOLND5imJ7JOp_COGGnCAo&usqp=CAc",
+                            "https://img01.ztat.net/article/spp-media-p1/1aef76a249164ed0bf8bc49a19361f23/9b108d6bf5184c608404c0b4b9142e98.jpg?imwidth=1800",
                             null, List.of(categorias.get("Ropa")), vendedorTasca),
 
                     new Producto(null, "Gorro tejido a mano", new BigDecimal("7.25"), "Gorro de lana merino tejido",
@@ -274,10 +289,78 @@ public class DataLoader {
                             "https://m.media-amazon.com/images/I/81S1Mr3RyoL._UF1000,1000_QL80_.jpg",
                             null, List.of(categorias.get("Discos")), vendedorTasca),
 
-
                     new Producto(null, "Cartulinas texturizadas hechas con papel reciclado", new BigDecimal("1.80"), "Cartulinas texturizadas hechas con papel reciclado",
                             "https://ritarita.es/wp-content/uploads/2023/08/carta-de-colores-cartulina-texturizada2.jpg",
-                            null, List.of(categorias.get("Papelerías")), vendedorTasca)
+                            null, List.of(categorias.get("Papelerías")), vendedorTasca),
+
+                    new Producto(null, "Camiseta unisex – Diseño arte urbano", new BigDecimal("15.99"),
+                            "Camiseta de algodón 100% con estampado de arte urbano hecho por artistas locales",
+                            "https://wakkatoa.com/cdn/shop/files/unisex-organic-cotton-t-shirt-heather-grey-front-651d8314a54c0.jpg?v=1699231904&width=1946",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Chaqueta vaquera retro – Edición limitada", new BigDecimal("45.00"),
+                            "Chaqueta estilo vintage con bordados personalizados, ideal para cualquier temporada",
+                            "https://m.media-amazon.com/images/I/61RKm-qgxDL._AC_UY1000_.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Vestido largo bohemio – Flores y colores", new BigDecimal("39.90"),
+                            "Vestido fluido con estampado floral, cómodo y fresco para primavera y verano",
+                            "https://ae01.alicdn.com/kf/S0776aa457d9541cd9f88f7a52b4eb6b0m.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Sudadera ecológica con capucha – Gris claro", new BigDecimal("29.99"),
+                            "Sudadera hecha con algodón orgánico, suave, duradera y respetuosa con el medio ambiente",
+                            "https://bixoto.com/media/catalog/product/cache/2e45ba69d70625e0fc47dbc2d34862e1/3/6/3666354887574_S6456551_P03.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Pantalón cargo unisex – Bolsillos múltiples", new BigDecimal("34.50"),
+                            "Pantalón resistente y versátil, ideal para uso diario o actividades al aire libre",
+                            "https://img01.ztat.net/article/spp-media-p1/956265ac86614e669379fef7bcffffc2/bef9c6512b4e409d89f23149ea8c84ab.jpg?imwidth=762&filter=packshot",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Falda midi plisada – Color vino", new BigDecimal("27.00"),
+                            "Falda elegante y ligera, con caída natural, perfecta para ocasiones semi-formales",
+                            "https://m.media-amazon.com/images/I/51wJ9k-hStL._AC_UY1000_.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+                    new Producto(null, "Camisa de lino – Blanco clásico", new BigDecimal("31.90"),
+                            "Camisa fresca de lino 100%, ideal para el verano o climas cálidos",
+                            "https://m.media-amazon.com/images/I/61SYrG1VZRL._AC_UY1000_.jpg",
+                            null, List.of(categorias.get("Ropa")), vendedorBodega),
+
+
+                    new Producto(null, "Mesa de comedor rústica – Madera de roble", new BigDecimal("280.00"),
+                            "Mesa artesanal hecha a mano con roble macizo, ideal para comedores familiares o espacios rústicos",
+                            "https://cdn02.plentymarkets.com/vji7b8phcm0f/item/images/112373/full/Casa-Padrino-Massivholz-Esstisch-Grau---Silber-200-x-100-x-H--77-cm-Kuechentisch-mit-massiver-Akazienholz-Tischplatte-und-Edelstahl-Beinen-Massivholz-Esszimmer-Moebel-112373.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega),
+
+
+                    new Producto(null, "Taburete alto de cocina – Madera y hierro", new BigDecimal("65.00"),
+                            "Taburete robusto con asiento de madera maciza y estructura metálica negra",
+                            "https://m.media-amazon.com/images/I/7110AYkvnpL.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega),
+
+                    new Producto(null, "Caja organizadora artesanal – Tapa corrediza", new BigDecimal("22.00"),
+                            "Caja de almacenamiento hecha a mano, ideal para joyas, herramientas pequeñas o recuerdos",
+                            "https://i.etsystatic.com/49543177/r/il/43a7c1/5698732850/il_570xN.5698732850_of3m.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega),
+
+                    new Producto(null, "Perchero de pared – 5 ganchos de madera", new BigDecimal("18.50"),
+                            "Práctico perchero montable de madera reciclada con ganchos resistentes para abrigos o bolsos",
+                            "https://m.media-amazon.com/images/I/71PsZPa-QKL._AC_UF894,1000_QL80_.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega),
+
+                    new Producto(null, "Banco de entrada – Estilo escandinavo", new BigDecimal("120.00"),
+                            "Banco de madera clara con compartimentos inferiores para almacenamiento de calzado",
+                            "https://erizho.com/19302-thickbox_default/banco-estilo-nordico-madera-pino-122x45x41h.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega),
+
+                    new Producto(null, "Porta llaves con compartimentos", new BigDecimal("19.99"),
+                            "Porta llaves montable en madera con espacio para cartas, monedas y gafas",
+                            "https://m.media-amazon.com/images/I/61J5Zp5JZwL._AC_UF894,1000_QL80_.jpg",
+                            null, List.of(categorias.get("Carpinteria")), vendedorBodega)
+
+
             );
 
             // Guardar productos en la base de datos
