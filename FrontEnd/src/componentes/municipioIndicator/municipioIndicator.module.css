@@ -1,205 +1,141 @@
 /* src/components/municipio/municipioIndicator.module.css */
 
-/* ============ INDICADOR TIPO CHIP ============ */
-.chipIndicator {
-    display: inline-flex;
+/* ============ BASE STYLES ============ */
+.chipIndicator,
+.bannerIndicator {
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     background: rgba(246, 182, 33, 0.15);
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(101, 73, 5, 0.15);
-    border-radius: 20px;
-    padding: 6px 12px;
-    transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.chipIndicator:hover {
-    background: rgba(172, 108, 13, 0.2);
-    border-color: rgba(172, 108, 13, 0.2);
+.chipIndicator:hover,
+.bannerIndicator:hover {
+    background: rgba(172, 108, 13, 0.25);
+    border-color: rgba(172, 108, 13, 0.3);
     transform: translateY(-1px);
 }
 
-.chipIcon {
-    font-size: 1rem;
-    line-height: 1;
-}
-
-.chipText {
+/* ============ CHIP STYLE ============ */
+.chipIndicator {
+    border-radius: 20px;
+    padding: 8px 12px;
     font-size: 0.875rem;
     font-weight: 600;
     color: #613706;
-    white-space: nowrap;
 }
 
-.chipChangeButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 2px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-    color: #613706;
+.chipIndicator .changeIcon {
+    opacity: 0.7;
+    font-size: 0.8em;
+    transition: opacity 0.2s ease;
 }
 
-.chipChangeButton:hover {
-    background: rgba(197, 159, 34, 0.2);
+.chipIndicator:hover .changeIcon {
+    opacity: 1;
 }
 
-/* ============ INDICADOR TIPO BANNER ============ */
+/* ============ BANNER STYLE ============ */
 .bannerIndicator {
     width: 100%;
-    max-width: 100%; /* Asegurar que no se salga */
-    background: linear-gradient(
-        135deg,
-        rgba(197, 156, 34, 0.1),
-        rgba(163, 132, 22, 0.05)
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(238, 217, 32, 0.2);
     border-radius: 12px;
     padding: 12px 16px;
     margin: 16px 0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box; /* Incluir padding en el ancho total */
+    justify-content: center;
 }
 
 .bannerContent {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 12px;
     flex-wrap: wrap;
-    max-width: 100%; /* Asegurar que el contenido no se salga */
+    justify-content: center;
 }
 
-.bannerIcon {
-    font-size: 1.25rem;
-    flex-shrink: 0; /* No permitir que se encoja */
-}
-
-.bannerText {
+.bannerIndicator .text {
     font-size: 1rem;
-    color: #ffffff;
+    color: #613706;
     font-weight: 500;
     text-align: center;
     flex: 1;
     min-width: 200px;
-    word-wrap: break-word; /* Permitir salto de línea si es necesario */
 }
 
-.changeButton {
-    padding: 6px 12px;
-    background: bisque;
-    color: rgb(0, 0, 0);
-    border: none;
+.bannerIndicator .changeHint {
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0; /* No permitir que se encoja */
-    white-space: nowrap; /* Evitar que el texto del botón se parta */
+    color: #613706;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
 }
 
-.changeButton:hover {
-    background: rgba(192, 144, 22, 0.9);
-    transform: translateY(-1px);
+.bannerIndicator:hover .changeHint {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.5);
 }
 
-/* ============ INDICADOR TIPO TEXTO ============ */
-.textIndicator {
-    display: inline;
+/* ============ COMMON ELEMENTS ============ */
+.icon {
+    font-size: 1.1em;
+    flex-shrink: 0;
+}
+
+.text {
+    color: #613706;
     font-weight: 600;
-    color: #a36f16;
+    white-space: nowrap;
 }
 
-/* ============ TAMAÑOS ============ */
-
-/* Small */
-.indicatorSmall.chipIndicator {
-    padding: 4px 8px;
+/* ============ SIZES ============ */
+.sizeSmall.chipIndicator {
+    padding: 6px 10px;
+    font-size: 0.75rem;
     border-radius: 16px;
 }
 
-.indicatorSmall .chipIcon {
-    font-size: 0.8rem;
+.sizeSmall .icon {
+    font-size: 0.9em;
 }
 
-.indicatorSmall .chipText {
-    font-size: 0.75rem;
+.sizeSmall.bannerIndicator {
+    padding: 10px 14px;
+    margin: 12px 0;
 }
 
-.indicatorSmall .chipChangeButton {
-    font-size: 0.7rem;
-}
-
-.indicatorSmall.bannerIndicator {
-    padding: 8px 12px;
-    border-radius: 8px;
-}
-
-.indicatorSmall .bannerIcon {
-    font-size: 1rem;
-}
-
-.indicatorSmall .bannerText {
-    font-size: 0.875rem;
-}
-
-.indicatorSmall .changeButton {
-    padding: 4px 8px;
-    font-size: 0.75rem;
-}
-
-.indicatorSmall.textIndicator {
-    font-size: 0.75rem;
-}
-
-/* Medium (default) - ya definido arriba */
-
-/* Large */
-.indicatorLarge.chipIndicator {
-    padding: 8px 16px;
-    border-radius: 24px;
+.sizeSmall .bannerContent {
     gap: 8px;
 }
 
-.indicatorLarge .chipIcon {
-    font-size: 1.25rem;
+.sizeSmall.bannerIndicator .text {
+    font-size: 0.875rem;
 }
 
-.indicatorLarge .chipText {
+.sizeLarge.chipIndicator {
+    padding: 10px 16px;
     font-size: 1rem;
+    border-radius: 24px;
 }
 
-.indicatorLarge .chipChangeButton {
-    font-size: 0.9rem;
-    padding: 4px;
+.sizeLarge .icon {
+    font-size: 1.2em;
 }
 
-.indicatorLarge.bannerIndicator {
+.sizeLarge.bannerIndicator {
     padding: 16px 20px;
+    margin: 20px 0;
     border-radius: 16px;
 }
 
-.indicatorLarge .bannerIcon {
-    font-size: 1.5rem;
-}
-
-.indicatorLarge .bannerText {
-    font-size: 1.125rem;
-}
-
-.indicatorLarge .changeButton {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-}
-
-.indicatorLarge.textIndicator {
+.sizeLarge.bannerIndicator .text {
     font-size: 1.125rem;
 }
 
@@ -208,59 +144,37 @@
     .bannerContent {
         flex-direction: column;
         gap: 8px;
-        padding: 0; /* Eliminar padding extra */
     }
 
-    .bannerText {
+    .bannerIndicator .text {
         min-width: unset;
-        text-align: center;
-        font-size: 0.9rem; /* Reducir tamaño en móvil */
+        font-size: 0.9rem;
     }
 
     .bannerIndicator {
-        margin: 12px 0; /* Reducir margen en móvil */
-        padding: 10px 12px; /* Reducir padding en móvil */
+        margin: 12px 0;
+        padding: 10px 12px;
     }
 
     .chipIndicator {
-        padding: 5px 10px;
-    }
-
-    .chipText {
+        padding: 6px 10px;
         font-size: 0.8rem;
     }
 }
 
 @media (max-width: 480px) {
-    .bannerIndicator {
-        margin: 12px 0;
-        padding: 10px 12px;
-        border-radius: 10px;
-    }
-
-    .bannerText {
-        font-size: 0.85rem; /* Aún más pequeño en móviles pequeños */
-    }
-
-    .bannerContent {
-        gap: 6px;
-    }
-
-    .changeButton {
-        padding: 5px 10px;
-        font-size: 0.75rem;
+    .bannerIndicator .text {
+        font-size: 0.85rem;
     }
 
     .chipIndicator {
-        padding: 4px 8px;
-        border-radius: 16px;
-    }
-
-    .chipText {
+        padding: 5px 8px;
         font-size: 0.75rem;
     }
 
-    .chipIcon {
-        font-size: 0.9rem;
+    .chipIndicator .text {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }

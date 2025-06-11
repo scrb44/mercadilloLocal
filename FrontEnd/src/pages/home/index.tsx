@@ -160,12 +160,6 @@ function Home() {
                             ? `Explora productos y tiendas de ${municipio.nombre}, ${municipio.provincia}`
                             : "Selecciona tu municipio para ver productos cerca de ti"}
                     </p>
-
-                    <MunicipioIndicator
-                        style="banner"
-                        size="large"
-                        showChangeButton={true}
-                    />
                 </div>
             </section>
             <div className={classes.container}>

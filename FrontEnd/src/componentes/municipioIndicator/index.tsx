@@ -3,75 +3,55 @@ import { useMunicipio } from "../../contexts/municipioContext";
 import classes from "./municipioIndicator.module.css";
 
 interface MunicipioIndicatorProps {
-    showChangeButton?: boolean;
     size?: "small" | "medium" | "large";
-    style?: "banner" | "chip" | "text";
+    style?: "banner" | "chip";
 }
 
 function MunicipioIndicator({
-    showChangeButton = false,
     size = "medium",
     style = "chip",
 }: MunicipioIndicatorProps) {
-    const { municipio } = useMunicipio();
+    const { municipio, clearMunicipio } = useMunicipio();
 
     if (!municipio) return null;
 
-    const handleChangeMunicipio = () => {
-        window.location.href = "/seleccionar-municipio";
+    const handleClick = () => {
+        // Limpiar el municipio hará que se abra automáticamente el modal
+        clearMunicipio();
     };
 
-    const sizeClass = `${classes.indicator}${
-        size.charAt(0).toUpperCase() + size.slice(1)
-    }`;
-    const styleClass = `${classes.indicator}${
-        style.charAt(0).toUpperCase() + style.slice(1)
-    }`;
-
-    if (style === "text") {
-        return (
-            <span className={`${classes.textIndicator} ${sizeClass}`}>
-                📍 {municipio.nombre}
-            </span>
-        );
-    }
+    const sizeClass =
+        classes[`size${size.charAt(0).toUpperCase() + size.slice(1)}`];
+    const styleClass = classes[style];
 
     if (style === "banner") {
         return (
-            <div className={`${classes.bannerIndicator} ${sizeClass}`}>
+            <button
+                onClick={handleClick}
+                className={`${classes.bannerIndicator} ${sizeClass}`}
+            >
                 <div className={classes.bannerContent}>
-                    <span className={classes.bannerIcon}>📍</span>
-                    <span className={classes.bannerText}>
+                    <span className={classes.icon}>📍</span>
+                    <span className={classes.text}>
                         Productos de <strong>{municipio.nombre}</strong>, Málaga
                     </span>
-                    {showChangeButton && (
-                        <button
-                            onClick={handleChangeMunicipio}
-                            className={classes.changeButton}
-                        >
-                            Cambiar
-                        </button>
-                    )}
+                    <span className={classes.changeHint}>Cambiar</span>
                 </div>
-            </div>
+            </button>
         );
     }
 
     // Style chip (default)
     return (
-        <div className={`${classes.chipIndicator} ${sizeClass}`}>
-            <span className={classes.chipIcon}>📍</span>
-            <span className={classes.chipText}>{municipio.nombre}</span>
-            {showChangeButton && (
-                <button
-                    onClick={handleChangeMunicipio}
-                    className={classes.chipChangeButton}
-                    title="Cambiar municipio"
-                >
-                    ⚙️
-                </button>
-            )}
-        </div>
+        <button
+            onClick={handleClick}
+            className={`${classes.chipIndicator} ${sizeClass}`}
+            title={`Cambiar de ${municipio.nombre}`}
+        >
+            <span className={classes.icon}>📍</span>
+            <span className={classes.text}>{municipio.nombre}</span>
+            <span className={classes.changeIcon}>⚙️</span>
+        </button>
     );
 }
 
