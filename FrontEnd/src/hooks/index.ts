@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import mercadilloService from "../services";
-import { type CategoryInterface, type ProductInterface } from "../types/types";
+import {
+    type CategoryInterface,
+    type ProductInterface,
+    type SearchFiltersInterface,
+} from "../types/types";
 
 // Hook para cargar una categoría con sus datos relacionados
 export function useCategory(categoryId: string | undefined) {
@@ -28,7 +32,7 @@ export function useCategory(categoryId: string | undefined) {
             setCategoria(categoryData);
 
             // Buscar categoría padre si existe
-            if (categoryData.fatherId) {
+            if (categoryData?.fatherId) {
                 const parentCategory = allCategories.find(
                     (cat) => cat.id === categoryData.fatherId
                 );
@@ -39,7 +43,7 @@ export function useCategory(categoryId: string | undefined) {
 
             // Buscar subcategorías
             const subcategoriasDeEstaCategoria = allCategories.filter(
-                (cat) => cat.fatherId === categoryData.id
+                (cat) => cat.fatherId === categoryData?.id
             );
             setSubcategorias(subcategoriasDeEstaCategoria);
         } catch (err: any) {
@@ -199,5 +203,55 @@ export function useForm<T extends Record<string, any>>(
         validate,
         reset,
         setErrors,
+    };
+}
+
+export function useProductsWithFilters(
+    categoryId?: string,
+    filters?: SearchFiltersInterface
+) {
+    const [productos, setProductos] = useState<ProductInterface[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadProducts = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            // 🔧 COMBINAR filtros: categoría + filtros adicionales
+            const combinedFilters: SearchFiltersInterface = {
+                ...filters, // Incluir todos los filtros (precio, vendedor, localidad, etc.)
+            };
+
+            // Agregar la categoría si existe
+            if (categoryId) {
+                combinedFilters.category = parseInt(categoryId);
+            }
+
+            const productsData = await mercadilloService.getProducts(
+                combinedFilters
+            );
+            setProductos(productsData);
+        } catch (err: any) {
+            setError(err.message || "Error al cargar productos");
+        } finally {
+            setLoading(false);
+        }
+    }, [categoryId, JSON.stringify(filters)]); // 🔧 CAMBIO CRÍTICO: usar JSON.stringify para comparar objetos
+
+    useEffect(() => {
+        loadProducts();
+    }, [loadProducts]);
+
+    const retry = useCallback(() => {
+        loadProducts();
+    }, [loadProducts]);
+
+    return {
+        productos,
+        loading,
+        error,
+        retry,
     };
 }

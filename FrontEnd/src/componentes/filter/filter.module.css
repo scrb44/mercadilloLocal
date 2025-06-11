@@ -1,87 +1,300 @@
-/* src/componentes/filter/filter.module.css - SOLUCIONADO PARA 100% REAL */
+/* src/componentes/filter/filter.module.css - REDISEÑO VISUAL MEJORADO */
 
-.page-searcher {
-    /* Banda que ocupa REALMENTE todo el ancho */
-    position: relative;
-    left: 0;
-    right: 0;
+.filter-container {
     width: 100%;
-
-    /* Fondo verde con efecto cristal */
-    background: linear-gradient(
-        135deg,
-        rgba(255, 223, 163, 0.192),
-        rgba(231, 147, 22, 0.345)
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-
-    /* Contenedor centrado */
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-    margin: 0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-width: var(--page-max-width, 1200px);
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.page-searcher__container {
-    width: var(--page-width, 80%);
-    max-width: var(--page-max-width, 1200px);
+/* ============ BARRA DE BÚSQUEDA PRINCIPAL ============ */
+.search-section {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 0 20px;
+    margin-bottom: 0;
 }
 
-.page-searcher__search-bar {
+.search-input {
     flex: 1;
-    padding: 14px 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50px;
+    padding: 14px 24px;
+    border: 2px solid #e5e7eb;
+    border-radius: 30px;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    color: #1f2937;
-    text-align: center;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.page-searcher__search-bar::placeholder {
+    background: #ffffff;
     color: #374151;
     text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.page-searcher__search-bar:focus {
+.search-input::placeholder {
+    color: #9ca3af;
+    text-align: center;
+}
+
+.search-input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
     text-align: left;
 }
 
-.page-searcher__search-bar:focus::placeholder {
+.search-input:focus::placeholder {
     text-align: left;
 }
 
-/* Indicador de búsqueda */
-.search-indicator {
-    color: #374151;
-    font-size: 0.85rem;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    white-space: nowrap;
+/* ============ BOTÓN DE FILTROS MEJORADO ============ */
+.filters-toggle {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #fbbf24;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+    position: relative;
+}
+
+.filters-toggle:hover {
+    background: #f59e0b;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.filters-toggle.active {
+    background: #d97706;
+    color: #ffffff;
+}
+
+.filter-icon {
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+}
+
+.filter-icon.rotated {
+    transform: rotate(180deg);
+}
+
+/* Indicador de filtros activos */
+.active-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    font-size: 0;
+}
+
+/* ============ PANEL DE FILTROS REDISEÑADO ============ */
+.filters-panel {
+    background: #ffffff;
+    border: 2px solid #f3f4f6;
+    border-radius: 20px;
+    padding: 0;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    overflow: hidden; /* 🔧 CRÍTICO: Ocultar overflow */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    max-height: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filters-panel.open {
+    opacity: 1;
+    max-height: 500px;
+    border-color: #e5e7eb;
+    margin-bottom: 32px;
+}
+
+.filters-content {
+    padding: 24px;
+    min-height: fit-content;
+    box-sizing: border-box; /* 🔧 CRÍTICO: Incluir padding en el ancho */
+    overflow: hidden; /* 🔧 CRÍTICO: Ocultar overflow del contenido */
+}
+
+/* ============ GRID DE FILTROS REDISEÑADO ============ */
+.filters-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* ============ GRUPOS DE FILTROS ============ */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 4px;
+    letter-spacing: 0.025em;
+}
+
+/* ============ INPUTS MEJORADOS SIN ANCHO MÍNIMO ============ */
+.filter-input {
+    width: 100%; /* 🔧 CRÍTICO: Ancho completo del contenedor */
+    max-width: 100%; /* 🔧 CRÍTICO: No exceder el contenedor */
+    min-width: 0; /* 🔧 CRÍTICO: Sin ancho mínimo */
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    background: #ffffff;
+    color: #374151;
+    transition: all 0.2s ease;
+    box-sizing: border-box; /* 🔧 CRÍTICO: Incluir padding */
+    overflow: hidden; /* 🔧 CRÍTICO: Ocultar texto que se salga */
+    text-overflow: ellipsis; /* 🔧 CRÍTICO: Mostrar "..." si se corta */
+    white-space: nowrap; /* 🔧 CRÍTICO: No saltar línea */
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    background: #fffbeb;
+    white-space: normal; /* 🔧 Permitir líneas múltiples al escribir */
+}
+
+.filter-input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* ============ RANGO DE PRECIOS MEJORADO PARA DESKTOP ============ */
+.price-range-group {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* 🔧 Gap aumentado para desktop */
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.price-input {
+    flex: 1;
+    min-width: 0;
+    max-width: calc(50% - 16px); /* 🔧 Más espacio en desktop */
+    padding: 12px 16px; /* 🔧 Padding normal en desktop */
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem; /* 🔧 Fuente normal en desktop */
+    text-align: center;
+    background: #ffffff;
+    color: #374151;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.price-input:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); /* 🔧 Shadow normal */
+    background: #fffbeb;
+}
+
+.price-input::placeholder {
+    font-size: 0.9rem; /* 🔧 Placeholder más legible */
+}
+
+.price-separator {
+    color: #6b7280;
+    font-weight: 700;
+    font-size: 1.1rem; /* 🔧 Tamaño normal */
+    flex-shrink: 0;
+    width: 24px; /* 🔧 Ancho ligeramente mayor */
+    text-align: center;
+}
+
+/* ============ BOTONES DE ACCIÓN REDISEÑADOS ============ */
+.filter-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 2px solid #f3f4f6;
+}
+
+.filter-button {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    text-align: center;
+}
+
+.filter-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.filter-button.clear {
+    background: #f9fafb;
+    color: #6b7280;
+    border-color: #e5e7eb;
+}
+
+.filter-button.clear:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.filter-button.apply {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+}
+
+.filter-button.apply:hover {
+    background: #d97706;
+    border-color: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* ============ INDICADOR DE BÚSQUEDA ============ */
+.search-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
 }
 
 .search-loading {
@@ -89,54 +302,163 @@
 }
 
 @keyframes pulse {
-    0% {
+    0%,
+    100% {
         opacity: 0.6;
     }
     50% {
         opacity: 1;
     }
-    100% {
-        opacity: 0.6;
-    }
 }
 
-/* Responsive */
+/* ============ RESPONSIVE MEJORADO ============ */
 @media (max-width: 768px) {
-    .page-searcher {
-        padding: 16px 0;
+    .filter-container {
+        padding: 16px;
     }
 
-    .page-searcher__container {
+    .search-section {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .search-input {
+        width: 100%; /* 🔧 CRÍTICO: Ancho completo en móvil */
+    }
+
+    .filters-toggle {
+        width: 100%;
+        justify-content: center;
+        padding: 16px 24px;
+    }
+
+    .filters-panel.open {
+        max-height: 600px;
+    }
+
+    .filters-grid {
+        gap: 16px;
+    }
+
+    .filter-actions {
         flex-direction: column;
         gap: 12px;
-        padding: 0 16px;
     }
 
-    .page-searcher__search-bar {
-        width: 100%;
-        max-width: none;
-        padding: 12px 18px;
-        font-size: 0.95rem;
+    /* 🔧 ARREGLO CRÍTICO: Precios en dos filas separadas en tablet */
+    .price-range-group {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
     }
 
-    .search-indicator {
-        font-size: 0.8rem;
-        padding: 6px 10px;
+    .price-input {
+        max-width: 100%; /* 🔧 CRÍTICO: Ancho completo */
+        text-align: left;
+        padding: 12px 16px; /* 🔧 Padding normal */
+        font-size: 0.95rem; /* 🔧 Fuente normal */
+    }
+
+    .price-separator {
+        display: none; /* 🔧 Ocultar separador en vertical */
     }
 }
 
 @media (max-width: 480px) {
-    .page-searcher {
-        padding: 12px 0;
+    .filter-container {
+        padding: 12px;
     }
 
-    .page-searcher__container {
-        padding: 0 12px;
-        gap: 10px;
+    .search-input {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        width: 100%; /* 🔧 CRÍTICO: Ancho completo */
     }
 
-    .page-searcher__search-bar {
-        padding: 10px 16px;
+    .filters-content {
+        padding: 20px;
+    }
+
+    .filters-panel.open {
+        max-height: 700px;
+    }
+
+    /* 🔧 En móviles pequeños mantener precios en vertical */
+    .price-range-group {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .price-input {
+        max-width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+
+    .price-separator {
+        display: none;
+    }
+}
+
+/* 🔧 NUEVO: Breakpoint para pantallas muy pequeñas (<320px) */
+@media (max-width: 319px) {
+    .filter-container {
+        padding: 8px; /* 🔧 Padding mínimo */
+    }
+
+    .search-input {
+        padding: 10px 12px; /* 🔧 Padding reducido */
         font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .filters-content {
+        padding: 16px; /* 🔧 Padding reducido */
+    }
+
+    .filter-input {
+        padding: 10px 12px; /* 🔧 Padding reducido */
+        font-size: 0.9rem;
+    }
+
+    .price-input {
+        padding: 10px 12px; /* 🔧 Padding reducido */
+        font-size: 0.9rem;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .filter-label {
+        font-size: 0.8rem; /* 🔧 Labels más pequeños */
+    }
+
+    .filter-button {
+        padding: 10px 16px; /* 🔧 Botones más compactos */
+        font-size: 0.85rem;
+    }
+
+    .filters-toggle {
+        padding: 12px 20px; /* 🔧 Toggle más compacto */
+        font-size: 0.9rem;
+    }
+}
+
+/* 🔧 NUEVO: Breakpoint específico para el problema de 482px */
+@media (min-width: 481px) and (max-width: 767px) {
+    /* En este rango, forzar precios en vertical para evitar cortes */
+    .price-range-group {
+        flex-direction: column !important;
+        gap: 12px;
+    }
+
+    .price-input {
+        max-width: 100% !important;
+        text-align: left;
+    }
+
+    .price-separator {
+        display: none !important;
     }
 }

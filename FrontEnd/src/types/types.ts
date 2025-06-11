@@ -174,9 +174,11 @@ export interface UserContextType {
 export interface SearchFiltersInterface {
     category?: number;
     vendor?: number;
+    vendorName?: string;
     minPrice?: number;
     maxPrice?: number;
     query?: string;
+    localidad?: number;
 }
 
 // ✅ NUEVO: Interface extendida con localidad

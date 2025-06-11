@@ -1,15 +1,34 @@
+/* src/componentes/footer/footer.module.css - ARREGLADO PARA COINCIDIR */
+
 .page-footer {
     background-color: bisque;
-    padding: 20px 0;
+    padding: 20px 0; /* 🔧 Padding reducido de 40px a 20px */
+}
+
+.page-header__link {
+    color: #374151;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: nowrap;
 }
 
 .page-footer__container {
-    width: var(--page-width);
+    /* 🔧 CRÍTICO: Usar ancho completo como el resto de componentes */
+    width: 100%;
+    max-width: var(--page-max-width, 1200px);
     margin: 0 auto;
-
+    padding: 0 20px; /* 🔧 Solo padding lateral, sin restricción de ancho */
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 }
 
 .page-footer__list {
@@ -17,6 +36,40 @@
     flex-flow: row;
     list-style: none;
     width: 70%;
-    gap: 10px;
+    gap: 20px; /* 🔧 Gap aumentado para mejor legibilidad */
     justify-content: space-between;
+    margin: 0; /* 🔧 NUEVO: Eliminar margin por defecto */
+    padding: 0; /* 🔧 NUEVO: Eliminar padding por defecto */
+}
+
+/* 🔧 NUEVO: Responsive para móviles */
+@media (max-width: 768px) {
+    .page-footer__container {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        padding: 0 16px; /* 🔧 Mismo padding que CategoryProducts en móvil */
+    }
+
+    .page-footer__list {
+        width: 100%;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-footer {
+        padding: 16px 0; /* 🔧 Padding aún más reducido en móvil */
+    }
+
+    .page-footer__container {
+        padding: 0 12px; /* 🔧 Mismo padding que CategoryProducts en móvil pequeño */
+    }
+
+    .page-footer__list {
+        font-size: 0.85rem;
+        gap: 8px;
+    }
 }

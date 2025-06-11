@@ -100,6 +100,7 @@
     padding-top: 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
+    padding-bottom: 20px;
 }
 
 .backNavigation {
@@ -128,7 +129,7 @@
 .backToParentLink:hover,
 .backToHomeLink:hover {
     color: white;
-    background:rgba(143, 89, 8, 0.9);
+    background: rgba(143, 89, 8, 0.9);
     border-color: rgba(143, 89, 8, 0.9);
     transform: translateY(-1px);
 }
@@ -161,7 +162,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    
     .container {
         padding: 0 16px;
     }
@@ -201,7 +201,6 @@
 }
 
 @media (max-width: 480px) {
-
     .subcategoriesSection {
         padding: 16px;
         border-radius: 12px;

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import classes from "./footer.module.css";
 
 function Footer() {
@@ -6,8 +7,17 @@ function Footer() {
             <div className={classes["page-footer__container"]}>
                 <h2>Mercadillo Local</h2>
                 <ul className={classes["page-footer__list"]}>
-                    <li>Todos los derechos reservados.</li>
-                    <li>Todas las marcas son propiedad de sus respectivos fabricantes.</li>
+                    <li>
+                        <Link
+                            to="/quienes-somos"
+                            className={classes["page-header__link"]}
+                        >
+                            ¿Quiénes somos?
+                        </Link>
+                    </li>
+                    <li>
+                        Todas las marcas son propiedad de sus respectivos fabricantes.
+                    </li>
                 </ul>
             </div>
         </footer>
