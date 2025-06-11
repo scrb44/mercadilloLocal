@@ -39,7 +39,8 @@ public class ProductoController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Long vendedor,
             @RequestParam(required = false) Long categoria,
-            @RequestParam(required = false) String busqueda
+            @RequestParam(required = false) String busqueda,
+            @RequestParam(required = false) Long localidad
     ) {
         return productoService.obtenerTodos().stream()
                 .filter(p -> minPrice == null || p.getPrecio().compareTo(minPrice) >= 0)
@@ -50,6 +51,7 @@ public class ProductoController {
                 .filter(p -> busqueda == null || busqueda.trim().isEmpty() ||
                         p.getNombre().toLowerCase().contains(busqueda.toLowerCase()) ||
                         p.getDescripcion().toLowerCase().contains(busqueda.toLowerCase()))
+                .filter(p-> localidad == null || p.getVendedor().getLocalidad().getId() == localidad)
                 .collect(Collectors.toList());
     }
 
