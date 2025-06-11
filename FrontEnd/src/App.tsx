@@ -1,4 +1,4 @@
-// src/App.tsx - ROLLBACK a estructura que funcionaba + PaymentProvider solo en checkout
+// src/App.tsx - ROLLBACK a estructura que funcionaba + PaymentProvider solo en checkout + MunicipioModal
 
 import { useEffect, lazy, Suspense } from "react";
 import axios from "axios";
@@ -13,7 +13,7 @@ import ErrorBoundary, { NotFoundPage } from "./componentes/errorBoundary";
 
 // Solo importamos componentes críticos para la carga inicial
 import Home from "./pages/home";
-import MunicipioSelector from "./pages/municipioSelector";
+import MunicipioModal from "./componentes/municipioSelectorModal";
 import WhoWeAre from "./pages/whoWeAre";
 
 // Lazy loading para páginas no críticas
@@ -94,15 +94,12 @@ function AppContent() {
 
     return (
         <MunicipioProvider>
+            {/* Modal del municipio - Se renderiza SIEMPRE, fuera del Router */}
+            <MunicipioModal />
+
             <BrowserRouter>
                 <ErrorBoundary>
                     <Routes>
-                        {/* Ruta especial para selección de municipio (sin guard) */}
-                        <Route
-                            path="/seleccionar-municipio"
-                            element={<MunicipioSelector />}
-                        />
-
                         {/* Rutas públicas */}
                         <Route
                             path="/login"
