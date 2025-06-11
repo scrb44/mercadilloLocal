@@ -19,6 +19,7 @@ public class Categoria {
     public Categoria(){}
     @ManyToOne
     @JoinColumn(name = "categoria_padre_id")
+    @JsonIgnore
     private Categoria categoriaPadre;  // Relación consigo misma (jerarquía de categorías)
 
     @ManyToMany(mappedBy = "categorias")
