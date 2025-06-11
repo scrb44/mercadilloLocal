@@ -77,3 +77,11 @@ body::before {
     margin-left: -50vw;
     margin-right: -50vw;
 }
+.header__login-icon{
+  width: 10dvh;
+  height:10dvh;
+  background-image: url("../assets/Logo-sinfondo.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
