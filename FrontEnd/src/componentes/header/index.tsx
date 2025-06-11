@@ -52,7 +52,8 @@ function Header() {
             <div className={classes["page-header__content"]}>
                 <div className={classes["page-header__left"]}>
                     <Link to="/" className={classes["page-header__logo"]}>
-                        <h1>Mercadillo Local</h1>
+                    <div className="header__login-icon"></div>
+                    <h4>Mercadillo Local</h4>
                     </Link>
 
                     {/* Indicador de municipio */}
